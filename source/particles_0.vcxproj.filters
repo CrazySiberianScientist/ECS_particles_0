@@ -16,6 +16,9 @@
     <Filter Include="glad">
       <UniqueIdentifier>{77b2e1cd-1d0f-4b2e-8564-d47212697f9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{4386adde-c7f1-4ba3-be20-a1f705581995}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -24,7 +27,7 @@
     <ClCompile Include="BakaEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="glad\src\glad.c">
+    <ClCompile Include="glad\glad_gl.c">
       <Filter>glad</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,8 +35,8 @@
     <ClInclude Include="BakaEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="glad\include\glad\glad.h">
-      <Filter>glad</Filter>
+    <ClInclude Include="utils\linmath.h">
+      <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

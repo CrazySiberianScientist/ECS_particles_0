@@ -1,20 +1,55 @@
 #include "BakaEngine.h"
 
-#include <gl/GL.h>
 #include <stdio.h>
+#include <glad/gl.h>
+#include <gl/GL.h>
+#include "utils/linmath.h"
+
 
 namespace Baka
 {
-	static void error_callback(int error, const char* description)
+	void Engine::glfw_error_callback(int error, const char* description)
 	{
 		fprintf(stderr, "Error: %s\n", description);
 	}
 
-	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	void Engine::glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
+
+
+	static const struct
+	{
+		float x, y;
+		float r, g, b;
+	} vertices[3] =
+	{
+		{ -0.6f, -0.4f, 1.f, 0.f, 0.f },
+		{  0.6f, -0.4f, 0.f, 1.f, 0.f },
+		{   0.f,  0.6f, 0.f, 0.f, 1.f }
+	};
+
+	static const char* vertex_shader_text =
+		"#version 110\n"
+		"uniform mat4 MVP;\n"
+		"attribute vec3 vCol;\n"
+		"attribute vec2 vPos;\n"
+		"varying vec3 color;\n"
+		"void main()\n"
+		"{\n"
+		"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+		"    color = vCol;\n"
+		"}\n";
+
+	static const char* fragment_shader_text =
+		"#version 110\n"
+		"varying vec3 color;\n"
+		"void main()\n"
+		"{\n"
+		"    gl_FragColor = vec4(color, 1.0);\n"
+		"}\n";
 
 	void Engine::run()
 	{
@@ -22,10 +57,10 @@ namespace Baka
 		GLuint vertex_buffer, vertex_shader, fragment_shader, program;
 		GLint mvp_location, vpos_location, vcol_location;
 
-		glfwSetErrorCallback(error_callback);
+		glfwSetErrorCallback(glfw_error_callback);
 
 		if (!glfwInit())
-			exit(EXIT_FAILURE);
+			return;
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
@@ -34,10 +69,10 @@ namespace Baka
 		if (!window)
 		{
 			glfwTerminate();
-			exit(EXIT_FAILURE);
+			return;
 		}
 
-		glfwSetKeyCallback(window, key_callback);
+		glfwSetKeyCallback(window, glfw_key_callback);
 
 		glfwMakeContextCurrent(window);
 		gladLoadGL(glfwGetProcAddress);
@@ -101,6 +136,6 @@ namespace Baka
 		glfwDestroyWindow(window);
 
 		glfwTerminate();
-		exit(EXIT_SUCCESS);
+		return;
 	}
 }

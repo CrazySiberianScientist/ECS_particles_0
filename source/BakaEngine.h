@@ -7,16 +7,22 @@ struct GLFWwindow;
 
 namespace Baka
 {
+	class LogicBase
+	{
+	public:
+		virtual ~LogicBase() {}
+		virtual void init() {}
+		virtual void update() {}
+		virtual void destroy() {}
+	};
+
 	class Engine
 	{
 	public:
-		void run();
+		Engine();
+		void run(LogicBase *logic);
 
 	private:
-		void init();
-		void update();
-		void destroy();
-
 		static void glfw_error_callback(int error, const char* description);
 		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	};

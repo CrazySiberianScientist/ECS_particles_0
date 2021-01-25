@@ -4,6 +4,8 @@
 
 int main()
 {
+	constexpr auto v = ECSUtils::PreferredIntegralType<UINT64_MAX>::value_to_index();
+
 	class Logic : public Baka::LogicBase
 	{
 

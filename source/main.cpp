@@ -4,7 +4,7 @@
 
 int main()
 {
-	ECSUtils::PreferredIntegralType<UINT64_MAX>::type v;
+	ECSUtils::ECS<100'000, 100> ecs;
 
 	class Logic : public Baka::LogicBase
 	{

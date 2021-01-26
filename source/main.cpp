@@ -12,6 +12,5 @@ int main()
 	};
 
 	Baka::Engine().run(new Logic);
-
 	return 0;
 }

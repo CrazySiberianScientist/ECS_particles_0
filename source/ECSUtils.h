@@ -7,6 +7,11 @@
 
 namespace ECSUtils
 {
+	class ChunkVector
+	{
+
+	};
+
 	template<size_t _MAX_VALUE>
 	class PreferredIntegralType
 	{
@@ -40,7 +45,6 @@ namespace ECSUtils
 	class ECS
 	{
 	public:
-
 		using EntityType = typename PreferredIntegralType<_ENTITIES_MAX_NUM>::type;
 		using ComponentIndexType = typename PreferredIntegralType<_ENTITIES_MAX_NUM * _COMPONENTS_PER_ENTITY_AVERAGE>::type;
 
@@ -83,11 +87,15 @@ namespace ECSUtils
 		class ComponentManager
 		{
 		public:
+			_ComponentType &create(const EntityType entity)
+			{
 
+			}
 
-		public:
+		private:
 			std::vector<_ComponentType> components;
 			std::array<EntityType, _ENTITIES_MAX_NUM> entity_to_component;
+			std::array<_ComponentType, _ENTITIES_MAX_NUM> entity_to_component;
 
 		};
 

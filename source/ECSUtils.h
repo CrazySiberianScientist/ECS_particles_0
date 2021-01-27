@@ -4,14 +4,10 @@
 #include <tuple>
 #include <limits>
 #include <algorithm>
+#include <array>
 
 namespace ECSUtils
 {
-	class ChunkVector
-	{
-
-	};
-
 	template<size_t _MAX_VALUE>
 	class PreferredIntegralType
 	{
@@ -40,6 +36,29 @@ namespace ECSUtils
 	public:
 		using type = PristineType<value_to_index()>;
 	};
+
+	// NOTE: I don't know preferred chunk size and I have solved to make it 64bytes as cache line.
+	template<typename _Type, size_t _CHUNK_SIZE_BYTES = 64>
+	class ChunkVector
+	{
+	public:
+		const _Type& get(size_t index) const
+		{
+			const auto chunk_index = index / chunks.size();
+
+		}
+
+	private:
+		static constexpr auto CHUNK_SIZE = std::max(_CHUNK_SIZE_BYTES / sizeof(_Type), 1);
+		static const _Type null_element;
+
+		using Chunk = std::array<_Type, CHUNK_SIZE>;
+
+
+		std::vector<Chunk*> chunks;
+	};
+
+	
 
 	template<size_t _ENTITIES_MAX_NUM, size_t _COMPONENTS_PER_ENTITY_AVERAGE>
 	class ECS

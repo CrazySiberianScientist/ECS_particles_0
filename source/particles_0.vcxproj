@@ -170,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="BakaEngine.h" />
     <ClInclude Include="ECSUtils.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="utils\linmath.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

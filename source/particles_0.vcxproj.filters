@@ -38,5 +38,11 @@
     <ClInclude Include="utils\linmath.h">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="ECSUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

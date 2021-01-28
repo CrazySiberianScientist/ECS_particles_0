@@ -6,19 +6,21 @@
 #include <algorithm>
 #include <array>
 
+#include "utils/Utils.h"
+
 namespace ECSUtils
 {
 	template<size_t _ENTITIES_MAX_NUM, size_t _COMPONENTS_PER_ENTITY_AVERAGE>
 	class ECS
 	{
 	public:
-		using EntityType = typename PreferredIntegralType<_ENTITIES_MAX_NUM>::type;
+		using EntityIdType = typename PreferredIntegralType<_ENTITIES_MAX_NUM>::type;
 		using ComponentIndexType = typename PreferredIntegralType<_ENTITIES_MAX_NUM * _COMPONENTS_PER_ENTITY_AVERAGE>::type;
 
 		class EntityManager
 		{
 		public:
-			std::tuple<EntityType, bool> create()
+			std::tuple<EntityIdType, bool> create()
 			{
 				if (remained_entities.size())
 				{
@@ -45,24 +47,34 @@ namespace ECSUtils
 			}
 
 		private:
-			std::vector<EntityType> entities;
-			std::vector<EntityType> remained_entities;
-			EntityType last_id = 0;
+			std::vector<EntityIdType> entities;
+			std::vector<EntityIdType> remained_entities;
+			EntityIdType last_id = 0;
 		};
 
 		template<typename _ComponentType>
 		class ComponentManager
 		{
 		public:
-			_ComponentType &create(const EntityType entity)
+			_ComponentType &create(const EntityIdType entity)
 			{
+				auto component_index = ComponentIndexType_INVALID_VAL;
+				if (entity >= entity_to_component.size())
+				{
+					entity_to_component.resize(entity + 1);
+				}
+				else if (entity_to_component[entity])
+				{
+
+				}
 
 			}
 
 		private:
 			std::vector<_ComponentType> components;
-			std::array<EntityType, _ENTITIES_MAX_NUM> entity_to_component;
-			std::array<_ComponentType, _ENTITIES_MAX_NUM> entity_to_component;
+			std::vector<ComponentIndexType> remained_components;
+			std::vector<ComponentIndexType> entity_to_component;
+			std::vector<EntityIdType> component_to_entity;
 
 		};
 

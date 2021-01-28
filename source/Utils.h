@@ -44,14 +44,27 @@ namespace Utils
 	public:
 		_Type &getSparse(size_t index)
 		{
+			Chunk* chunk = nullptr;
 			const auto chunk_index = index / CHUNK_SIZE;
 			if (chunk_index >= chunks.size())
-				chunks.resize(chunk_index + 1)
-			//else if
-			//if (chunk_index)
+			{
+				chunks.resize(chunk_index + 1);
+				chunk = new Chunk;
+				chunks.back = chunk;
+			}
+			else if (!(chunk = chunks[chunk_index]))
+			{
+				chunk = new Chunk;
+				chunks[chunk_index] = chunk;
+			}
+			
+			return (*chunk)[index - chunk_index * CHUNK_SIZE];
+		}
 
-			const auto array_index = chunk_index * CHUNK_SIZE;
-
+		_Type &getContiguous(size_t index)
+		{
+			const auto chunk_index = index / CHUNK_SIZE;
+			return (*chunk)[index - chunk_index * CHUNK_SIZE];
 		}
 
 	private:

@@ -8,12 +8,6 @@
 
 namespace Utils
 {
-	template<typename _IntegralType>
-	class IdWrap
-	{
-
-	};
-
 	template<size_t _MAX_VALUE>
 	class PreferredIntegralType
 	{

@@ -82,12 +82,28 @@ namespace ECSUtils
 				{
 					component_index = components.size();
 					components.push_back();
+					component_to_entity.push_back();
 				}
 
 				if (entity >= entity_to_component.size())
 					entity_to_component.resize(entity + 1, ComponentIndexType_Invalid);
 				entity_to_component[entity] = component_index;
+				component_to_entity[component_index] = entity;
+
 				return &components[component_index];
+			}
+
+			bool removeFrom(const EntityIdType entity)
+			{
+				if (entity == EntityIdType_Invalid || entity >= entity_to_component.size()) 
+					return false;
+
+				auto &component_index = entity_to_component[entity];
+				component_to_entity[component_index] = EntityIdType_Invalid;
+				remained_components.emplace_back(component_index);
+				component_index = ComponentIndexType_Invalid;
+				
+				return true;
 			}
 
 		private:

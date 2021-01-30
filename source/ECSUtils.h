@@ -113,7 +113,6 @@ namespace ECSUtils
 			std::vector<ComponentIndexType> remained_components;
 			std::vector<ComponentIndexType> entity_to_component;
 			std::vector<EntityIdType> component_to_entity;
-
 		};
 
 	};

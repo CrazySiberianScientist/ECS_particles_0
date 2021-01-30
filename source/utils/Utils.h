@@ -67,10 +67,25 @@ namespace Utils
 			return (*chunk)[index - chunk_index * CHUNK_SIZE];
 		}
 
+		template<class ...Args>
+		_Type &emplace_back(Args &&...args)
+		{
+			const auto current_chunk_i = elements_count / CHUNK_SIZE;
+			Chunk *current_chunk = nullptr;
+			if (current_chunk_i >= chunks.size())
+				current_chunk = chunks.emplace_back(new Chunk);
+			else current_chunk = chunks[current_chunk_i];
+
+			const auto element_index = (elements_count++) - current_chunk_i * CHUNK_SIZE;
+			auto element = new (&(*current_chunk)[element_index]) _Type(std::forward<Args>(args)...);
+			return *element;
+		}
+
 	private:
 		static constexpr auto CHUNK_SIZE = std::max(_CHUNK_SIZE_BYTES / sizeof(_Type), 1);
 
 		using Chunk = std::array<_Type, CHUNK_SIZE>;
 		std::vector<Chunk*> chunks;
+		size_t elements_count = 0;
 	};
 }

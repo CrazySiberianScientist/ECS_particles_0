@@ -39,10 +39,10 @@ namespace Utils
 
 	// NOTE: I don't know preferred chunk size and I have solved to make it 64bytes as cache line.
 	template<typename _Type, size_t _CHUNK_SIZE_BYTES = 64>
-	class ChunkVector
+	class ChunkBuffer
 	{
 	public:
-		_Type &getSparse(size_t index)
+		/*_Type &getSparse(size_t index)
 		{
 			Chunk* chunk = nullptr;
 			const auto chunk_index = index / CHUNK_SIZE;
@@ -59,25 +59,33 @@ namespace Utils
 			}
 			
 			return (*chunk)[index - chunk_index * CHUNK_SIZE];
-		}
+		}*/
 
-		_Type &getContiguous(size_t index)
+		_Type &get(size_t id)
 		{
 			const auto chunk_index = index / CHUNK_SIZE;
 			return (*chunk)[index - chunk_index * CHUNK_SIZE];
 		}
 
 		template<class ...Args>
-		_Type &emplace_back(Args &&...args)
+		std::tuple<_Type&, size_t> emplace_back(Args &&...args)
 		{
-			const auto current_chunk_i = elements_count / CHUNK_SIZE;
+			if (reserved_elements.size())
+			{
+				++elements_count;
+				const auto id = reserved_elements.back();
+				reserved_elements.pop_back();
+				return { get(id), id };
+			}
+
+			const auto current_chunk_i = elements_capacity / CHUNK_SIZE;
 			Chunk *current_chunk = nullptr;
 			if (current_chunk_i >= chunks.size())
 				current_chunk = chunks.emplace_back(new Chunk);
 			else current_chunk = chunks[current_chunk_i];
 
-			const auto element_index = (elements_count++) - current_chunk_i * CHUNK_SIZE;
-			auto element = new (&(*current_chunk)[element_index]) _Type(std::forward<Args>(args)...);
+			const auto element_index = (elements_capacity++) - current_chunk_i * CHUNK_SIZE;
+			auto element = new (&((*current_chunk)[element_index])) _Type(std::forward<Args>(args)...);
 			return *element;
 		}
 
@@ -86,6 +94,8 @@ namespace Utils
 
 		using Chunk = std::array<_Type, CHUNK_SIZE>;
 		std::vector<Chunk*> chunks;
+		std::vector<size_t> reserved_elements;
 		size_t elements_count = 0;
+		size_t elements_capacity = 0;
 	};
 }

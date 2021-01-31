@@ -61,32 +61,41 @@ namespace Utils
 			return (*chunk)[index - chunk_index * CHUNK_SIZE];
 		}*/
 
-		_Type &get(size_t id)
-		{
-			const auto chunk_index = index / CHUNK_SIZE;
-			return (*chunk)[index - chunk_index * CHUNK_SIZE];
-		}
+		//_Type &get(size_t id)
+		//{
+		//	const auto chunk_index = index / CHUNK_SIZE;
+		//	return (*chunk)[index - chunk_index * CHUNK_SIZE];
+		//}
 
 		template<class ...Args>
-		std::tuple<_Type&, size_t> emplace_back(Args &&...args)
+		_Type* emplace_back(Args &&...args)
 		{
+			_Type *current_element = nullptr;
 			if (reserved_elements.size())
 			{
-				++elements_count;
-				const auto id = reserved_elements.back();
+				current_element = reserved_elements.back();
 				reserved_elements.pop_back();
-				return { get(id), id };
 			}
+			else
+			{
+				const auto current_chunk_i = elements_capacity / CHUNK_SIZE;
+				Chunk *current_chunk = nullptr;
+				if (current_chunk_i >= chunks.size())
+					current_chunk = chunks.emplace_back(new Chunk);
+				else current_chunk = chunks[current_chunk_i];
 
-			const auto current_chunk_i = elements_capacity / CHUNK_SIZE;
-			Chunk *current_chunk = nullptr;
-			if (current_chunk_i >= chunks.size())
-				current_chunk = chunks.emplace_back(new Chunk);
-			else current_chunk = chunks[current_chunk_i];
+				const auto element_index = (elements_capacity++) - current_chunk_i * CHUNK_SIZE;
+				current_element = &((*current_chunk)[element_index]);
+			}
+			++elements_count;
+			return new (current_element) _Type(std::forward<Args>(args)...);
+		}
 
-			const auto element_index = (elements_capacity++) - current_chunk_i * CHUNK_SIZE;
-			auto element = new (&((*current_chunk)[element_index])) _Type(std::forward<Args>(args)...);
-			return *element;
+		void remove(_Type *element)
+		{
+			element.~_Type();
+			--elements_count;
+			reserved_elements.emplace_back(element);
 		}
 
 	private:
@@ -94,7 +103,7 @@ namespace Utils
 
 		using Chunk = std::array<_Type, CHUNK_SIZE>;
 		std::vector<Chunk*> chunks;
-		std::vector<size_t> reserved_elements;
+		std::vector<_Type*> reserved_elements;
 		size_t elements_count = 0;
 		size_t elements_capacity = 0;
 	};

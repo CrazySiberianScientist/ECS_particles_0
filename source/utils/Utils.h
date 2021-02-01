@@ -114,17 +114,17 @@ namespace Utils
 	};
 
 	// NOTE: I don't know preferred chunk size and I solved to make it 64bytes as cache line.
-	/*template<typename _Type, size_t _CHUNK_SIZE_BYTES = 64>
+	template<typename _Type, size_t _CHUNK_SIZE_BYTES = 64>
 	class ChunkTable
 	{
-	public:
-		static constexpr auto CHUNK_SIZE = std::max(_CHUNK_SIZE_BYTES / sizeof(_Type), 1);
-
 	private:
+		static constexpr auto CHUNK_SIZE_BYTES = calcPreferredChunkSizeBytes<_Type, _CHUNK_SIZE_BYTES_RATIO, _MIN_CHUNK_SIZE_BYTES>();
+		static constexpr auto CHUNK_SIZE = CHUNK_SIZE_BYTES / sizeof(_Type);
+
 		struct Chunk
 		{
 			std::bitset<CHUNK_SIZE> valid;
-			std::array<_Type, CHUNK_SIZE> data;
+			std::array<uint8_t, CHUNK_SIZE_BYTES> data;
 		};
 
 	public:
@@ -140,51 +140,35 @@ namespace Utils
 			if (!chunk->valid[element_index])
 				return nullptr;
 
-			return &chunk->data[element_index];
+			return &chunk->data[element_index * sizeof(_Type)];
 		}
 
-		_Type *get(const size_t key)
+		template<class ...Args>
+		_Type* emplace(const size_t key, Args &&...args)
 		{
 			Chunk* chunk = nullptr;
 			const auto chunk_index = key / CHUNK_SIZE;
-			if (!(chunk = chunks[chunk_index]))
-			{
-				chunk = new Chunk;
-				chunks[chunk_index] = chunk;
-			}
-			else if (chunk_index >= chunks.size())
+			if (chunk_index >= chunks.size())
 			{
 				chunks.resize(chunk_index + 1);
 				chunk = new Chunk;
 				chunks.back = chunk;
 			}
-
-			return (*chunk)[key - chunk_index * CHUNK_SIZE];
-		}
-
-
-		template<class ...Args>
-		_Type* emplace(const size_t key, Args &&...args)
-		{
-			_Type *current_element = nullptr;
-			if (reserved_elements.size())
+			else if (!(chunk = chunks[chunk_index]))
 			{
-				current_element = reserved_elements.back();
-				reserved_elements.pop_back();
+				chunk = new Chunk;
+				chunks[chunk_index] = chunk;
 			}
-			else
-			{
-				const auto current_chunk_i = elements_capacity / CHUNK_SIZE;
-				Chunk *current_chunk = nullptr;
-				if (current_chunk_i >= chunks.size())
-					current_chunk = chunks.emplace_back(new Chunk);
-				else current_chunk = chunks[current_chunk_i];
 
-				const auto element_index = (elements_capacity++) - current_chunk_i * CHUNK_SIZE;
-				current_element = &((*current_chunk)[element_index]);
-			}
-			++elements_count;
-			return new (current_element) _Type(std::forward<Args>(args)...);
+			const auto element_index = key - chunk_index * CHUNK_SIZE;
+			auto current_element = reinterpret_cast<_Type*>(&(current_chunk->data[element_index]));
+			if (chunk->valid[element_index])
+				return current_element;
+
+			new (current_element) _Type(std::forward<Args>(args)...);
+			chunk->valid[element_index] = true;
+
+			return current_element;
 		}
 
 		void remove(const size_t key)
@@ -198,5 +182,5 @@ namespace Utils
 		std::vector<Chunk*> chunks;
 		size_t elements_count = 0;
 		size_t elements_capacity = 0;
-	};*/
+	};
 }

@@ -40,21 +40,22 @@ namespace Utils
 
 	// NOTE: I don't know preferred chunk size and I solved to make it 64bytes as cache line.
 	template<typename _Type, size_t _CHUNK_SIZE_BYTES_RATIO = 10, size_t _MIN_CHUNK_SIZE_BYTES = 64>
+	static constexpr auto calcPreferredChunkSizeBytes()
+	{
+		constexpr auto sizeof_type = sizeof(_Type);
+		constexpr auto type_chunk_size_bytes = sizeof_type * _CHUNK_SIZE_BYTES_RATIO;
+		if constexpr (type_chunk_size_bytes >= _MIN_CHUNK_SIZE_BYTES)
+			return type_chunk_size_bytes;
+		if constexpr (_MIN_CHUNK_SIZE_BYTES % sizeof_type)
+			return (_MIN_CHUNK_SIZE_BYTES / sizeof_type + 1) * sizeof_type;
+		return _MIN_CHUNK_SIZE_BYTES;
+	}
+
+	template<typename _Type, size_t _CHUNK_SIZE_BYTES_RATIO = 10, size_t _MIN_CHUNK_SIZE_BYTES = 64>
 	class ChunkBuffer
 	{
 	private:
-		static constexpr auto calc_chunk_size_bytes()
-		{
-			constexpr auto sizeof_type = sizeof(_Type);
-			constexpr auto type_chunk_size_bytes = sizeof_type * _CHUNK_SIZE_BYTES_RATIO;
-			if constexpr (type_chunk_size_bytes >= _MIN_CHUNK_SIZE_BYTES)
-				return type_chunk_size_bytes;
-			if constexpr (_MIN_CHUNK_SIZE_BYTES % sizeof_type)
-				return (_MIN_CHUNK_SIZE_BYTES / sizeof_type + 1) * sizeof_type;
-			return _MIN_CHUNK_SIZE_BYTES;
-		}
-
-		static constexpr auto CHUNK_SIZE_BYTES = calc_chunk_size_bytes();
+		static constexpr auto CHUNK_SIZE_BYTES = calcPreferredChunkSizeBytes<_Type, _CHUNK_SIZE_BYTES_RATIO, _MIN_CHUNK_SIZE_BYTES>();
 		static constexpr auto CHUNK_SIZE = CHUNK_SIZE_BYTES / sizeof(_Type);
 
 		using Chunk = std::array<uint8_t, CHUNK_SIZE_BYTES>;
@@ -112,7 +113,7 @@ namespace Utils
 		std::vector<_Type*> constructed_elements;
 	};
 
-		// NOTE: I don't know preferred chunk size and I solved to make it 64bytes as cache line.
+	// NOTE: I don't know preferred chunk size and I solved to make it 64bytes as cache line.
 	/*template<typename _Type, size_t _CHUNK_SIZE_BYTES = 64>
 	class ChunkTable
 	{

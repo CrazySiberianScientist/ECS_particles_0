@@ -39,67 +39,87 @@ namespace Utils
 	};
 
 	// NOTE: I don't know preferred chunk size and I solved to make it 64bytes as cache line.
-	template<typename _Type, size_t _CHUNK_SIZE_BYTES = 64>
+	template<typename _Type, size_t _CHUNK_SIZE_BYTES_RATIO = 10, size_t _MIN_CHUNK_SIZE_BYTES = 64>
 	class ChunkBuffer
 	{
-	public:
-		static constexpr auto CHUNK_SIZE = std::max(_CHUNK_SIZE_BYTES / sizeof(_Type), 1);
-
 	private:
-		using Chunk = std::array<_Type, CHUNK_SIZE>;
+		static constexpr auto calc_chunk_size_bytes()
+		{
+			constexpr auto sizeof_type = sizeof(_Type);
+			constexpr auto type_chunk_size_bytes = sizeof_type * _CHUNK_SIZE_BYTES_RATIO;
+			if constexpr (type_chunk_size_bytes >= _MIN_CHUNK_SIZE_BYTES)
+				return type_chunk_size_bytes;
+			if constexpr (_MIN_CHUNK_SIZE_BYTES % sizeof_type)
+				return (_MIN_CHUNK_SIZE_BYTES / sizeof_type + 1) * sizeof_type;
+			return _MIN_CHUNK_SIZE_BYTES;
+		}
+
+		static constexpr auto CHUNK_SIZE_BYTES = calc_chunk_size_bytes();
+		static constexpr auto CHUNK_SIZE = CHUNK_SIZE_BYTES / sizeof(_Type);
+
+		using Chunk = std::array<uint8_t, CHUNK_SIZE_BYTES>;
 
 	public:
 		~ChunkBuffer()
 		{
-			for (auto chunk : chunks) delete chunk;
+			for (auto &element : constructed_elements)
+				element->~_Type();
+			for (auto &chunk : chunks)
+				delete chunk;
 		}
 
 		template<class ...Args>
 		_Type* emplace_back(Args &&...args)
 		{
 			_Type *current_element = nullptr;
-			if (reserved_elements.size())
+			if (destructed_elements.size())
 			{
-				current_element = reserved_elements.back();
-				reserved_elements.pop_back();
+				current_element = destructed_elements.back();
+				destructed_elements.pop_back();
 			}
 			else
 			{
+				const auto elements_count = constructed_elements.size();
 				const auto current_chunk_i = elements_count / CHUNK_SIZE;
 				Chunk *current_chunk = nullptr;
 				if (current_chunk_i >= chunks.size())
 					current_chunk = chunks.emplace_back(new Chunk);
 				else current_chunk = chunks[current_chunk_i];
 
-				const auto element_index = elements_count - current_chunk_i * CHUNK_SIZE;
-				current_element = &((*current_chunk)[element_index]);
+				const auto element_index = (elements_count - current_chunk_i * CHUNK_SIZE) * sizeof(_Type);
+				current_element = reinterpret_cast<_Type*>(&((*current_chunk)[element_index]));
 			}
-			++elements_count;
-			return new (current_element) _Type(std::forward<Args>(args)...);
+			new (current_element) _Type(std::forward<Args>(args)...);
+			constructed_elements.emplace_back(current_element);
+			
+			return current_element;
 		}
 
 		void remove(_Type *element)
 		{
-			element.~_Type();
-			--elements_count;
-			reserved_elements.emplace_back(element);
+			auto found_it = std::find(constructed_elements.begin(), constructed_elements.end(), element);
+			if (found_it == constructed_elements.end()) return;
+			*found_it = constructed_elements.back();
+			constructed_elements.pop_back();
+
+			element->~_Type();
+			destructed_elements.emplace_back(element);
 		}
 
 	private:
 		std::vector<Chunk*> chunks;
-		std::vector<_Type*> reserved_elements;
-		size_t elements_count = 0;
+		std::vector<_Type*> destructed_elements;
+		std::vector<_Type*> constructed_elements;
 	};
 
 		// NOTE: I don't know preferred chunk size and I solved to make it 64bytes as cache line.
-	template<typename _Type, size_t _CHUNK_SIZE_BYTES = 64>
-	class ChunkMap
+	/*template<typename _Type, size_t _CHUNK_SIZE_BYTES = 64>
+	class ChunkTable
 	{
 	public:
 		static constexpr auto CHUNK_SIZE = std::max(_CHUNK_SIZE_BYTES / sizeof(_Type), 1);
 
 	private:
-		using Chunk = std::array<_Type, CHUNK_SIZE>;
 		struct Chunk
 		{
 			std::bitset<CHUNK_SIZE> valid;
@@ -107,10 +127,25 @@ namespace Utils
 		};
 
 	public:
-		_Type *getSparse(size_t index)
+		_Type *get(const size_t key)
 		{
 			Chunk* chunk = nullptr;
-			const auto chunk_index = index / CHUNK_SIZE;
+			const auto chunk_index = key / CHUNK_SIZE;
+
+			if (chunk_index >= chunks.size() || !(chunk = chunks[chunk_index]))
+				return nullptr;
+
+			const auto element_index = key - chunk_index * CHUNK_SIZE;
+			if (!chunk->valid[element_index])
+				return nullptr;
+
+			return &chunk->data[element_index];
+		}
+
+		_Type *get(const size_t key)
+		{
+			Chunk* chunk = nullptr;
+			const auto chunk_index = key / CHUNK_SIZE;
 			if (!(chunk = chunks[chunk_index]))
 			{
 				chunk = new Chunk;
@@ -123,17 +158,12 @@ namespace Utils
 				chunks.back = chunk;
 			}
 
-			return (*chunk)[index - chunk_index * CHUNK_SIZE];
+			return (*chunk)[key - chunk_index * CHUNK_SIZE];
 		}
 
-		//_Type &get(size_t id)
-		//{
-		//	const auto chunk_index = index / CHUNK_SIZE;
-		//	return (*chunk)[index - chunk_index * CHUNK_SIZE];
-		//}
 
 		template<class ...Args>
-		_Type* emplace_back(Args &&...args)
+		_Type* emplace(const size_t key, Args &&...args)
 		{
 			_Type *current_element = nullptr;
 			if (reserved_elements.size())
@@ -156,7 +186,7 @@ namespace Utils
 			return new (current_element) _Type(std::forward<Args>(args)...);
 		}
 
-		void remove(_Type *element)
+		void remove(const size_t key)
 		{
 			element.~_Type();
 			--elements_count;
@@ -165,8 +195,7 @@ namespace Utils
 
 	private:
 		std::vector<Chunk*> chunks;
-		std::vector<_Type*> reserved_elements;
 		size_t elements_count = 0;
 		size_t elements_capacity = 0;
-	};
+	};*/
 }

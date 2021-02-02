@@ -9,6 +9,13 @@
 
 namespace Utils
 {
+	template <typename _Type, typename _Iterator>
+	void removeFast(const typename std::vector<_Type>::iterator &it, std::vector<_Type> & container)
+	{
+		*it = container.back();
+		container.pop_back();
+	}
+
 	template<size_t _MAX_VALUE>
 	class PreferredIntegralType
 	{
@@ -38,7 +45,7 @@ namespace Utils
 		using type = PristineType<value_to_index()>;
 	};
 
-	// NOTE: I don't know preferred chunk size and I solved to make it 64bytes as cache line.
+	// NOTE: Min chunk size is 64bytes as cache line.
 	template<typename _Type, size_t _CHUNK_SIZE_BYTES_RATIO = 10, size_t _MIN_CHUNK_SIZE_BYTES = 64>
 	static constexpr auto calcPreferredChunkSizeBytes()
 	{
@@ -113,7 +120,6 @@ namespace Utils
 		std::vector<_Type*> constructed_elements;
 	};
 
-	// NOTE: I don't know preferred chunk size and I solved to make it 64bytes as cache line.
 	template<typename _Type, size_t _CHUNK_SIZE_BYTES_RATIO = 10, size_t _MIN_CHUNK_SIZE_BYTES = 64>
 	class ChunkTable
 	{

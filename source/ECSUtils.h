@@ -10,14 +10,11 @@
 
 namespace ECSUtils
 {
-	template<size_t _ENTITIES_MAX_NUM, size_t _COMPONENTS_PER_ENTITY_AVERAGE>
 	class ECS
 	{
 	public:
-		using EntityIdType = typename PreferredIntegralType<_ENTITIES_MAX_NUM>::type;
+		using EntityIdType = uint32_t;
 		static constexpr auto EntityIdType_Invalid = std::numeric_limits<EntityIdType>::max();
-		using ComponentIndexType = typename PreferredIntegralType<_ENTITIES_MAX_NUM * _COMPONENTS_PER_ENTITY_AVERAGE>::type;
-		static constexpr auto ComponentIndexType_Invalid = std::numeric_limits<ComponentIndexType>::max();
 
 		class EntityManager
 		{
@@ -31,13 +28,13 @@ namespace ECSUtils
 					entities.emplace_back(e);
 					return e;
 				}
-				if (last_id >= _ENTITIES_MAX_NUM)
+				if (last_id >= EntityIdType_Invalid)
 					return EntityIdType_Invalid;
 				entities.emplace_back(last_id);
 				return last_id++;
 			}
 
-			bool remove(const EntityType entity)
+			bool remove(const EntityIdType entity)
 			{
 				if (entity == EntityIdType_Invalid) return false;
 
@@ -108,7 +105,7 @@ namespace ECSUtils
 
 		private:
 			//TODO: Chunk Vector
-			std::vector<_ComponentType> components;
+			Utils::ChunkBuffer<_ComponentType> components;
 
 			std::vector<ComponentIndexType> remained_components;
 			std::vector<ComponentIndexType> entity_to_component;

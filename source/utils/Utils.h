@@ -114,7 +114,7 @@ namespace Utils
 	};
 
 	// NOTE: I don't know preferred chunk size and I solved to make it 64bytes as cache line.
-	template<typename _Type, size_t _CHUNK_SIZE_BYTES = 64>
+	template<typename _Type, size_t _CHUNK_SIZE_BYTES_RATIO = 10, size_t _MIN_CHUNK_SIZE_BYTES = 64>
 	class ChunkTable
 	{
 	private:
@@ -128,6 +128,20 @@ namespace Utils
 		};
 
 	public:
+		~ChunkTable()
+		{
+			for (auto &chunk : chunks)
+			{
+				if (!chunk) continue;
+				for (auto i = 0; i < CHUNK_SIZE; ++i)
+				{
+					if (!chunk->valid[i]) continue;
+					reinterpret_cast<_Type*>(&chunk->data[i * sizeof(_Type)])->~_Type();
+				}
+				delete chunk;
+			}
+		}
+
 		_Type *get(const size_t key)
 		{
 			Chunk* chunk = nullptr;
@@ -140,7 +154,7 @@ namespace Utils
 			if (!chunk->valid[element_index])
 				return nullptr;
 
-			return &chunk->data[element_index * sizeof(_Type)];
+			return reinterpret_cast<_Type*>(&chunk->data[element_index * sizeof(_Type)]);
 		}
 
 		template<class ...Args>
@@ -152,7 +166,7 @@ namespace Utils
 			{
 				chunks.resize(chunk_index + 1);
 				chunk = new Chunk;
-				chunks.back = chunk;
+				chunks.back() = chunk;
 			}
 			else if (!(chunk = chunks[chunk_index]))
 			{
@@ -161,7 +175,7 @@ namespace Utils
 			}
 
 			const auto element_index = key - chunk_index * CHUNK_SIZE;
-			auto current_element = reinterpret_cast<_Type*>(&(current_chunk->data[element_index]));
+			auto current_element = reinterpret_cast<_Type*>(&(chunk->data[element_index * sizeof(_Type)]));
 			if (chunk->valid[element_index])
 				return current_element;
 
@@ -173,14 +187,22 @@ namespace Utils
 
 		void remove(const size_t key)
 		{
-			element.~_Type();
-			--elements_count;
-			reserved_elements.emplace_back(element);
+			Chunk* chunk = nullptr;
+			const auto chunk_index = key / CHUNK_SIZE;
+
+			if (chunk_index >= chunks.size() || !(chunk = chunks[chunk_index]))
+				return;
+
+			const auto element_index = key - chunk_index * CHUNK_SIZE;
+			if (!chunk->valid[element_index])
+				return;
+
+			chunk->valid[element_index] = false;
+			auto element = &chunk->data[element_index * sizeof(_Type)];
+			element->~_Type();
 		}
 
 	private:
 		std::vector<Chunk*> chunks;
-		size_t elements_count = 0;
-		size_t elements_capacity = 0;
 	};
 }

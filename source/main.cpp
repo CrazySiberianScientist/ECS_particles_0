@@ -29,19 +29,17 @@ int main()
 {
 	//ECSUtils::ECS<100'000, 100> ecs;
 	{
-		Utils::ChunkBuffer<Kaka, 2> test_buffer;
-		std::vector<Kaka*> kaki;
+		Utils::ChunkTable<Kaka, 2> test_buffer;
+		std::vector<size_t> keys;
 		for (auto i = 0; i < 100; ++i)
 		{
-			//kaki.push_back(test_buffer.emplace_back(i, 100 - i));
-			//test_buffer.remove(test_buffer.emplace_back(i, 100 - i));
-			test_buffer.emplace_back(i, 100 - i);
+			size_t v = rand() % 100;
+			keys.push_back(v);
+			test_buffer.emplace(v, v, v / 100.0f);
 		}
-		/*for (auto k : kaki)
-			test_buffer.remove(k);*/
-
-		auto kaka = test_buffer.emplace_back();
-		//test_buffer.remove(kaka);
+		for (auto k : keys)
+			if (k == test_buffer.get(k)->i)
+				printf("KAKAKAKA!\n");
 	}
 
 	class Logic : public Baka::LogicBase

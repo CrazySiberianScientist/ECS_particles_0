@@ -9,7 +9,7 @@
 
 namespace Utils
 {
-	template <typename _Type, typename _Iterator>
+	template <typename _Type>
 	void removeFast(const typename std::vector<_Type>::iterator &it, std::vector<_Type> & container)
 	{
 		*it = container.back();
@@ -107,8 +107,7 @@ namespace Utils
 		{
 			auto found_it = std::find(constructed_elements.begin(), constructed_elements.end(), element);
 			if (found_it == constructed_elements.end()) return;
-			*found_it = constructed_elements.back();
-			constructed_elements.pop_back();
+			Utils::removeFast(found_it, constructed_elements);
 
 			element->~_Type();
 			destructed_elements.emplace_back(element);
@@ -204,7 +203,7 @@ namespace Utils
 				return;
 
 			chunk->valid[element_index] = false;
-			auto element = &chunk->data[element_index * sizeof(_Type)];
+			auto element = reinterpret_cast<_Type*>(&chunk->data[element_index * sizeof(_Type)]);
 			element->~_Type();
 		}
 

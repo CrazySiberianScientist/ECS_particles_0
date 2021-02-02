@@ -42,8 +42,7 @@ namespace ECSUtils
 				if (found_it == entities.end()) return false;
 
 				remained_entities.emplace_back(*found_it);
-				*found_it = entities.back();
-				entities.pop_back();
+				Utils::removeFast(found_it, entities);
 				return true;
 			}
 
@@ -57,59 +56,40 @@ namespace ECSUtils
 		class ComponentManager
 		{
 		public:
-			_ComponentType *getComponentFor(const EntityIdType entity)
+			_ComponentType *getComponent(const EntityIdType entity)
 			{
-				return components[entity_to_component[entity]];
+				if (auto c = entity_to_component.get(entity))
+					return *c;
+				return nullptr;
 			}
 
-			_ComponentType *createFor(const EntityIdType entity)
+			template<class ...Args>
+			_ComponentType *create(const EntityIdType entity, Args &&...args)
 			{
 				if (entity == EntityIdType_Invalid) 
 					return nullptr;
+				if (auto c = getComponent(entity))
+					return c;
 
-				auto component_index = entity_to_component[entity];
-				if (component_index != ComponentIndexType_Invalid)
-					return &components[component_index];
-				if (remained_components.size())
-				{
-					component_index = remained_components.back();
-					remained_components.pop_back();
-				}
-				else
-				{
-					component_index = components.size();
-					components.push_back();
-					component_to_entity.push_back();
-				}
+				auto new_component = components.emplace_back(std::forward<Args>(args)...);
+				entity_to_component.emplace(entity, new_component);
 
-				if (entity >= entity_to_component.size())
-					entity_to_component.resize(entity + 1, ComponentIndexType_Invalid);
-				entity_to_component[entity] = component_index;
-				component_to_entity[component_index] = entity;
-
-				return &components[component_index];
+				return new_component;
 			}
 
-			bool removeFrom(const EntityIdType entity)
+			void remove(const EntityIdType entity)
 			{
-				if (entity == EntityIdType_Invalid || entity >= entity_to_component.size()) 
-					return false;
+				if (entity == EntityIdType_Invalid) return;
+				auto component = getComponent(entity);
+				if (!component) return;
 
-				auto &component_index = entity_to_component[entity];
-				component_to_entity[component_index] = EntityIdType_Invalid;
-				remained_components.emplace_back(component_index);
-				component_index = ComponentIndexType_Invalid;
-				
-				return true;
+				entity_to_component.remove(entity);
+				components.remove(component);
 			}
 
 		private:
-			//TODO: Chunk Vector
 			Utils::ChunkBuffer<_ComponentType> components;
-
-			std::vector<ComponentIndexType> remained_components;
-			std::vector<ComponentIndexType> entity_to_component;
-			std::vector<EntityIdType> component_to_entity;
+			Utils::ChunkTable<_ComponentType*> entity_to_component;
 		};
 
 	};

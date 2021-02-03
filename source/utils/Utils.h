@@ -53,7 +53,7 @@ namespace Utils
 		constexpr auto type_chunk_size_bytes = sizeof_type * _CHUNK_SIZE_BYTES_RATIO;
 		if constexpr (type_chunk_size_bytes >= _MIN_CHUNK_SIZE_BYTES)
 			return type_chunk_size_bytes;
-		if constexpr (_MIN_CHUNK_SIZE_BYTES % sizeof_type)
+		if constexpr ((_MIN_CHUNK_SIZE_BYTES % sizeof_type) != 0)
 			return (_MIN_CHUNK_SIZE_BYTES / sizeof_type + 1) * sizeof_type;
 		return _MIN_CHUNK_SIZE_BYTES;
 	}

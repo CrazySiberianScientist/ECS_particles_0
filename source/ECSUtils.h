@@ -96,19 +96,27 @@ namespace ECSUtils
 		template<typename _Component>
 		_Component* getComponent(const EntityIdType entity)
 		{
-			return get_collection<_Component>.get(entity);
+			return get_collection<_Component>().get(entity);
 		}
 
 		template<typename _Component, class ...Args>
 		_Component* createComponent(const EntityIdType entity, Args &&...args)
 		{
-			return get_collection<_Component>.create(entity, std::forward<Args>(args)...);
+			if constexpr (std::is_constructible_v<_Component, Args...>)
+				return get_collection<_Component>().create(entity, std::forward<Args>(args)...);
+			return get_collection<_Component>().create(entity, _Component{ std::forward<Args>(args)... });
 		}
 
 		template<typename _Component>
 		void removeComponent(const EntityIdType entity)
 		{
-			return get_collection<_Component>.remove(entity);
+			get_collection<_Component>().remove(entity);
+		}
+
+		
+		void removeAllComponents(const EntityIdType entity)
+		{
+			(get_collection<_ComponentTypes>().remove(entity), ...);
 		}
 
 	private:
@@ -116,8 +124,7 @@ namespace ECSUtils
 		ComponentCollection<_Component>& get_collection()
 		{
 			return std::get<ComponentCollection<_Component>>(component_collections);
-		}
-		
+		}	
 
 	private:
 		std::tuple<ComponentCollection<_ComponentTypes>...> component_collections;

@@ -15,10 +15,8 @@ struct Kaka
 
 int main()
 {
-	ECSUtils::ECS::ComponentManager<Kaka> cm;
-	cm.create(13);
-	auto c = cm.getComponent(13);
-	cm.remove(13);
+	ECSUtils::ComponentManager<Kaka> cm;
+	
 
 	class Logic : public Baka::LogicBase
 	{

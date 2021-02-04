@@ -27,6 +27,7 @@ int main()
 	auto e = em.create();
 	cm.createComponent<Kaka>(e, 6, 13.0f);
 	cm.createComponent<Gaka>(e, "TEST");
+	cm.removeAllComponents(e);
 	
 
 	class Logic : public Baka::LogicBase

@@ -8,7 +8,7 @@
 
 #include "utils/Utils.h"
 
-namespace ECSUtils
+namespace ECS
 {
 	using EntityIdType = uint32_t;
 	static constexpr auto EntityIdType_Invalid = std::numeric_limits<EntityIdType>::max();

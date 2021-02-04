@@ -7,22 +7,9 @@
 
 using namespace std;
 
-struct Kaka
-{
-	int i = 666;
-	float f = 13.0f ;
-};
-
-struct Gaka
-{
-	string s = "LOH";
-};
 
 int main()
 {
-	constexpr auto i_t = std::is_constructible<Kaka, int, float>::value;
-
-	ECS::EntityManager em;
 	
 
 	class Logic : public Baka::LogicBase

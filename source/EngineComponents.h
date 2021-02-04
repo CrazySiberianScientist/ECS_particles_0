@@ -1,16 +1,17 @@
 #pragma once
 
 #include "utils/linmath.h"
+#include "ECS.h"
 
 namespace Baka
 {
-	#define ENGINE_COMPONENT(COMPONENT) EngineComponents::COMPONENT
-	#define ENGINE_COMPONENTS\
-	ENGINE_COMPONENT(Transform),\
-	ENGINE_COMPONENT(Camera)
-
 	namespace EngineComponents
 	{
+		#define ENGINE_COMPONENT(COMPONENT) EngineComponents::COMPONENT
+		#define ENGINE_COMPONENTS\
+		ENGINE_COMPONENT(Transform),\
+		ENGINE_COMPONENT(CameraTransform)
+
 		struct Transform
 		{
 			vec3 pos;
@@ -18,9 +19,12 @@ namespace Baka
 			vec3 scale;
 		};
 
-		struct Camera
+		struct CameraTransform
 		{
-
+			mat4x4 modelview;
+			mat4x4 projection;
 		};
+
+		COMPONENT_BUNDLE(CameraBundle, Transform, CameraTransform);
 	}
 }

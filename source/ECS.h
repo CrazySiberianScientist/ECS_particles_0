@@ -13,6 +13,10 @@ namespace ECS
 	using EntityIdType = uint32_t;
 	static constexpr auto EntityIdType_Invalid = std::numeric_limits<EntityIdType>::max();
 
+	template <typename ..._Components>
+	using ComponentBundle = std::tuple<_Components...>;
+	#define COMPONENT_BUNDLE(NAME, ...) using NAME = ECS::ComponentBundle<__VA_ARGS__>
+
 	class EntityManager
 	{
 	public:
@@ -63,7 +67,7 @@ namespace ECS
 		}
 
 		template<class ...Args>
-		_ComponentType* create(const EntityIdType entity, Args &&...args)
+		_ComponentType* emplace(const EntityIdType entity, Args &&...args)
 		{
 			if (entity == EntityIdType_Invalid)
 				return nullptr;
@@ -74,6 +78,16 @@ namespace ECS
 			entity_to_component.emplace(entity, new_component);
 
 			return new_component;
+		}
+
+		_ComponentType* create(const EntityIdType entity, _ComponentType && component)
+		{
+			return emplace(entity, std::move(component));
+		}
+
+		_ComponentType* create(const EntityIdType entity, const _ComponentType & component)
+		{
+			return emplace(entity, component);
 		}
 
 		void remove(const EntityIdType entity)
@@ -102,11 +116,21 @@ namespace ECS
 		}
 
 		template<typename _Component, class ...Args>
-		_Component* createComponent(const EntityIdType entity, Args &&...args)
+		_Component* emplaceComponent(const EntityIdType entity, Args &&...args)
 		{
-			if constexpr (std::is_constructible_v<_Component, Args...>)
-				return get_collection<_Component>().create(entity, std::forward<Args>(args)...);
-			return get_collection<_Component>().create(entity, _Component{ std::forward<Args>(args)... });
+			return get_collection<_Component>().emplace(entity, std::forward<Args>(args)...);
+		}
+
+		template<typename _Component>
+		_Component* createComponent(const EntityIdType entity, _Component && component)
+		{
+			return get_collection<_Component>().create(entity, std::move(component));
+		}
+
+		template<typename _Component>
+		_Component* createComponent(const EntityIdType entity, const _Component & component)
+		{
+			return get_collection<_Component>().create(entity, component);
 		}
 
 		template<typename _Component>
@@ -114,7 +138,6 @@ namespace ECS
 		{
 			get_collection<_Component>().remove(entity);
 		}
-
 		
 		void removeAllComponents(const EntityIdType entity)
 		{
@@ -126,7 +149,7 @@ namespace ECS
 		ComponentCollection<_Component>& get_collection()
 		{
 			return std::get<ComponentCollection<_Component>>(component_collections);
-		}	
+		}
 
 	private:
 		std::tuple<ComponentCollection<_ComponentTypes>...> component_collections;

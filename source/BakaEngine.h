@@ -29,13 +29,20 @@ namespace Baka
 		Engine() {}
 		void run(LogicBase *logic) {}
 
+		auto createEntity() { return entity_manager.create(); }
+		void removeEnity(const ECS::EntityIdType entity_id)
+		{
+			component_manager.removeAllComponents(entity_id);
+			entity_manager.remove(entity_id);
+		}
+
 	private:
 		static void glfw_error_callback(int error, const char* description) {}
 		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}
 
 	private:
 		ECS::EntityManager entity_manager;
-		ECS::ComponentManager<ENGINE_COMPONENTS_TYPES, _UserComponents...> component_manager;
+		ECS::ComponentManager<ENGINE_COMPONENTS, _UserComponents...> component_manager;
 	};
 
 

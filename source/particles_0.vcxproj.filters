@@ -38,11 +38,14 @@
     <ClInclude Include="utils\linmath.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="ECSUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="utils\Utils.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineComponents.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

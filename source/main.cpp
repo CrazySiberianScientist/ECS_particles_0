@@ -1,6 +1,6 @@
 #include "BakaEngine.h"
 
-#include "ECSUtils.h"
+#include "ECS.h"
 #include "utils/Utils.h"
 
 #include <iostream>
@@ -22,12 +22,7 @@ int main()
 {
 	constexpr auto i_t = std::is_constructible<Kaka, int, float>::value;
 
-	ECSUtils::EntityManager em;
-	ECSUtils::ComponentManager<Kaka, Gaka> cm;
-	auto e = em.create();
-	cm.createComponent<Kaka>(e, 6, 13.0f);
-	cm.createComponent<Gaka>(e, "TEST");
-	cm.removeAllComponents(e);
+	ECS::EntityManager em;
 	
 
 	class Logic : public Baka::LogicBase

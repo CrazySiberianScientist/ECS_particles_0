@@ -4,7 +4,11 @@
 
 namespace Baka
 {
-	#define ENGINE_COMPONENTS_TYPES Transform, Camera
+	#define ENGINE_COMPONENT(COMPONENT) EngineComponents::COMPONENT
+	#define ENGINE_COMPONENTS\
+	ENGINE_COMPONENT(Transform),\
+	ENGINE_COMPONENT(Camera)
+
 	namespace EngineComponents
 	{
 		struct Transform

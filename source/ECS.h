@@ -43,6 +43,8 @@ namespace ECS
 			return true;
 		}
 
+		const auto &getEntities() const { return entities; }
+
 	private:
 		std::vector<EntityIdType> entities;
 		std::vector<EntityIdType> remained_entities;

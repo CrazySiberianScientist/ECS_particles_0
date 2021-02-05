@@ -12,6 +12,7 @@ namespace Baka
 		ENGINE_COMPONENT(Transform),\
 		ENGINE_COMPONENT(CameraTransform)
 
+
 		struct Transform
 		{
 			vec3 pos;
@@ -25,6 +26,7 @@ namespace Baka
 			mat4x4 projection;
 		};
 
+		using ComponentsTypes = Utils::TypesPack<Transform, CameraTransform>;
 		ECS_COMPONENT_BUNDLE(CameraBundle, Transform, CameraTransform);
 	}
 }

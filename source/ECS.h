@@ -14,7 +14,7 @@ namespace ECS
 	static constexpr auto EntityIdType_Invalid = std::numeric_limits<EntityIdType>::max();
 
 	template <typename ..._Components>
-	using ComponentBundle = std::tuple<_Components...>;
+	using ComponentBundle = Utils::TypesPack<_Components...>;
 	#define ECS_COMPONENT_BUNDLE(NAME, ...)\
 	using NAME = ECS::ComponentBundle<__VA_ARGS__>;\
 	constexpr NAME NAME##_v {};
@@ -132,22 +132,22 @@ namespace ECS
 		}
 
 		template<typename _Component>
-		_Component* createComponent(const EntityIdType entity, const _Component & component)
+		_Component* createComponent(const EntityIdType entity, const _Component & component = {})
 		{
 			return get_collection<_Component>().create(entity, component);
 		}
 
-		template<typename _Bundle, typename ...Args>
-		void createBundle(const EntityIdType entity, Args &&...args)
+		template<typename ..._Components>
+		void createBundle(ComponentBundle<_Components...>, const EntityIdType entity, _Components ...components)
 		{
-			create_bundle_impl(_Bundle{}, entity, std::forward<Args>(args)...);
+			(emplaceComponent<_Components>(entity, std::move(components)), ...);
 		}
 
-		/*template<typename ComponentBundle<typename _Components>...>
-		void createBundle(const EntityIdType entity)
+		template<typename ..._Components>
+		void createBundle(ComponentBundle<_Components...>, const EntityIdType entity)
 		{
-			(get_collection<_Components>().emplace(entity), ...);
-		}*/
+			(emplaceComponent<_Components>(entity), ...);
+		}
 
 		template<typename _Component>
 		void removeComponent(const EntityIdType entity)
@@ -165,12 +165,6 @@ namespace ECS
 		ComponentCollection<_Component>& get_collection()
 		{
 			return std::get<ComponentCollection<_Component>>(component_collections);
-		}
-
-		template<typename ..._Components>
-		void create_bundle_impl(ComponentBundle<_Components...>, const EntityIdType entity, _Components ...components)
-		{
-			(emplaceComponent<_Components>(entity, std::move(components)), ...);
 		}
 
 	private:

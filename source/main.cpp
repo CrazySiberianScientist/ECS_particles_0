@@ -18,9 +18,11 @@ int main()
 
 	Engine engine;
 	auto e = engine.createEntity();
-	engine.component_manager.create_bundle_impl(EngineComponents::CameraBundle_v,
+	engine.component_manager.createBundle(EngineComponents::CameraBundle_v,
 		e, {}, {});
-	engine.component_manager.createComponent<EngineComponents::Transform>(e, {});
+	engine.component_manager.createBundle(EngineComponents::CameraBundle_v,
+		e);
+	//engine.component_manager.createComponent<EngineComponents::Transform>(e);
 
 	//Baka::Engine().run(new Logic);
 	return 0;

@@ -9,6 +9,12 @@
 
 namespace Utils
 {
+	template <typename ..._Types>
+	struct TypesPack {};
+
+	template <typename ..._Types0, typename ..._Types1>
+	constexpr decltype(auto) conCatTypesPack(TypesPack<_Types0...>, TypesPack<_Types1...>) { return TypesPack<_Types0..., _Types1...>{}; }
+
 	template <typename _Type>
 	void removeFast(const typename std::vector<_Type>::iterator &it, std::vector<_Type> & container)
 	{

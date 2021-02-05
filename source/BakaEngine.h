@@ -22,7 +22,7 @@ namespace Baka
 		virtual void destroy() {}
 	};
 
-	template<typename ..._UserComponents>
+	template<typename _UserComponentsPack = Utils::TypesPack<>>
 	class Engine
 	{
 	public:
@@ -40,9 +40,15 @@ namespace Baka
 		static void glfw_error_callback(int error, const char* description) {}
 		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}
 
+		template<typename ..._Components>
+		static decltype(auto) make_component_manager(Utils::TypesPack<_Components...>) 
+		{
+			return ECS::ComponentManager<_Components...>{};
+		}
+
 	public:
 		ECS::EntityManager entity_manager;
-		ECS::ComponentManager<ENGINE_COMPONENTS, _UserComponents...> component_manager;
+		decltype(make_component_manager(Utils::conCatTypesPack(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}))) component_manager;
 	};
 
 

@@ -25,6 +25,11 @@ namespace Baka
 	template<typename _UserComponentsPack = Utils::TypesPack<>>
 	class Engine
 	{
+		template<typename ..._Components>
+		static constexpr decltype(auto) make_component_manager_type(Utils::TypesPack<_Components...>) 
+		{ return ECS::ComponentManager<_Components...>{}; }
+		using ComponentManagerType = decltype(make_component_manager_type(Utils::conCatTypesPack(EngineComponents::ComponentsTypes{}, _UserComponentsPack{})));
+
 	public:
 		Engine() {}
 		void run(LogicBase *logic) {}
@@ -40,15 +45,11 @@ namespace Baka
 		static void glfw_error_callback(int error, const char* description) {}
 		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}
 
-		template<typename ..._Components>
-		static decltype(auto) make_component_manager(Utils::TypesPack<_Components...>) 
-		{
-			return ECS::ComponentManager<_Components...>{};
-		}
+		
 
 	public:
 		ECS::EntityManager entity_manager;
-		decltype(make_component_manager(Utils::conCatTypesPack(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}))) component_manager;
+		ComponentManagerType component_manager;
 	};
 
 

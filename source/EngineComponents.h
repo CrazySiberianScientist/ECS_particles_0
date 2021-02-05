@@ -7,11 +7,7 @@ namespace Baka
 {
 	namespace EngineComponents
 	{
-		#define ENGINE_COMPONENT(COMPONENT) EngineComponents::COMPONENT
-		#define ENGINE_COMPONENTS\
-		ENGINE_COMPONENT(Transform),\
-		ENGINE_COMPONENT(CameraTransform)
-
+		// -v-v-v- Components -v-v-v-
 
 		struct Transform
 		{
@@ -27,6 +23,14 @@ namespace Baka
 		};
 
 		using ComponentsTypes = Utils::TypesPack<Transform, CameraTransform>;
+
+		// -^-^-^- Components -^-^-^-
+
+
+		// -v-v-v- Bundles -v-v-v-
+
 		ECS_COMPONENT_BUNDLE(CameraBundle, Transform, CameraTransform);
+
+		// -^-^-^- Bundles -^-^-^-
 	}
 }

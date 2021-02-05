@@ -8,6 +8,10 @@
 using namespace std;
 using namespace Baka;
 
+struct TestC
+{
+	bool satan = false;
+};
 
 int main()
 {
@@ -16,7 +20,7 @@ int main()
 
 	};
 
-	Engine engine;
+	Engine<Utils::TypesPack<TestC>> engine;
 	auto e = engine.createEntity();
 	engine.component_manager.createBundle(EngineComponents::CameraBundle_v,
 		e, {}, {});

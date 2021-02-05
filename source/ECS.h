@@ -160,7 +160,7 @@ namespace ECS
 			(get_collection<_ComponentTypes>().remove(entity), ...);
 		}
 
-	public:
+	private:
 		template<typename _Component>
 		ComponentCollection<_Component>& get_collection()
 		{

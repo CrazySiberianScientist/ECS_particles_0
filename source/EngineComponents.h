@@ -25,6 +25,6 @@ namespace Baka
 			mat4x4 projection;
 		};
 
-		COMPONENT_BUNDLE(CameraBundle, Transform, CameraTransform);
+		ECS_COMPONENT_BUNDLE(CameraBundle, Transform, CameraTransform);
 	}
 }

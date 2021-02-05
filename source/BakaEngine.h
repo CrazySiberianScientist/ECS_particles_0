@@ -40,7 +40,7 @@ namespace Baka
 		static void glfw_error_callback(int error, const char* description) {}
 		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}
 
-	private:
+	public:
 		ECS::EntityManager entity_manager;
 		ECS::ComponentManager<ENGINE_COMPONENTS, _UserComponents...> component_manager;
 	};

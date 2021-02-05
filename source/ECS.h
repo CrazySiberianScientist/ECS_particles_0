@@ -15,7 +15,10 @@ namespace ECS
 
 	template <typename ..._Components>
 	using ComponentBundle = std::tuple<_Components...>;
-	#define COMPONENT_BUNDLE(NAME, ...) using NAME = ECS::ComponentBundle<__VA_ARGS__>
+	#define ECS_COMPONENT_BUNDLE(NAME, ...)\
+	using NAME = ECS::ComponentBundle<__VA_ARGS__>;\
+	constexpr NAME NAME##_v {};
+
 
 	class EntityManager
 	{
@@ -55,6 +58,7 @@ namespace ECS
 		EntityIdType last_id{};
 	};
 
+	// TODO: few components per entity
 	template<typename _ComponentType>
 	class ComponentCollection
 	{
@@ -133,6 +137,18 @@ namespace ECS
 			return get_collection<_Component>().create(entity, component);
 		}
 
+		template<typename _Bundle, typename ...Args>
+		void createBundle(const EntityIdType entity, Args &&...args)
+		{
+			create_bundle_impl(_Bundle{}, entity, std::forward<Args>(args)...);
+		}
+
+		/*template<typename ComponentBundle<typename _Components>...>
+		void createBundle(const EntityIdType entity)
+		{
+			(get_collection<_Components>().emplace(entity), ...);
+		}*/
+
 		template<typename _Component>
 		void removeComponent(const EntityIdType entity)
 		{
@@ -144,11 +160,17 @@ namespace ECS
 			(get_collection<_ComponentTypes>().remove(entity), ...);
 		}
 
-	private:
+	public:
 		template<typename _Component>
 		ComponentCollection<_Component>& get_collection()
 		{
 			return std::get<ComponentCollection<_Component>>(component_collections);
+		}
+
+		template<typename ..._Components>
+		void create_bundle_impl(ComponentBundle<_Components...>, const EntityIdType entity, _Components ...components)
+		{
+			(emplaceComponent<_Components>(entity, std::move(components)), ...);
 		}
 
 	private:

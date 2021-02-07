@@ -22,9 +22,9 @@ int main()
 
 	Engine<Utils::TypesPack<TestC>> engine;
 	auto e = engine.createEntity();
-	engine.component_manager.createBundle(EngineComponents::CameraBundle_v,
+	engine.getComponentManager().createBundle(EngineComponents::CameraBundle_v,
 		e, {}, {});
-	auto cb = engine.component_manager.createBundle(EngineComponents::CameraBundle_v,
+	auto cb = engine.getComponentManager().createBundle(EngineComponents::CameraBundle_v,
 		e);
 	//engine.component_manager.createComponent<EngineComponents::Transform>(e);
 

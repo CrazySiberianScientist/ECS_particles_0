@@ -41,13 +41,15 @@ namespace Baka
 			entity_manager.remove(entity_id);
 		}
 
+		auto &getComponentManager() { return component_manager; }
+
 	private:
 		static void glfw_error_callback(int error, const char* description) {}
 		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}
 
 		
 
-	public:
+	private:
 		ECS::EntityManager entity_manager;
 		ComponentManagerType component_manager;
 	};

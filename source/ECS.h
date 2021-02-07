@@ -112,6 +112,8 @@ namespace ECS
 	template<typename ..._ComponentTypes>
 	class ComponentManager
 	{
+		ComponentManager &operator=(const ComponentManager&) = delete;
+
 	public:
 		template<typename _Component>
 		_Component* getComponent(const EntityIdType entity)

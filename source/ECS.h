@@ -138,15 +138,15 @@ namespace ECS
 		}
 
 		template<typename ..._Components>
-		void createBundle(ComponentBundle<_Components...>, const EntityIdType entity, _Components ...components)
+		decltype(auto) createBundle(ComponentBundle<_Components...>, const EntityIdType entity, _Components ...components)
 		{
-			(emplaceComponent<_Components>(entity, std::move(components)), ...);
+			return std::make_tuple(emplaceComponent<_Components>(entity, std::move(components))...);
 		}
 
 		template<typename ..._Components>
-		void createBundle(ComponentBundle<_Components...>, const EntityIdType entity)
+		decltype(auto) createBundle(ComponentBundle<_Components...>, const EntityIdType entity)
 		{
-			(emplaceComponent<_Components>(entity), ...);
+			return std::make_tuple(emplaceComponent<_Components>(entity)...);
 		}
 
 		template<typename _Component>
@@ -162,7 +162,7 @@ namespace ECS
 
 	private:
 		template<typename _Component>
-		ComponentCollection<_Component>& get_collection()
+		constexpr ComponentCollection<_Component>& get_collection()
 		{
 			return std::get<ComponentCollection<_Component>>(component_collections);
 		}

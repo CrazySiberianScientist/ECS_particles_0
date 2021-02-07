@@ -24,7 +24,7 @@ int main()
 	auto e = engine.createEntity();
 	engine.component_manager.createBundle(EngineComponents::CameraBundle_v,
 		e, {}, {});
-	engine.component_manager.createBundle(EngineComponents::CameraBundle_v,
+	auto cb = engine.component_manager.createBundle(EngineComponents::CameraBundle_v,
 		e);
 	//engine.component_manager.createComponent<EngineComponents::Transform>(e);
 

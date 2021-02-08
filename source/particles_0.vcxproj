@@ -171,8 +171,11 @@
     <ClInclude Include="ecs\ECS.h" />
     <ClInclude Include="engine\AppSystem.h" />
     <ClInclude Include="engine\BakaEngine.h" />
+    <ClInclude Include="engine\BaseSystem.h" />
+    <ClInclude Include="engine\CameraSystem.h" />
     <ClInclude Include="engine\EngineComponents.h" />
-    <ClInclude Include="engine\EngineSystemOrders.h" />
+    <ClInclude Include="engine\EngineSystems.h" />
+    <ClInclude Include="engine\EngineSystemsOrders.h" />
     <ClInclude Include="utils\linmath.h" />
     <ClInclude Include="utils\Utils.h" />
   </ItemGroup>

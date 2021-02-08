@@ -8,33 +8,26 @@
 
 #include "ecs/ECS.h"
 #include "EngineComponents.h"
-#include "EngineSystemOrders.h"
+#include "EngineSystems.h"
 
 struct GLFWwindow;
 
 namespace Baka
 {
-	class LogicBase
-	{
-	public:
-		virtual ~LogicBase() {}
-		virtual void init() {}
-		virtual void update() {}
-		virtual void destroy() {}
-	};
-
-	template<typename _UserComponentsPack = Utils::TypesPack<>, typename _UserSystemsPack = Utils::TypesPack<>>
+	template<typename _UserComponentsPack = Utils::TypesPack<>
+		, typename _UserSystemsPack = Utils::TypesPack<>
+		, typename _UserSystemsOrdersPack = Utils::TypesPack<>>
 	class Engine
 	{
 		using ComponentManagerType = decltype(Utils::combineTypesPack<ECS::ComponentManager>(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}));
-		using SystemsCollection = decltype(Utils::combineTypesPack<std::tuple>(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}));
+		using SystemsCollection = decltype(Utils::combineTypesPack<std::tuple>(EngineSystemsTypes{}, _UserSystemsPack{}));
 
 	public:
 		Engine() {}
-		void run(LogicBase *logic) {}
+		void run() {}
 		
 		template<typename _System>
-		decltype(auto) getSystem() { return std::get<_System>(systems); }
+		const auto &getSystem() { return std::get<_System>(systems); }
 
 		auto createEntity() { return entity_manager.create(); }
 		void removeEnity(const ECS::EntityIdType entity_id)

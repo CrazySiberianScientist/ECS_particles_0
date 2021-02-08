@@ -37,12 +37,10 @@ int main()
 	test_t.f<666>();
 	//test_t.f<1>();
 
-	class Logic : public LogicBase
-	{
-
-	};
-
 	Engine<Utils::TypesPack<TestC>> engine;
+	engine.getSystem<CameraSystem>();
+
+
 	auto e = engine.createEntity();
 	engine.getComponentManager().createBundle(EngineComponents::CameraBundle_v,
 		e, {}, {});

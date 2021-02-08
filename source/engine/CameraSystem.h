@@ -6,7 +6,7 @@
 
 namespace Baka
 {
-	class AppSystem : public BaseSystem
+	class CameraSystem : public BaseSystem
 	{
 
 	};

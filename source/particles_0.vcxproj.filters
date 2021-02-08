@@ -50,9 +50,6 @@
     <ClInclude Include="engine\EngineComponents.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="engine\EngineSystemOrders.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="engine\AppSystem.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
@@ -61,6 +58,18 @@
     </ClInclude>
     <ClInclude Include="ecs\ECS.h">
       <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\EngineSystemsOrders.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\EngineSystems.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\CameraSystem.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BaseSystem.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

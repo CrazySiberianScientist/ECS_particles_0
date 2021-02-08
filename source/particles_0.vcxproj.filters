@@ -19,33 +19,48 @@
     <Filter Include="utils">
       <UniqueIdentifier>{4386adde-c7f1-4ba3-be20-a1f705581995}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{04316109-5970-4387-a154-edb9add99712}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{fb797fc0-10e8-4045-8589-a6f74d1dc716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ECS">
+      <UniqueIdentifier>{ab8e531c-801b-446d-85b8-e8096fc50d54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BakaEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="glad\glad_gl.c">
       <Filter>glad</Filter>
     </ClCompile>
+    <ClCompile Include="engine\BakaEngine.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BakaEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="utils\linmath.h">
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="utils\Utils.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="ECS.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="engine\EngineComponents.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="EngineComponents.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="engine\EngineSystemOrders.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AppSystem.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BakaEngine.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ecs\ECS.h">
+      <Filter>Header Files\ECS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,7 +1,4 @@
-#include "BakaEngine.h"
-
-#include "ECS.h"
-#include "utils/Utils.h"
+#include "engine/BakaEngine.h"
 
 #include <iostream>
 
@@ -13,8 +10,33 @@ struct TestC
 	bool satan = false;
 };
 
+struct TestT
+{
+	template<size_t _Order>
+	void f();
+
+	template<>
+	void f<0>()
+	{
+		printf("!! %d\n", 0);
+	}
+
+	template<>
+	void f<666>()
+	{
+		printf("!! %d\n", 666);
+	}
+};
+
+UTILS_ENUM_SEQUENCE(InitOrders, BASIC, OTHER, BAKA);
+
 int main()
 {
+	TestT test_t;
+	test_t.f<0>();
+	test_t.f<666>();
+	//test_t.f<1>();
+
 	class Logic : public LogicBase
 	{
 
@@ -26,7 +48,7 @@ int main()
 		e, {}, {});
 	auto cb = engine.getComponentManager().createBundle(EngineComponents::CameraBundle_v,
 		e);
-	//engine.component_manager.createComponent<EngineComponents::Transform>(e);
+	engine.getComponentManager().createComponent<TestC>(e);
 
 	//Baka::Engine().run(new Logic);
 	return 0;

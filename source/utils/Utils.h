@@ -7,6 +7,12 @@
 #include <array>
 #include <bitset>
 
+#define UTILS_ENUM_SEQUENCE(NAME, ...)\
+struct NAME{\
+	enum {__VA_ARGS__};\
+	using type = std::index_sequence<__VA_ARGS__>;\
+}
+
 namespace Utils
 {
 	template <typename ..._Types>
@@ -14,6 +20,9 @@ namespace Utils
 
 	template <typename ..._Types0, typename ..._Types1>
 	constexpr decltype(auto) conCatTypesPack(TypesPack<_Types0...>, TypesPack<_Types1...>) { return TypesPack<_Types0..., _Types1...>{}; }
+
+	template <template <typename> typename _NewType, typename ..._Types0, typename ..._Types1>
+	constexpr decltype(auto) combineTypesPack(TypesPack<_Types0...>, TypesPack<_Types1...>) { return _NewType<_Types0..., _Types1...>{}; }
 
 	template <typename _Type>
 	void removeFast(const typename std::vector<_Type>::iterator &it, std::vector<_Type> & container)

@@ -163,14 +163,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BakaEngine.cpp" />
+    <ClCompile Include="engine\BakaEngine.cpp" />
     <ClCompile Include="glad\glad_gl.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BakaEngine.h" />
-    <ClInclude Include="ECS.h" />
-    <ClInclude Include="EngineComponents.h" />
+    <ClInclude Include="ecs\ECS.h" />
+    <ClInclude Include="engine\AppSystem.h" />
+    <ClInclude Include="engine\BakaEngine.h" />
+    <ClInclude Include="engine\EngineComponents.h" />
+    <ClInclude Include="engine\EngineSystemOrders.h" />
     <ClInclude Include="utils\linmath.h" />
     <ClInclude Include="utils\Utils.h" />
   </ItemGroup>

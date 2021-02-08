@@ -6,8 +6,9 @@
 #include <glad/gl.h>
 #include <gl/GL.h>
 
-#include "ECS.h"
+#include "ecs/ECS.h"
 #include "EngineComponents.h"
+#include "EngineSystemOrders.h"
 
 struct GLFWwindow;
 
@@ -22,17 +23,18 @@ namespace Baka
 		virtual void destroy() {}
 	};
 
-	template<typename _UserComponentsPack = Utils::TypesPack<>>
+	template<typename _UserComponentsPack = Utils::TypesPack<>, typename _UserSystemsPack = Utils::TypesPack<>>
 	class Engine
 	{
-		template<typename ..._Components>
-		static constexpr decltype(auto) make_component_manager_type(Utils::TypesPack<_Components...>) 
-		{ return ECS::ComponentManager<_Components...>{}; }
-		using ComponentManagerType = decltype(make_component_manager_type(Utils::conCatTypesPack(EngineComponents::ComponentsTypes{}, _UserComponentsPack{})));
+		using ComponentManagerType = decltype(Utils::combineTypesPack<ECS::ComponentManager>(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}));
+		using SystemsCollection = decltype(Utils::combineTypesPack<std::tuple>(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}));
 
 	public:
 		Engine() {}
 		void run(LogicBase *logic) {}
+		
+		template<typename _System>
+		decltype(auto) getSystem() { return std::get<_System>(systems); }
 
 		auto createEntity() { return entity_manager.create(); }
 		void removeEnity(const ECS::EntityIdType entity_id)
@@ -42,6 +44,7 @@ namespace Baka
 		}
 
 		auto &getComponentManager() { return component_manager; }
+		
 
 	private:
 		static void glfw_error_callback(int error, const char* description) {}
@@ -52,6 +55,7 @@ namespace Baka
 	private:
 		ECS::EntityManager entity_manager;
 		ComponentManagerType component_manager;
+		SystemsCollection systems;
 	};
 
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utils/linmath.h"
-#include "ECS.h"
+#include "ecs/ECS.h"
 
 namespace Baka
 {

@@ -1,4 +1,5 @@
 #include "engine/BakaEngine.h"
+#include "user_logic/UserSystemsOrders.h"
 
 #include <iostream>
 
@@ -37,7 +38,11 @@ int main()
 	test_t.f<666>();
 	//test_t.f<1>();
 
-	Engine<Utils::TypesPack<TestC>> engine;
+	Engine<Utils::TypesPack<TestC>
+		, Utils::TypesPack<>
+		, UserSystemsOrders::Init::types
+		, UserSystemsOrders::Update::types
+		, UserSystemsOrders::Destroy::types> engine;
 	engine.getSystem<CameraSystem>();
 
 

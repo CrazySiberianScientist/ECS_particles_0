@@ -23,9 +23,9 @@ namespace Baka
 	{
 		using ComponentManagerType = decltype(Utils::combineTypesPack<ECS::ComponentManager>(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}));
 		using SystemsCollection = decltype(Utils::combineTypesPack<std::tuple>(EngineSystemsTypes{}, _UserSystemsPack{}));
-		using SystemsInitOrders = decltype(Utils::combineTypesPack<std::index_sequence>(EngineSystemsOrders::Init::type{}, _UserSystemsInitOrders));
-		using SystemsUpdateOrders = decltype(Utils::combineTypesPack<std::index_sequence>(EngineSystemsOrders::Update::type{}, _UserSystemsUpdateOrders));
-		using SystemsDestroyOrders = decltype(Utils::combineTypesPack<std::index_sequence>(EngineSystemsOrders::Destroy::type{}, _UserSystemsDestroyOrders));
+		using SystemsInitOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Init::types{}, _UserSystemsInitOrders{}));
+		using SystemsUpdateOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Update::types{}, _UserSystemsUpdateOrders{}));
+		using SystemsDestroyOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Destroy::types{}, _UserSystemsDestroyOrders{}));
 
 	public:
 		Engine() {}

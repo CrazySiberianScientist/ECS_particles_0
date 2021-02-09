@@ -176,6 +176,8 @@
     <ClInclude Include="engine\EngineComponents.h" />
     <ClInclude Include="engine\EngineSystems.h" />
     <ClInclude Include="engine\EngineSystemsOrders.h" />
+    <ClInclude Include="user_logic\SceneLogicSystem.h" />
+    <ClInclude Include="user_logic\TestLogicSystem.h" />
     <ClInclude Include="user_logic\UserSystemsOrders.h" />
     <ClInclude Include="utils\linmath.h" />
     <ClInclude Include="utils\Utils.h" />

@@ -28,6 +28,9 @@
     <Filter Include="Header Files\ECS">
       <UniqueIdentifier>{ab8e531c-801b-446d-85b8-e8096fc50d54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="User_Logic">
+      <UniqueIdentifier>{8441ae5e-b6cf-4b03-811a-d5714922a8e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -70,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="engine\BaseSystem.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="user_logic\UserSystemsOrders.h">
+      <Filter>User_Logic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -16,11 +16,16 @@ namespace Baka
 {
 	template<typename _UserComponentsPack = Utils::TypesPack<>
 		, typename _UserSystemsPack = Utils::TypesPack<>
-		, typename _UserSystemsOrdersPack = Utils::TypesPack<>>
+		, typename _UserSystemsInitOrders = Utils::TypesPack<>
+		, typename _UserSystemsUpdateOrders = Utils::TypesPack<>
+		, typename _UserSystemsDestroyOrders = Utils::TypesPack<>>
 	class Engine
 	{
 		using ComponentManagerType = decltype(Utils::combineTypesPack<ECS::ComponentManager>(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}));
 		using SystemsCollection = decltype(Utils::combineTypesPack<std::tuple>(EngineSystemsTypes{}, _UserSystemsPack{}));
+		using SystemsInitOrders = decltype(Utils::combineTypesPack<std::index_sequence>(EngineSystemsOrders::Init::type{}, _UserSystemsInitOrders));
+		using SystemsUpdateOrders = decltype(Utils::combineTypesPack<std::index_sequence>(EngineSystemsOrders::Update::type{}, _UserSystemsUpdateOrders));
+		using SystemsDestroyOrders = decltype(Utils::combineTypesPack<std::index_sequence>(EngineSystemsOrders::Destroy::type{}, _UserSystemsDestroyOrders));
 
 	public:
 		Engine() {}

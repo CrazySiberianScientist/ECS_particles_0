@@ -9,7 +9,7 @@
 
 #define UTILS_ENUM_SEQUENCE(NAME, ...)\
 struct NAME{\
-	enum {__VA_ARGS__};\
+	enum {__VA_ARGS__, ENUM_COUNT};\
 	using type = std::index_sequence<__VA_ARGS__>;\
 }
 

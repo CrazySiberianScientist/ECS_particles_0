@@ -45,10 +45,29 @@ namespace Baka
 		
 
 	private:
-		static void glfw_error_callback(int error, const char* description) {}
-		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}
+		template<typename _System, size_t _ORDER>
+		struct HasInit
+		{
+			template<typename _Type, void(_Type::*)()> struct func_pattern {};
+			template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::used_memory>*);
+			template<typename _Type> static constexpr std::false_type check_func(...);
+			static const bool value = check_func<_System>(nullptr);
+		};
 
-		
+		template<size_t ..._I>
+		void pass_systems_impl(std::index_sequence<_I...>)
+		{
+			//std::get<(systems
+		}
+
+		template<size_t _I>
+		void run_system_init()
+		{
+
+		}
+
+		/*static void glfw_error_callback(int error, const char* description) {}
+		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}*/
 
 	private:
 		ECS::EntityManager entity_manager;

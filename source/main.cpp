@@ -1,15 +1,12 @@
 #include "engine/BakaEngine.h"
-#include "user_logic/UserSystemsOrders.h"
+#include "user_logic/UserSystems.h"
+#include "user_logic/UserComponents.h"
 
 #include <iostream>
 
 using namespace std;
 using namespace Baka;
 
-struct TestC
-{
-	bool satan = false;
-};
 
 struct TestT
 {
@@ -27,31 +24,45 @@ struct TestT
 	{
 		printf("!! %d\n", 666);
 	}
+
+	void init() {}
 };
 
-UTILS_ENUM_SEQUENCE(InitOrders, BASIC, OTHER, BAKA);
+struct TestB
+{
+
+};
+
+template<typename _System>
+struct HasInit
+{
+	template<typename _Type, void(_Type::*)()> struct func_pattern {};
+	template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::init>*);
+	template<typename _Type> static constexpr std::false_type check_func(...);
+	static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value;
+};
 
 int main()
 {
 	TestT test_t;
-	test_t.f<0>();
-	test_t.f<666>();
-	//test_t.f<1>();
+	constexpr auto v = HasInit<TestT>::value;
 
-	Engine<Utils::TypesPack<TestC>
-		, Utils::TypesPack<>
+	printf("!! %d %d\n", HasInit<TestT>::value != 0, HasInit<TestB>::value != 0);
+
+	Engine<UserComponents::ComponentsTypes
+		, UserSystemsTypes
 		, UserSystemsOrders::Init::types
 		, UserSystemsOrders::Update::types
 		, UserSystemsOrders::Destroy::types> engine;
-	engine.getSystem<CameraSystem>();
 
+
+	engine.getSystem<CameraSystem>();
 
 	auto e = engine.createEntity();
 	engine.getComponentManager().createBundle(EngineComponents::CameraBundle_v,
 		e, {}, {});
 	auto cb = engine.getComponentManager().createBundle(EngineComponents::CameraBundle_v,
 		e);
-	engine.getComponentManager().createComponent<TestC>(e);
 
 	//Baka::Engine().run(new Logic);
 	return 0;

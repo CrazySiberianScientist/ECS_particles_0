@@ -83,5 +83,11 @@
     <ClInclude Include="user_logic\TestLogicSystem.h">
       <Filter>User_Logic</Filter>
     </ClInclude>
+    <ClInclude Include="user_logic\UserSystems.h">
+      <Filter>User_Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="user_logic\UserComponents.h">
+      <Filter>User_Logic</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

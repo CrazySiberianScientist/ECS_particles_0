@@ -49,7 +49,7 @@ namespace Baka
 		struct HasInit
 		{
 			template<typename _Type, void(_Type::*)()> struct func_pattern {};
-			template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::used_memory>*);
+			template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::init>*);
 			template<typename _Type> static constexpr std::false_type check_func(...);
 			static const bool value = check_func<_System>(nullptr);
 		};

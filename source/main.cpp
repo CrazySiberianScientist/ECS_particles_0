@@ -10,17 +10,17 @@ using namespace Baka;
 
 struct TestT
 {
-	template<size_t _Order>
+	template<typename _T>
 	void f();
 
 	template<>
-	void f<0>()
+	void f<UserSystemsOrders::Init>()
 	{
 		printf("!! %d\n", 0);
 	}
 
 	template<>
-	void f<666>()
+	void f<UserSystemsOrders::Update>()
 	{
 		printf("!! %d\n", 666);
 	}
@@ -42,10 +42,21 @@ struct HasInit
 	static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value;
 };
 
+template<typename _System, typename _OrderType>
+struct HasF
+{
+	template<typename _Type, void(_Type::*)()> struct func_pattern {};
+	template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::template f<_OrderType>>*);
+	template<typename _Type> static constexpr std::false_type check_func(...);
+	static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value;
+};
+
 int main()
 {
+	auto ptr = &TestT::f<UserSystemsOrders::Init>;
+
 	TestT test_t;
-	constexpr auto v = HasInit<TestT>::value;
+	constexpr auto v = HasF<TestT, UserSystemsOrders::Init>::value;
 
 	printf("!! %d %d\n", HasInit<TestT>::value != 0, HasInit<TestB>::value != 0);
 

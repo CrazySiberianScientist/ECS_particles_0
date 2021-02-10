@@ -12,46 +12,36 @@ struct TestT
 {
 	void init(UserSystemsOrders::Init::TEST_0)
 	{
-		printf("!! %d\n", 666);
+		printf("!! %s %s\n", __FUNCTION__, "TEST_0");
 	}
 	void init(UserSystemsOrders::Init::TEST_1)
 	{
 		printf("!! %d\n", 666);
 	}
-
-	void init() {}
 };
 
-struct TestB
-{
 
-};
+#define DECLARE_METHOD_CHECKER(METHOD_NAME)\
+template<typename _System, typename _OrderType>\
+struct has_##METHOD_NAME {\
+	template<typename _Type, void(_Type::*)(_OrderType)> struct func_pattern {};\
+	template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::METHOD_NAME>*);\
+	template<typename _Type> static constexpr std::false_type check_func(...);\
+	static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value; }
 
-template<typename _System, typename _OrderType>
-struct HasInit
-{
-	template<typename _Type, void(_Type::*)(_OrderType)> struct func_pattern {};
-	template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::init>*);
-	template<typename _Type> static constexpr std::false_type check_func(...);
-	static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value;
-};
+DECLARE_METHOD_CHECKER(init);
 
-template<typename _System, typename _OrderType>
-struct HasF
-{
-	template<typename _Type, void(_Type::*)()> struct func_pattern {};
-	template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::template f<_OrderType>>*);
-	template<typename _Type> static constexpr std::false_type check_func(...);
-	static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value;
-};
+#undef DECLARE_METHOD_CHECKER
+
+
 
 int main()
 {
 	//auto ptr = &TestT::f<UserSystemsOrders::Init>;
 	TestT test_t;
-	constexpr auto v = HasInit<TestT, UserSystemsOrders::Init::TEST_1>::value;
+	constexpr auto v = has_init<TestT, UserSystemsOrders::Init::TEST_1>::value;
 
-	printf("!! %d %d\n", HasInit<TestT, UserSystemsOrders::Init::SCENE_0>::value != 0, HasInit<TestT, UserSystemsOrders::Init::TEST_0>::value != 0);
+	printf("!! %d %d\n", has_init<TestT, UserSystemsOrders::Init::SCENE_0>::value != 0, has_init<TestT, UserSystemsOrders::Init::TEST_0>::value != 0);
 
 	Engine<UserComponents::ComponentsTypes
 		, UserSystemsTypes

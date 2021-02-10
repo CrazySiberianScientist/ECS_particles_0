@@ -21,11 +21,14 @@ namespace Baka
 		, typename _UserSystemsDestroyOrders = Utils::TypesPack<>>
 	class Engine
 	{
+	private:
 		using ComponentManagerType = decltype(Utils::combineTypesPack<ECS::ComponentManager>(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}));
 		using SystemsCollection = decltype(Utils::combineTypesPack<std::tuple>(EngineSystemsTypes{}, _UserSystemsPack{}));
 		using SystemsInitOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Init::types{}, _UserSystemsInitOrders{}));
 		using SystemsUpdateOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Update::types{}, _UserSystemsUpdateOrders{}));
-		using SystemsDestroyOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Destroy::types{}, _UserSystemsDestroyOrders{}));
+		using SystemsDestroyOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(_UserSystemsDestroyOrders{}, EngineSystemsOrders::Destroy::types{}));
+
+
 
 	public:
 		Engine() {}
@@ -45,14 +48,6 @@ namespace Baka
 		
 
 	private:
-		template<typename _System, size_t _ORDER>
-		struct HasInit
-		{
-			template<typename _Type, void(_Type::*)()> struct func_pattern {};
-			template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::init>*);
-			template<typename _Type> static constexpr std::false_type check_func(...);
-			static const bool value = check_func<_System>(nullptr);
-		};
 
 		template<size_t ..._I>
 		void pass_systems_impl(std::index_sequence<_I...>)

@@ -10,17 +10,11 @@ using namespace Baka;
 
 struct TestT
 {
-	template<typename _T>
-	void f();
-
-	template<>
-	void f<UserSystemsOrders::Init>()
+	void init(UserSystemsOrders::Init::TEST_0)
 	{
-		printf("!! %d\n", 0);
+		printf("!! %d\n", 666);
 	}
-
-	template<>
-	void f<UserSystemsOrders::Update>()
+	void init(UserSystemsOrders::Init::TEST_1)
 	{
 		printf("!! %d\n", 666);
 	}
@@ -33,10 +27,10 @@ struct TestB
 
 };
 
-template<typename _System>
+template<typename _System, typename _OrderType>
 struct HasInit
 {
-	template<typename _Type, void(_Type::*)()> struct func_pattern {};
+	template<typename _Type, void(_Type::*)(_OrderType)> struct func_pattern {};
 	template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::init>*);
 	template<typename _Type> static constexpr std::false_type check_func(...);
 	static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value;
@@ -53,12 +47,11 @@ struct HasF
 
 int main()
 {
-	auto ptr = &TestT::f<UserSystemsOrders::Init>;
-
+	//auto ptr = &TestT::f<UserSystemsOrders::Init>;
 	TestT test_t;
-	constexpr auto v = HasF<TestT, UserSystemsOrders::Init>::value;
+	constexpr auto v = HasInit<TestT, UserSystemsOrders::Init::TEST_1>::value;
 
-	printf("!! %d %d\n", HasInit<TestT>::value != 0, HasInit<TestB>::value != 0);
+	printf("!! %d %d\n", HasInit<TestT, UserSystemsOrders::Init::SCENE_0>::value != 0, HasInit<TestT, UserSystemsOrders::Init::TEST_0>::value != 0);
 
 	Engine<UserComponents::ComponentsTypes
 		, UserSystemsTypes

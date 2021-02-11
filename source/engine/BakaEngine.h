@@ -28,11 +28,26 @@ namespace Baka
 		using SystemsUpdateOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Update::types{}, _UserSystemsUpdateOrders{}));
 		using SystemsDestroyOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(_UserSystemsDestroyOrders{}, EngineSystemsOrders::Destroy::types{}));
 
-
+		#define DECLARE_METHOD_CHECKER(METHOD_NAME)\
+		template<typename _System, typename _OrderType>\
+		struct has_##METHOD_NAME {\
+			template<typename _Type, void(_Type::*)(_OrderType)> struct func_pattern {};\
+			template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::METHOD_NAME>*);\
+			template<typename _Type> static constexpr std::false_type check_func(...);\
+			static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value; }
+		
+		DECLARE_METHOD_CHECKER(init);
+		DECLARE_METHOD_CHECKER(update);
+		DECLARE_METHOD_CHECKER(destroy);
+		
+		#undef DECLARE_METHOD_CHECKER
 
 	public:
 		Engine() {}
-		void run() {}
+		void run()
+		{
+			run_inits_orders(SystemsInitOrders{});
+		}
 		
 		template<typename _System>
 		const auto &getSystem() { return std::get<_System>(systems); }
@@ -49,16 +64,23 @@ namespace Baka
 
 	private:
 
-		template<size_t ..._I>
-		void pass_systems_impl(std::index_sequence<_I...>)
+		template<typename ..._Orders>
+		void run_inits_orders(Utils::TypesPack<_Orders...>)
 		{
-			//std::get<(systems
+			(run_systems_inits<_Orders>(SystemsCollection{}), ...);
 		}
 
-		template<size_t _I>
+		template <typename _Order, typename ..._Systems>
+		void run_systems_inits(std::tuple<_Systems...>)
+		{
+			(run_system_init<_Systems, _Order>(), ...);
+		}
+
+		template<typename _System, typename _Order>
 		void run_system_init()
 		{
-
+			if constexpr (has_init<_System, _Order>::value)
+				std::get<_System>(systems).init(_Order{});
 		}
 
 		/*static void glfw_error_callback(int error, const char* description) {}

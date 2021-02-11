@@ -8,6 +8,10 @@ namespace Baka
 {
 	class AppSystem : public BaseSystem
 	{
-
+	public:
+		void init(EngineSystemsOrders::Init::APP)
+		{
+			printf("!! %s %s\n", __FUNCTION__, "APP");
+		}
 	};
 }

@@ -2,10 +2,10 @@
 
 #include "utils/Utils.h"
 
-namespace Baka
+namespace EngineLogic
 {
 	class AppSystem;
 	class CameraSystem;
 
-	using EngineSystemsTypes = Utils::TypesPack<AppSystem*, CameraSystem*>;
+	using SystemsTypes = Utils::TypesPack<AppSystem*, CameraSystem*>;
 }

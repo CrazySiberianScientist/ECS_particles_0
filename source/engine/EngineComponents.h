@@ -3,9 +3,9 @@
 #include "utils/linmath.h"
 #include "ecs/ECS.h"
 
-namespace Baka
+namespace EngineLogic
 {
-	namespace EngineComponents
+	namespace Components
 	{
 		// -v-v-v- Components -v-v-v-
 

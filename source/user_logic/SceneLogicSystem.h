@@ -3,16 +3,20 @@
 #include "engine/BaseSystem.h"
 #include "UserSystemsOrders.h"
 
-class SceneLogicSystem : public BaseSystem
+namespace UserLogic
 {
-public:
-	void init(UserSystemsOrders::Init::SCENE_0)
+	class SceneLogicSystem : public BaseSystem
 	{
-		printf("!! %s %s\n", __FUNCTION__, "SCENE_0");
-	}
+	public:
+		void init(SystemsOrders::Init::SCENE_0)
+		{
+			printf("!! %s %s\n", __FUNCTION__, "SCENE_0");
+		}
 
-	void init(UserSystemsOrders::Init::SCENE_1)
-	{
-		printf("!! %s %s\n", __FUNCTION__, "SCENE_1");
-	}
-};
+		void init(SystemsOrders::Init::SCENE_1)
+		{
+			printf("!! %s %s\n", __FUNCTION__, "SCENE_1");
+		}
+	};
+
+}

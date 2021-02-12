@@ -6,7 +6,7 @@
 #include "utils/linmath.h"
 
 
-namespace Baka
+namespace EngineLogic
 {
 
 }

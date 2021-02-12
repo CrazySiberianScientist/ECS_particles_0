@@ -4,12 +4,12 @@
 #include "EngineSystemsOrders.h"
 #include "BaseSystem.h"
 
-namespace Baka
+namespace EngineLogic
 {
 	class AppSystem : public BaseSystem
 	{
 	public:
-		void init(EngineSystemsOrders::Init::APP)
+		void init(SystemsOrders::Init::APP)
 		{
 			printf("!! %s %s\n", __FUNCTION__, "APP");
 		}

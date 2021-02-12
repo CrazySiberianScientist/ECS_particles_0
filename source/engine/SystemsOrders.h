@@ -3,12 +3,9 @@
 #include "EngineSystemsOrders.h"
 #include "user_logic/UserSystemsOrders.h"
 
-namespace Baka
+struct SystemsOrders
 {
-	struct SystemsOrders
-	{
-		using Init = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Init::types{}, UserSystemsOrders::Init::types{}));
-		using Update = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Update::types{}, UserSystemsOrders::Update::types{}));
-		using Destroy = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Destroy::types{}, UserSystemsOrders::Destroy::types{}));
-	};
-}
+	using Init = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineLogic::SystemsOrders::Init::types{}, UserLogic::SystemsOrders::Init::types{}));
+	using Update = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineLogic::SystemsOrders::Update::types{}, UserLogic::SystemsOrders::Update::types{}));
+	using Destroy = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineLogic::SystemsOrders::Destroy::types{}, UserLogic::SystemsOrders::Destroy::types{}));
+};

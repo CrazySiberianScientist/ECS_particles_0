@@ -104,5 +104,8 @@
     <ClInclude Include="engine\SystemsOrders.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="engine\Components.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

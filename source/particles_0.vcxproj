@@ -173,6 +173,7 @@
     <ClInclude Include="engine\BakaEngine.h" />
     <ClInclude Include="engine\BaseSystem.h" />
     <ClInclude Include="engine\CameraSystem.h" />
+    <ClInclude Include="engine\Components.h" />
     <ClInclude Include="engine\EngineComponents.h" />
     <ClInclude Include="engine\EngineSystems.h" />
     <ClInclude Include="engine\EngineSystemsTypes.h" />

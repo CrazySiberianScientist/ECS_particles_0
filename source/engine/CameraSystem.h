@@ -4,12 +4,12 @@
 #include "EngineSystemsOrders.h"
 #include "BaseSystem.h"
 
-namespace Baka
+namespace EngineLogic
 {
 	class CameraSystem : public BaseSystem
 	{
 	public:
-		void init(EngineSystemsOrders::Init::RENDER)
+		void init(SystemsOrders::Init::RENDER)
 		{
 			printf("!! %s %s\n", __FUNCTION__, "RENDER");
 		}

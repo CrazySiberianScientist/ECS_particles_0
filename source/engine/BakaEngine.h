@@ -13,7 +13,7 @@
 
 struct GLFWwindow;
 
-namespace Baka
+namespace EngineLogic
 {
 	template<typename _UserComponentsPack = Utils::TypesPack<>>
 	class Engine
@@ -42,7 +42,7 @@ namespace Baka
 		}
 		
 		template<typename _System>
-		const auto &getSystem() { return std::get<_System>(systems); }
+		auto *getSystem() { return std::get<_System*>(systems); }
 
 		auto createEntity() { return entity_manager.create(); }
 		void removeEnity(const ECS::EntityIdType entity_id)

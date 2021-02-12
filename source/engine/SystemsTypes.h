@@ -3,7 +3,4 @@
 #include "EngineSystemsTypes.h"
 #include "user_logic/UserSystemsTypes.h"
 
-namespace Baka
-{
-	using SystemsTypes = decltype(Utils::conCatTypesPack(EngineSystemsTypes{}, UserSystemsTypes{}));
-}
+using SystemsTypes = decltype(Utils::conCatTypesPack(EngineLogic::SystemsTypes{}, UserLogic::SystemsTypes{}));

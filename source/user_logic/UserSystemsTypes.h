@@ -5,4 +5,9 @@
 class SceneLogicSystem;
 class TestLogicSystem;
 
-using UserSystemsTypes = Utils::TypesPack<SceneLogicSystem*, TestLogicSystem*>;
+namespace UserLogic
+{
+
+	using SystemsTypes = Utils::TypesPack<SceneLogicSystem*, TestLogicSystem*>;
+
+}

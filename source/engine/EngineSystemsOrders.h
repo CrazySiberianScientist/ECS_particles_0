@@ -2,32 +2,32 @@
 
 #include "utils/Utils.h"
 
-namespace Baka
+namespace EngineLogic
 {
-	#define BAKA_SYSTEMS_ORDER(NAME) struct NAME{};
-	#define BAKA_SYSTEMS_ORDERS_TYPES(...) using types = Utils::TypesPack<__VA_ARGS__>;
+	#define SYSTEMS_ORDER(NAME) struct NAME{};
+	#define SYSTEMS_ORDERS_TYPES(...) using types = Utils::TypesPack<__VA_ARGS__>;
 
-	struct EngineSystemsOrders
+	struct SystemsOrders
 	{
 		struct Init
 		{
-			BAKA_SYSTEMS_ORDER(APP);
-			BAKA_SYSTEMS_ORDER(RENDER);
-			BAKA_SYSTEMS_ORDERS_TYPES(APP, RENDER);
+			SYSTEMS_ORDER(APP);
+			SYSTEMS_ORDER(RENDER);
+			SYSTEMS_ORDERS_TYPES(APP, RENDER);
 		};
 
 		struct Update
 		{
-			BAKA_SYSTEMS_ORDER(APP);
-			BAKA_SYSTEMS_ORDER(RENDER);
-			BAKA_SYSTEMS_ORDERS_TYPES(APP, RENDER);
+			SYSTEMS_ORDER(APP);
+			SYSTEMS_ORDER(RENDER);
+			SYSTEMS_ORDERS_TYPES(APP, RENDER);
 		};
 
 		struct Destroy
 		{
-			BAKA_SYSTEMS_ORDER(RENDER);
-			BAKA_SYSTEMS_ORDER(APP);
-			BAKA_SYSTEMS_ORDERS_TYPES(RENDER, APP);
+			SYSTEMS_ORDER(RENDER);
+			SYSTEMS_ORDER(APP);
+			SYSTEMS_ORDERS_TYPES(RENDER, APP);
 		};
 	};
 }

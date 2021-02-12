@@ -2,27 +2,30 @@
 
 #include "utils/Utils.h"
 
-namespace UserComponents
+namespace UserLogic
 {
-	// -v-v-v- Components -v-v-v-
-
-	struct Test0
+	namespace Components
 	{
-		bool state = false;
-	};
+		// -v-v-v- Components -v-v-v-
 
-	struct Test1
-	{
-		int v = 666;
-	};
+		struct Test0
+		{
+			bool state = false;
+		};
 
-	using ComponentsTypes = Utils::TypesPack<Test0, Test1>;
+		struct Test1
+		{
+			int v = 666;
+		};
 
-	// -^-^-^- Components -^-^-^-
+		using ComponentsTypes = Utils::TypesPack<Test0, Test1>;
+
+		// -^-^-^- Components -^-^-^-
 
 
-	// -v-v-v- Bundles -v-v-v-
+		// -v-v-v- Bundles -v-v-v-
 
 
-	// -^-^-^- Bundles -^-^-^-
+		// -^-^-^- Bundles -^-^-^-
+	}
 }

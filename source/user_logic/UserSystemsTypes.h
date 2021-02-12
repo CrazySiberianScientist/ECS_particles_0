@@ -2,12 +2,10 @@
 
 #include "utils/Utils.h"
 
-class SceneLogicSystem;
-class TestLogicSystem;
-
 namespace UserLogic
 {
+	class SceneLogicSystem;
+	class TestLogicSystem;
 
 	using SystemsTypes = Utils::TypesPack<SceneLogicSystem*, TestLogicSystem*>;
-
 }

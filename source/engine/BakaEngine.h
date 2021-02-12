@@ -35,6 +35,7 @@ namespace Common
 
 	public:
 		Engine();
+		~Engine();
 		void run();
 		
 		template<typename _System>
@@ -55,11 +56,20 @@ namespace Common
 		void run_inits_orders(Utils::TypesPack<_Orders...>) { (run_systems_inits<_Orders>(SystemsCollection{}), ...); }
 		template <typename _Order, typename ..._Systems>
 		void run_systems_inits(std::tuple<_Systems...>) { (run_system_init<_Systems, _Order>(), ...); }
-		template<typename _System, typename _Order>
-		void run_system_init() { if constexpr (has_init<std::remove_pointer_t<_System>, _Order>::value) std::get<_System>(systems)->init(_Order{}); }
+		template<typename _SystemPtr, typename _Order>
+		void run_system_init() { if constexpr (has_init<std::remove_pointer_t<_SystemPtr>, _Order>::value) std::get<_SystemPtr>(systems)->init(_Order{}); }
 
-		/*static void glfw_error_callback(int error, const char* description) {}
-		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}*/
+		void construct_systems();
+		template<typename ..._Systems>
+		void construct_systems_impl(std::tuple<_Systems...>);
+		template<typename _SystemPtr>
+		void construct_system();
+
+		void destruct_systems();
+		template<typename ..._Systems>
+		void destruct_systems_impl(std::tuple<_Systems...>);
+		template<typename _SystemPtr>
+		void destruct_system();
 
 	private:
 		ECS::EntityManager entity_manager;
@@ -67,6 +77,8 @@ namespace Common
 		SystemsCollection systems;
 	};
 
+	/*static void glfw_error_callback(int error, const char* description) {}
+		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}*/
 
 	/*void Engine::glfw_error_callback(int error, const char* description)
 	{
@@ -125,3 +137,5 @@ namespace Common
 		return;
 	}*/
 }
+
+

@@ -35,11 +35,9 @@ namespace Baka
 			template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::METHOD_NAME>*);\
 			template<typename _Type> static constexpr std::false_type check_func(...);\
 			static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value; }
-		
 		DECLARE_METHOD_CHECKER(init);
 		DECLARE_METHOD_CHECKER(update);
 		DECLARE_METHOD_CHECKER(destroy);
-		
 		#undef DECLARE_METHOD_CHECKER
 
 	public:
@@ -63,25 +61,12 @@ namespace Baka
 		
 
 	private:
-
 		template<typename ..._Orders>
-		void run_inits_orders(Utils::TypesPack<_Orders...>)
-		{
-			(run_systems_inits<_Orders>(SystemsCollection{}), ...);
-		}
-
+		void run_inits_orders(Utils::TypesPack<_Orders...>) { (run_systems_inits<_Orders>(SystemsCollection{}), ...); }
 		template <typename _Order, typename ..._Systems>
-		void run_systems_inits(std::tuple<_Systems...>)
-		{
-			(run_system_init<_Systems, _Order>(), ...);
-		}
-
+		void run_systems_inits(std::tuple<_Systems...>) { (run_system_init<_Systems, _Order>(), ...); }
 		template<typename _System, typename _Order>
-		void run_system_init()
-		{
-			if constexpr (has_init<_System, _Order>::value)
-				std::get<_System>(systems).init(_Order{});
-		}
+		void run_system_init() { if constexpr (has_init<_System, _Order>::value) std::get<_System>(systems).init(_Order{}); }
 
 		/*static void glfw_error_callback(int error, const char* description) {}
 		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}*/

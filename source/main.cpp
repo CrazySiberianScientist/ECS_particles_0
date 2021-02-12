@@ -1,7 +1,4 @@
 #include "engine/BakaEngine.h"
-#include "user_logic/UserSystems.h"
-#include "user_logic/UserComponents.h"
-
 #include <iostream>
 
 using namespace std;
@@ -9,8 +6,8 @@ using namespace EngineLogic;
 
 int main()
 {
-	Engine<UserComponents::ComponentsTypes> engine;
-
+	Common::Engine engine;
+	engine.run();
 
 	/*engine.getSystem<CameraSystem>();
 

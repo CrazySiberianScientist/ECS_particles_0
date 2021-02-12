@@ -7,19 +7,18 @@
 #include <gl/GL.h>
 
 #include "ecs/ECS.h"
-#include "EngineComponents.h"
+#include "Components.h"
 #include "SystemsTypes.h"
 #include "SystemsOrders.h"
 
 struct GLFWwindow;
 
-namespace EngineLogic
+namespace Common
 {
-	template<typename _UserComponentsPack = Utils::TypesPack<>>
 	class Engine
 	{
 	private:
-		using ComponentManagerType = decltype(Utils::combineTypesPack<ECS::ComponentManager>(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}));
+		using ComponentManagerType = decltype(Utils::convertTypesPack<ECS::ComponentManager>(ComponentsTypes{}));
 		using SystemsCollection = decltype(Utils::convertTypesPack<std::tuple>(SystemsTypes{}));
 
 		#define DECLARE_METHOD_CHECKER(METHOD_NAME)\
@@ -35,11 +34,8 @@ namespace EngineLogic
 		#undef DECLARE_METHOD_CHECKER
 
 	public:
-		Engine() {}
-		void run()
-		{
-			run_inits_orders(SystemsOrders::Init{});
-		}
+		Engine();
+		void run();
 		
 		template<typename _System>
 		auto *getSystem() { return std::get<_System*>(systems); }
@@ -60,7 +56,7 @@ namespace EngineLogic
 		template <typename _Order, typename ..._Systems>
 		void run_systems_inits(std::tuple<_Systems...>) { (run_system_init<_Systems, _Order>(), ...); }
 		template<typename _System, typename _Order>
-		void run_system_init() { if constexpr (has_init<_System, _Order>::value) std::get<_System>(systems).init(_Order{}); }
+		void run_system_init() { if constexpr (has_init<std::remove_pointer_t<_System>, _Order>::value) std::get<_System>(systems)->init(_Order{}); }
 
 		/*static void glfw_error_callback(int error, const char* description) {}
 		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}*/

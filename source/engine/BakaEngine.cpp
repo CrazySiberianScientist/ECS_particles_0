@@ -5,8 +5,17 @@
 #include <gl/GL.h>
 #include "utils/linmath.h"
 
+#include "Systems.h"
 
-namespace EngineLogic
+namespace Common
 {
+	Engine::Engine() 
+	{
 
+	}
+
+	void Engine::run()
+	{
+		run_inits_orders(SystemsOrders::Init{});
+	}
 }

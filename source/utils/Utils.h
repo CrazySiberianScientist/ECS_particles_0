@@ -24,6 +24,9 @@ namespace Utils
 	template <template <typename> typename _NewType, typename ..._Types0, typename ..._Types1>
 	constexpr decltype(auto) combineTypesPack(TypesPack<_Types0...>, TypesPack<_Types1...>) { return _NewType<_Types0..., _Types1...>{}; }
 
+	template <template <typename> typename _NewType, typename ..._Types0>
+	constexpr decltype(auto) convertTypesPack(TypesPack<_Types0...>) { return _NewType<_Types0...>{}; }
+
 	template <typename _Type>
 	void removeFast(const typename std::vector<_Type>::iterator &it, std::vector<_Type> & container)
 	{

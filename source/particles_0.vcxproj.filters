@@ -65,9 +65,6 @@
     <ClInclude Include="engine\EngineSystemsOrders.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="engine\EngineSystems.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="engine\CameraSystem.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
@@ -83,11 +80,29 @@
     <ClInclude Include="user_logic\TestLogicSystem.h">
       <Filter>User_Logic</Filter>
     </ClInclude>
+    <ClInclude Include="user_logic\UserComponents.h">
+      <Filter>User_Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="user_logic\UserSystemsTypes.h">
+      <Filter>User_Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\EngineSystemsTypes.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\SystemsTypes.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Systems.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\EngineSystems.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
     <ClInclude Include="user_logic\UserSystems.h">
       <Filter>User_Logic</Filter>
     </ClInclude>
-    <ClInclude Include="user_logic\UserComponents.h">
-      <Filter>User_Logic</Filter>
+    <ClInclude Include="engine\SystemsOrders.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

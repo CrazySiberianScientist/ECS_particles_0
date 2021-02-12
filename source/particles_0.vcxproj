@@ -175,11 +175,16 @@
     <ClInclude Include="engine\CameraSystem.h" />
     <ClInclude Include="engine\EngineComponents.h" />
     <ClInclude Include="engine\EngineSystems.h" />
+    <ClInclude Include="engine\EngineSystemsTypes.h" />
     <ClInclude Include="engine\EngineSystemsOrders.h" />
+    <ClInclude Include="engine\Systems.h" />
+    <ClInclude Include="engine\SystemsOrders.h" />
+    <ClInclude Include="engine\SystemsTypes.h" />
     <ClInclude Include="user_logic\SceneLogicSystem.h" />
     <ClInclude Include="user_logic\TestLogicSystem.h" />
     <ClInclude Include="user_logic\UserComponents.h" />
     <ClInclude Include="user_logic\UserSystems.h" />
+    <ClInclude Include="user_logic\UserSystemsTypes.h" />
     <ClInclude Include="user_logic\UserSystemsOrders.h" />
     <ClInclude Include="utils\linmath.h" />
     <ClInclude Include="utils\Utils.h" />

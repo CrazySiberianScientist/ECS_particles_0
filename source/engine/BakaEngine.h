@@ -8,25 +8,19 @@
 
 #include "ecs/ECS.h"
 #include "EngineComponents.h"
-#include "EngineSystems.h"
+#include "SystemsTypes.h"
+#include "SystemsOrders.h"
 
 struct GLFWwindow;
 
 namespace Baka
 {
-	template<typename _UserComponentsPack = Utils::TypesPack<>
-		, typename _UserSystemsPack = Utils::TypesPack<>
-		, typename _UserSystemsInitOrders = Utils::TypesPack<>
-		, typename _UserSystemsUpdateOrders = Utils::TypesPack<>
-		, typename _UserSystemsDestroyOrders = Utils::TypesPack<>>
+	template<typename _UserComponentsPack = Utils::TypesPack<>>
 	class Engine
 	{
 	private:
 		using ComponentManagerType = decltype(Utils::combineTypesPack<ECS::ComponentManager>(EngineComponents::ComponentsTypes{}, _UserComponentsPack{}));
-		using SystemsCollection = decltype(Utils::combineTypesPack<std::tuple>(EngineSystemsTypes{}, _UserSystemsPack{}));
-		using SystemsInitOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Init::types{}, _UserSystemsInitOrders{}));
-		using SystemsUpdateOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(EngineSystemsOrders::Update::types{}, _UserSystemsUpdateOrders{}));
-		using SystemsDestroyOrders = decltype(Utils::combineTypesPack<Utils::TypesPack>(_UserSystemsDestroyOrders{}, EngineSystemsOrders::Destroy::types{}));
+		using SystemsCollection = decltype(Utils::convertTypesPack<std::tuple>(SystemsTypes{}));
 
 		#define DECLARE_METHOD_CHECKER(METHOD_NAME)\
 		template<typename _System, typename _OrderType>\
@@ -44,7 +38,7 @@ namespace Baka
 		Engine() {}
 		void run()
 		{
-			run_inits_orders(SystemsInitOrders{});
+			run_inits_orders(SystemsOrders::Init{});
 		}
 		
 		template<typename _System>

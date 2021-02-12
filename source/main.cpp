@@ -9,14 +9,10 @@ using namespace Baka;
 
 int main()
 {
-	Engine<UserComponents::ComponentsTypes
-		, UserSystemsTypes
-		, UserSystemsOrders::Init::types
-		, UserSystemsOrders::Update::types
-		, UserSystemsOrders::Destroy::types> engine;
+	Engine<UserComponents::ComponentsTypes> engine;
 
 
-	engine.getSystem<CameraSystem>();
+	/*engine.getSystem<CameraSystem>();
 
 	auto e = engine.createEntity();
 	engine.getComponentManager().createBundle(EngineComponents::CameraBundle_v,
@@ -24,7 +20,7 @@ int main()
 	auto cb = engine.getComponentManager().createBundle(EngineComponents::CameraBundle_v,
 		e);
 
-	engine.run();
+	engine.run();*/
 
 	return 0;
 }

@@ -19,12 +19,18 @@ namespace Common
 		destruct_systems();
 	}
 
-	
-
 	void Engine::run()
 	{
 		run_inits_orders(SystemsOrders::Init{});
 	}
+
+
+	template<typename ..._Orders>
+	void Engine::run_inits_orders(Utils::TypesPack<_Orders...>) { (run_systems_inits<_Orders>(SystemsCollection{}), ...); }
+	template <typename _Order, typename ..._Systems>
+	void Engine::run_systems_inits(std::tuple<_Systems...>) { (run_system_init<_Systems, _Order>(), ...); }
+	template<typename _SystemPtr, typename _Order>
+	void Engine::run_system_init() { if constexpr (has_init<std::remove_pointer_t<_SystemPtr>, _Order>::value) std::get<_SystemPtr>(systems)->init(_Order{}); }
 
 	void Engine::construct_systems() { construct_systems_impl(SystemsCollection{}); }
 	template<typename ..._Systems>

@@ -53,11 +53,11 @@ namespace Common
 
 	private:
 		template<typename ..._Orders>
-		void run_inits_orders(Utils::TypesPack<_Orders...>) { (run_systems_inits<_Orders>(SystemsCollection{}), ...); }
+		void run_inits_orders(Utils::TypesPack<_Orders...>);
 		template <typename _Order, typename ..._Systems>
-		void run_systems_inits(std::tuple<_Systems...>) { (run_system_init<_Systems, _Order>(), ...); }
+		void run_systems_inits(std::tuple<_Systems...>);
 		template<typename _SystemPtr, typename _Order>
-		void run_system_init() { if constexpr (has_init<std::remove_pointer_t<_SystemPtr>, _Order>::value) std::get<_SystemPtr>(systems)->init(_Order{}); }
+		void run_system_init();
 
 		void construct_systems();
 		template<typename ..._Systems>

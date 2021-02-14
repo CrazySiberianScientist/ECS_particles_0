@@ -36,7 +36,7 @@ namespace Common
 	template<typename ..._Systems>
 	void Engine::construct_systems_impl(std::tuple<_Systems...>) { (construct_system<_Systems>(), ...); }
 	template<typename _SystemPtr>
-	void Engine::construct_system() { std::get<_SystemPtr>(systems) = new std::remove_pointer_t<_SystemPtr>; }
+	void Engine::construct_system() { std::get<_SystemPtr>(systems) = new std::remove_pointer_t<_SystemPtr>(*this); }
 
 	void Engine::destruct_systems() { destruct_systems_impl(SystemsCollection{}); }
 	template<typename ..._Systems> 

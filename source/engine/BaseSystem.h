@@ -2,9 +2,27 @@
 
 #include "ecs/ECS.h"
 
+namespace Common
+{
+	class Engine;
+}
+
 // WARNING: Don't use any VIRTUAL functional!
 class BaseSystem
 {
+public:
+	BaseSystem(Common::Engine &engine_) : engine(engine_) {}
+
+protected:
+	Common::Engine &engine;
+};
+
+// WARNING: Don't use any VIRTUAL functional!
+class GenericSystem : BaseSystem
+{
+public:
+	GenericSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
+
 	void linkEntity(const ECS::EntityIdType entity) { /*some code in inherited classes;*/ link_entity(entity); }
 	void unlinkEntity(const ECS::EntityIdType entity) { /*some code in inherited classes;*/ unlink_entity(entity); }
 
@@ -19,4 +37,5 @@ protected:
 
 protected:
 	std::vector<ECS::EntityIdType> entities;
+	//std::vector<ECS::EntityIdType> entities;
 };

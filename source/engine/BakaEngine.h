@@ -17,7 +17,7 @@ namespace Common
 {
 	class Engine
 	{
-	private:
+	public:
 		using ComponentManagerType = decltype(Utils::convertTypesPack<ECS::ComponentManager>(ComponentsTypes{}));
 		using SystemsCollection = decltype(Utils::convertTypesPack<std::tuple>(SystemsTypes{}));
 
@@ -32,6 +32,15 @@ namespace Common
 		DECLARE_METHOD_CHECKER(update);
 		DECLARE_METHOD_CHECKER(destroy);
 		#undef DECLARE_METHOD_CHECKER
+
+	public:
+		template<typename _System>
+		struct SystemInfo
+		{
+			template<typename ..._Orders>
+			static constexpr int check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value + ...); }
+			static constexpr auto has_init_methods = check_inits(Common::SystemsOrders::Init{});
+		};
 
 	public:
 		Engine();

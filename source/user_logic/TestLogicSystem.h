@@ -6,9 +6,11 @@
 namespace UserLogic
 {
 
-	class TestLogicSystem : public BaseSystem
+	class TestLogicSystem : public GenericSystem
 	{
 	public:
+		TestLogicSystem(Common::Engine &engine_) : GenericSystem(engine_) {}
+
 		void init(SystemsOrders::Init::TEST_0)
 		{
 			printf("!! %s %s\n", __FUNCTION__, "TEST_0");

@@ -37,5 +37,5 @@ protected:
 
 protected:
 	std::vector<ECS::EntityIdType> entities;
-	//std::vector<ECS::EntityIdType> entities;
+	std::vector<ECS::EntityIdType> not_inited_entities;
 };

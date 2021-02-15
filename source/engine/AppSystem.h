@@ -6,12 +6,14 @@
 
 namespace EngineLogic
 {
-	class AppSystem : public BaseSystem
+	class AppSystem : public GenericSystem
 	{
 	public:
-		void init(SystemsOrders::Init::APP)
+		AppSystem(Common::Engine &engine_) : GenericSystem(engine_) {}
+
+		/*void init(SystemsOrders::Init::APP)
 		{
 			printf("!! %s %s\n", __FUNCTION__, "APP");
-		}
+		}*/
 	};
 }

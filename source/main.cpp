@@ -2,17 +2,19 @@
 #include <iostream>
 
 #include "engine/EngineSystems.h"
+#include "user_logic/UserSystems.h"
 
 using namespace std;
+using namespace UserLogic;
+using namespace Common;
 
 int main()
 {
 	Common::Engine engine;
 	engine.run();
 
-	//const auto v = Common::Engine::SystemInfo<UserLogic::TestLogicSystem>::has_init_methods;
-	const auto v = Common::Engine::has_init<UserLogic::TestLogicSystem, UserLogic::SystemsOrders::Init::TEST_0>::value;
-	printf("!! %d\n", v);
+	const auto v = Common::Engine::SystemInfo<UserLogic::TestLogicSystem>::has_init_methods;
+	printf("!! %d\n", v ? 1 : 0);
 
 	/*engine.getSystem<CameraSystem>();
 

@@ -38,7 +38,7 @@ namespace Common
 		struct SystemInfo
 		{
 			template<typename ..._Orders>
-			static constexpr int check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value + ...); }
+			static constexpr bool check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value | ...); }
 			static constexpr auto has_init_methods = check_inits(Common::SystemsOrders::Init{});
 		};
 

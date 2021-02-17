@@ -13,7 +13,7 @@ int main()
 	Common::Engine engine;
 	engine.run();
 
-	const auto v = Common::Engine::SystemInfo<UserLogic::TestLogicSystem>::has_init_methods;
+	const auto v = Common::Engine::SystemInfo<UserLogic::TestLogicSystem>::init_methods_count;
 	printf("!! %d\n", v ? 1 : 0);
 
 	/*engine.getSystem<CameraSystem>();

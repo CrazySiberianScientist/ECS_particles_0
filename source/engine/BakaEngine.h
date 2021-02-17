@@ -38,9 +38,13 @@ namespace Common
 		struct SystemInfo
 		{
 			template<typename ..._Orders>
-			static constexpr bool check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value | ...); }
-			static constexpr auto has_init_methods = check_inits(Common::SystemsOrders::Init{});
+			static constexpr size_t check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value + ...); }
+			static constexpr auto init_methods_count = check_inits(Common::SystemsOrders::Init{});
+			std::vector<ECS::EntityIdType> entities;
+			std::vector<ECS::EntityIdType> not_inited_entities;
+			std::vector<ECS::EntityIdType> initing_entities;
 		};
+		using SystemsInfoCollection = decltype(Utils::wrapTypesPack<std::tuple, SystemInfo>(SystemsTypes{}));
 
 	public:
 		Engine();

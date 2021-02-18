@@ -13,8 +13,8 @@ int main()
 	Common::Engine engine;
 	engine.run();
 
-	const auto v = Common::Engine::SystemInfo<UserLogic::TestLogicSystem>::init_methods_count;
-	printf("!! %d\n", v ? 1 : 0);
+	auto entity = engine.createEntity();
+	engine.linkEntityToSystem<TestLogicSystem>(entity);
 
 	/*engine.getSystem<CameraSystem>();
 

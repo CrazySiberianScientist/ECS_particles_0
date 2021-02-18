@@ -37,12 +37,31 @@ namespace Common
 		template<typename _System>
 		struct SystemInfo
 		{
+			struct EntityInitingState
+			{
+				ECS::EntityIdType id = ECS::EntityIdType_Invalid;
+				uint32_t passed_inits = 0;
+			};
+
 			template<typename ..._Orders>
 			static constexpr size_t check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value + ...); }
 			static constexpr auto init_methods_count = check_inits(Common::SystemsOrders::Init{});
+
+			bool has_entity(const ECS::EntityIdType entity_id) const
+			{
+				if (auto found_it = std::find(entities.begin(), entities.end(), entity_id);
+					found_it != entities.end()) return true;
+				if (auto found_it = std::find(not_inited_entities.begin(), not_inited_entities.end(), entity_id);
+					found_it != not_inited_entities.end()) return true;
+				if (auto found_it = std::find_if(initing_entities.begin(), initing_entities.end()
+					, [entity_id](const auto &state){ return state.id == entity_id; });
+					found_it != initing_entities.end()) return true;
+				return false;
+			}
+
 			std::vector<ECS::EntityIdType> entities;
 			std::vector<ECS::EntityIdType> not_inited_entities;
-			std::vector<ECS::EntityIdType> initing_entities;
+			std::vector<EntityInitingState> initing_entities;
 		};
 		using SystemsInfoCollection = decltype(Utils::wrapTypesPack<std::tuple, SystemInfo>(SystemsTypes{}));
 
@@ -62,6 +81,15 @@ namespace Common
 		}
 
 		auto &getComponentManager() { return component_manager; }
+
+		
+		template<typename _System>
+		void linkEntityToSystem(const ECS::EntityIdType entity_id)
+		{
+			auto &system_info = std::get<SystemInfo<_System*>>(systems_info);
+			if (system_info.has_entity(entity_id)) return;
+			return system_info.not_inited_entities.push_back({entity_id});
+		}
 		
 
 	private:
@@ -88,6 +116,7 @@ namespace Common
 		ECS::EntityManager entity_manager;
 		ComponentManagerType component_manager;
 		SystemsCollection systems;
+		SystemsInfoCollection systems_info;
 	};
 
 	/*static void glfw_error_callback(int error, const char* description) {}

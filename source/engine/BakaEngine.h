@@ -24,7 +24,7 @@ namespace Common
 		#define DECLARE_METHOD_CHECKER(METHOD_NAME)\
 		template<typename _System, typename _OrderType>\
 		struct has_##METHOD_NAME {\
-			template<typename _Type, void(_Type::*)(_OrderType)> struct func_pattern {};\
+			template<typename _Type, void(_Type::*)(_OrderType, const ECS::EntityIdType)> struct func_pattern {};\
 			template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::METHOD_NAME>*);\
 			template<typename _Type> static constexpr std::false_type check_func(...);\
 			static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value; }
@@ -33,16 +33,10 @@ namespace Common
 		DECLARE_METHOD_CHECKER(destroy);
 		#undef DECLARE_METHOD_CHECKER
 
-	public:
+	private:
 		template<typename _System>
 		struct SystemInfo
 		{
-			struct EntityInitingState
-			{
-				ECS::EntityIdType id = ECS::EntityIdType_Invalid;
-				uint32_t passed_inits = 0;
-			};
-
 			template<typename ..._Orders>
 			static constexpr size_t check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value + ...); }
 			static constexpr auto init_methods_count = check_inits(Common::SystemsOrders::Init{});
@@ -53,15 +47,15 @@ namespace Common
 					found_it != entities.end()) return true;
 				if (auto found_it = std::find(not_inited_entities.begin(), not_inited_entities.end(), entity_id);
 					found_it != not_inited_entities.end()) return true;
-				if (auto found_it = std::find_if(initing_entities.begin(), initing_entities.end()
-					, [entity_id](const auto &state){ return state.id == entity_id; });
+				if (auto found_it = std::find(initing_entities.begin(), initing_entities.end(), entity_id);
 					found_it != initing_entities.end()) return true;
 				return false;
 			}
 
 			std::vector<ECS::EntityIdType> entities;
 			std::vector<ECS::EntityIdType> not_inited_entities;
-			std::vector<EntityInitingState> initing_entities;
+			std::vector<ECS::EntityIdType> initing_entities;
+			uint32_t passed_inits = 0;
 		};
 		using SystemsInfoCollection = decltype(Utils::wrapTypesPack<std::tuple, SystemInfo>(SystemsTypes{}));
 
@@ -88,15 +82,20 @@ namespace Common
 		{
 			auto &system_info = std::get<SystemInfo<_System*>>(systems_info);
 			if (system_info.has_entity(entity_id)) return;
-			return system_info.not_inited_entities.push_back({entity_id});
+			return system_info.not_inited_entities.push_back(entity_id);
 		}
 		
 
 	private:
+		template <typename ..._Systems>
+		void run_systems_preinits(Utils::TypesPack<_Systems...>);
+		template<typename _SystemPtr>
+		void run_system_preinit();
+
 		template<typename ..._Orders>
 		void run_inits_orders(Utils::TypesPack<_Orders...>);
 		template <typename _Order, typename ..._Systems>
-		void run_systems_inits(std::tuple<_Systems...>);
+		void run_systems_inits(Utils::TypesPack<_Systems...>);
 		template<typename _SystemPtr, typename _Order>
 		void run_system_init();
 

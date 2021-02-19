@@ -52,9 +52,16 @@ namespace Common
 				return false;
 			}
 
-			std::vector<ECS::EntityIdType> entities;
-			std::vector<ECS::EntityIdType> not_inited_entities;
-			std::vector<ECS::EntityIdType> initing_entities;
+			using EntityCollection = std::vector<ECS::EntityIdType>;
+
+			EntityCollection entities;
+
+			EntityCollection not_inited_entities;
+			EntityCollection initing_entities;
+
+			EntityCollection not_destroyed_entities;
+			EntityCollection destroying_entities;
+
 			uint32_t passed_inits = 0;
 		};
 		using SystemsInfoCollection = decltype(Utils::wrapTypesPack<std::tuple, SystemInfo>(SystemsTypes{}));

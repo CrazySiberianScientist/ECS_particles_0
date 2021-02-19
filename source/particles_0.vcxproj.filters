@@ -42,6 +42,9 @@
     <ClCompile Include="engine\BakaEngine.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="user_logic\TestLogicSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils\linmath.h">
@@ -82,15 +85,6 @@
     </ClInclude>
     <ClInclude Include="user_logic\UserComponents.h">
       <Filter>User_Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="user_logic\UserSystemsTypes.h">
-      <Filter>User_Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\EngineSystemsTypes.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\SystemsTypes.h">
-      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="engine\Systems.h">
       <Filter>Header Files\Engine</Filter>

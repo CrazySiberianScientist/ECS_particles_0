@@ -30,6 +30,9 @@ namespace Utils
 	template <template <typename> typename _NewType, template <typename> typename _WrapType, typename ..._Types>
 	constexpr decltype(auto) wrapTypesPack(TypesPack<_Types...>) { return _NewType<_WrapType<_Types>...>{}; }
 
+	template <typename ..._Types>
+	constexpr decltype(auto) convertTypesToPointersPack(TypesPack<_Types...>) { return TypesPack<_Types*...>{}; }
+
 	template <typename _Type>
 	void removeFast(const typename std::vector<_Type>::iterator &it, std::vector<_Type> & container)
 	{

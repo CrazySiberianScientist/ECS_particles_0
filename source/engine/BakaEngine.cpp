@@ -51,18 +51,18 @@ namespace Common
 	void Engine::run_inits_orders(Utils::TypesPack<_Orders...>) { (run_systems_inits<_Orders>(SystemsTypes{}), ...); }
 	template <typename _Order, typename ..._Systems>
 	void Engine::run_systems_inits(Utils::TypesPack<_Systems...>) { (run_system_init<_Systems, _Order>(), ...); }
-	template<typename _SystemPtr, typename _Order>
+	template<typename _System, typename _Order>
 	void Engine::run_system_init()
 	{ 
-		if constexpr (has_init<std::remove_pointer_t<_SystemPtr>, _Order>::value)
+		if constexpr (has_init<_System, _Order>::value)
 		{
-			auto &system_info = std::get<SystemInfo<_SystemPtr>>(systems_info);
+			auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
 			for (const auto entity_id : system_info.initing_entities)
-				std::get<_SystemPtr>(systems)->init(_Order{}, entity_id);
+				std::get<_System*>(systems)->init(_Order{}, entity_id);
 			++system_info.passed_inits;
 
-			if (SystemInfo<_SystemPtr>::init_methods_count == system_info.passed_inits)
+			if (SystemInfo<_System>::init_methods_count == system_info.passed_inits)
 			{
 				system_info.entities.insert(system_info.entities.end()
 					, system_info.initing_entities.begin()
@@ -72,17 +72,17 @@ namespace Common
 		}
 	}
 
-	void Engine::construct_systems() { construct_systems_impl(SystemsCollection{}); }
+	void Engine::construct_systems() { construct_systems_impl(SystemsTypes{}); }
 	template<typename ..._Systems>
-	void Engine::construct_systems_impl(std::tuple<_Systems...>) { (construct_system<_Systems>(), ...); }
-	template<typename _SystemPtr>
-	void Engine::construct_system() { std::get<_SystemPtr>(systems) = new std::remove_pointer_t<_SystemPtr>(*this); }
+	void Engine::construct_systems_impl(Utils::TypesPack<_Systems...>) { (construct_system<_Systems>(), ...); }
+	template<typename _System>
+	void Engine::construct_system() { std::get<_System*>(systems) = new _System(*this); }
 
-	void Engine::destruct_systems() { destruct_systems_impl(SystemsCollection{}); }
+	void Engine::destruct_systems() { destruct_systems_impl(SystemsTypes{}); }
 	template<typename ..._Systems> 
-	void Engine::destruct_systems_impl(std::tuple<_Systems...>) { (destruct_system<_Systems>(), ...); }
-	template<typename _SystemPtr>
-	void Engine::destruct_system() { delete std::get<_SystemPtr>(systems); }
+	void Engine::destruct_systems_impl(Utils::TypesPack<_Systems...>) { (destruct_system<_Systems>(), ...); }
+	template<typename _System>
+	void Engine::destruct_system() { delete std::get<_System*>(systems); }
 }
 
 

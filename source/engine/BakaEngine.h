@@ -8,8 +8,8 @@
 
 #include "ecs/ECS.h"
 #include "Components.h"
-#include "SystemsTypes.h"
 #include "SystemsOrders.h"
+#include "Systems.h"
 
 struct GLFWwindow;
 
@@ -17,9 +17,9 @@ namespace Common
 {
 	class Engine
 	{
-	public:
+	private:
 		using ComponentManagerType = decltype(Utils::convertTypesPack<ECS::ComponentManager>(ComponentsTypes{}));
-		using SystemsCollection = decltype(Utils::convertTypesPack<std::tuple>(SystemsTypes{}));
+		using SystemsCollection = decltype(Utils::convertTypesPack<std::tuple>(convertTypesToPointersPack(SystemsTypes{})));
 
 		#define DECLARE_METHOD_CHECKER(METHOD_NAME)\
 		template<typename _System, typename _OrderType>\
@@ -80,35 +80,35 @@ namespace Common
 		template<typename _System>
 		void linkEntityToSystem(const ECS::EntityIdType entity_id)
 		{
-			auto &system_info = std::get<SystemInfo<_System*>>(systems_info);
+			auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 			if (system_info.has_entity(entity_id)) return;
-			return system_info.not_inited_entities.push_back(entity_id);
+			system_info.not_inited_entities.push_back(entity_id);
 		}
 		
 
 	private:
 		template <typename ..._Systems>
 		void run_systems_preinits(Utils::TypesPack<_Systems...>);
-		template<typename _SystemPtr>
+		template<typename _System>
 		void run_system_preinit();
 
 		template<typename ..._Orders>
 		void run_inits_orders(Utils::TypesPack<_Orders...>);
 		template <typename _Order, typename ..._Systems>
 		void run_systems_inits(Utils::TypesPack<_Systems...>);
-		template<typename _SystemPtr, typename _Order>
+		template<typename _System, typename _Order>
 		void run_system_init();
 
 		void construct_systems();
 		template<typename ..._Systems>
-		void construct_systems_impl(std::tuple<_Systems...>);
-		template<typename _SystemPtr>
+		void construct_systems_impl(Utils::TypesPack<_Systems...>);
+		template<typename _System>
 		void construct_system();
 
 		void destruct_systems();
 		template<typename ..._Systems>
-		void destruct_systems_impl(std::tuple<_Systems...>);
-		template<typename _SystemPtr>
+		void destruct_systems_impl(Utils::TypesPack<_Systems...>);
+		template<typename _System>
 		void destruct_system();
 
 	private:

@@ -5,8 +5,6 @@
 #include <gl/GL.h>
 #include "utils/linmath.h"
 
-#include "Systems.h"
-
 namespace Common
 {
 	Engine::Engine() 
@@ -23,66 +21,19 @@ namespace Common
 	{
 		run_systems_preinits(SystemsTypes{});
 		run_inits_orders(SystemsOrders::Init{});
+
+		if (is_needed_to_stop)
+		{
+			// destroy
+			return;
+		}
 	}
 
-	template <typename ..._Systems>
-	void Engine::run_systems_preinits(Utils::TypesPack<_Systems...>){ (run_system_preinit<_Systems>(), ...); }
-	template<typename _SystemPtr>
-	void Engine::run_system_preinit()
+	/* TODO: I thought about realization via exception, but I'm not sure.
+	There is needed way to immediately engine stop.*/
+	void Engine::stop()
 	{
-		auto &system_info = std::get<SystemInfo<_SystemPtr>>(systems_info);
-		if constexpr (SystemInfo<_SystemPtr>::init_methods_count == 0)
-		{
-			system_info.entities.insert(system_info.entities.end()
-					, system_info.not_inited_entities.begin()
-					, system_info.not_inited_entities.end());
-		}
-		else
-		{
-			system_info.passed_inits = 0;
-			system_info.initing_entities.insert(system_info.initing_entities.end()
-					, system_info.not_inited_entities.begin()
-					, system_info.not_inited_entities.end());
-		}
-		system_info.not_inited_entities.clear();
+		is_needed_to_stop = true;
 	}
 
-	template<typename ..._Orders>
-	void Engine::run_inits_orders(Utils::TypesPack<_Orders...>) { (run_systems_inits<_Orders>(SystemsTypes{}), ...); }
-	template <typename _Order, typename ..._Systems>
-	void Engine::run_systems_inits(Utils::TypesPack<_Systems...>) { (run_system_init<_Systems, _Order>(), ...); }
-	template<typename _System, typename _Order>
-	void Engine::run_system_init()
-	{ 
-		if constexpr (has_init<_System, _Order>::value)
-		{
-			auto &system_info = std::get<SystemInfo<_System>>(systems_info);
-
-			for (const auto entity_id : system_info.initing_entities)
-				std::get<_System*>(systems)->init(_Order{}, entity_id);
-			++system_info.passed_inits;
-
-			if (SystemInfo<_System>::init_methods_count == system_info.passed_inits)
-			{
-				system_info.entities.insert(system_info.entities.end()
-					, system_info.initing_entities.begin()
-					, system_info.initing_entities.end());
-				system_info.initing_entities.clear();
-			}
-		}
-	}
-
-	void Engine::construct_systems() { construct_systems_impl(SystemsTypes{}); }
-	template<typename ..._Systems>
-	void Engine::construct_systems_impl(Utils::TypesPack<_Systems...>) { (construct_system<_Systems>(), ...); }
-	template<typename _System>
-	void Engine::construct_system() { std::get<_System*>(systems) = new _System(*this); }
-
-	void Engine::destruct_systems() { destruct_systems_impl(SystemsTypes{}); }
-	template<typename ..._Systems> 
-	void Engine::destruct_systems_impl(Utils::TypesPack<_Systems...>) { (destruct_system<_Systems>(), ...); }
-	template<typename _System>
-	void Engine::destruct_system() { delete std::get<_System*>(systems); }
 }
-
-

@@ -63,9 +63,7 @@ namespace Common
 		Engine();
 		~Engine();
 		void run();
-		
-		template<typename _System>
-		auto *getSystem() { return std::get<_System*>(systems); }
+		void stop();
 
 		auto createEntity() { return entity_manager.create(); }
 		void removeEnity(const ECS::EntityIdType entity_id)
@@ -75,7 +73,9 @@ namespace Common
 		}
 
 		auto &getComponentManager() { return component_manager; }
-
+		
+		template<typename _System>
+		auto *getSystem() { return std::get<_System*>(systems); }
 		
 		template<typename _System>
 		void linkEntityToSystem(const ECS::EntityIdType entity_id)
@@ -84,38 +84,74 @@ namespace Common
 			if (system_info.has_entity(entity_id)) return;
 			system_info.not_inited_entities.push_back(entity_id);
 		}
-		
 
 	private:
 		template <typename ..._Systems>
-		void run_systems_preinits(Utils::TypesPack<_Systems...>);
-		template<typename _System>
-		void run_system_preinit();
+		void run_systems_preinits(Utils::TypesPack<_Systems...>) { (run_system_preinit<_Systems>(), ...); }
+		template<typename _SystemPtr>
+		void run_system_preinit()
+		{
+			auto &system_info = std::get<SystemInfo<_SystemPtr>>(systems_info);
+			if constexpr (SystemInfo<_SystemPtr>::init_methods_count == 0)
+			{
+				system_info.entities.insert(system_info.entities.end()
+					, system_info.not_inited_entities.begin()
+					, system_info.not_inited_entities.end());
+			}
+			else
+			{
+				system_info.passed_inits = 0;
+				system_info.initing_entities.insert(system_info.initing_entities.end()
+					, system_info.not_inited_entities.begin()
+					, system_info.not_inited_entities.end());
+			}
+			system_info.not_inited_entities.clear();
+		}
 
 		template<typename ..._Orders>
-		void run_inits_orders(Utils::TypesPack<_Orders...>);
+		void run_inits_orders(Utils::TypesPack<_Orders...>) { (run_systems_inits<_Orders>(SystemsTypes{}), ...); }
 		template <typename _Order, typename ..._Systems>
-		void run_systems_inits(Utils::TypesPack<_Systems...>);
+		void run_systems_inits(Utils::TypesPack<_Systems...>) { (run_system_init<_Systems, _Order>(), ...); }
 		template<typename _System, typename _Order>
-		void run_system_init();
+		void run_system_init()
+		{
+			if constexpr (has_init<_System, _Order>::value)
+			{
+				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
-		void construct_systems();
-		template<typename ..._Systems>
-		void construct_systems_impl(Utils::TypesPack<_Systems...>);
-		template<typename _System>
-		void construct_system();
+				for (const auto entity_id : system_info.initing_entities)
+					std::get<_System*>(systems)->init(_Order{}, entity_id);
+				++system_info.passed_inits;
 
-		void destruct_systems();
+				if (SystemInfo<_System>::init_methods_count == system_info.passed_inits)
+				{
+					system_info.entities.insert(system_info.entities.end()
+						, system_info.initing_entities.begin()
+						, system_info.initing_entities.end());
+					system_info.initing_entities.clear();
+				}
+			}
+		}
+
+		void construct_systems() { construct_systems_impl(SystemsTypes{}); }
 		template<typename ..._Systems>
-		void destruct_systems_impl(Utils::TypesPack<_Systems...>);
+		void construct_systems_impl(Utils::TypesPack<_Systems...>) { (construct_system<_Systems>(), ...); }
 		template<typename _System>
-		void destruct_system();
+		void construct_system() { std::get<_System*>(systems) = new _System(*this); }
+
+		void destruct_systems() { destruct_systems_impl(SystemsTypes{}); }
+		template<typename ..._Systems> 
+		void destruct_systems_impl(Utils::TypesPack<_Systems...>) { (destruct_system<_Systems>(), ...); }
+		template<typename _System>
+		void destruct_system() { delete std::get<_System*>(systems); }
 
 	private:
 		ECS::EntityManager entity_manager;
 		ComponentManagerType component_manager;
 		SystemsCollection systems;
 		SystemsInfoCollection systems_info;
+
+		bool is_needed_to_stop = false;
 	};
 
 	/*static void glfw_error_callback(int error, const char* description) {}

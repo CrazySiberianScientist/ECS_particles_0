@@ -92,6 +92,12 @@ namespace Common
 			system_info.not_inited_entities.push_back(entity_id);
 		}
 
+		template<typename _System>
+		void unlinkEntityFromSystem(const ECS::EntityIdType entity_id)
+		{
+
+		}
+
 	private:
 		template <typename ..._Systems>
 		void run_systems_preinits(Utils::TypesPack<_Systems...>) { (run_system_preinit<_Systems>(), ...); }

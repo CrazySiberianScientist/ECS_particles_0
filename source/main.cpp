@@ -18,6 +18,9 @@ int main()
 	auto entity = engine.createEntity();
 	engine.linkEntityToSystem<UserLogic::TestLogicSystem>(entity);
 
+	constexpr auto n = Common::SystemsTypes::getTypeIndex<UserLogic::SceneLogicSystem>();
+	//constexpr auto n = Common::SystemsTypes::getTypeIndex<int>();
+
 	engine.run();
 
 	/*engine.getSystem<CameraSystem>();

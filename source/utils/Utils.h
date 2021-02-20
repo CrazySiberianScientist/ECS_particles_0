@@ -16,7 +16,26 @@ struct NAME{\
 namespace Utils
 {
 	template <typename ..._Types>
-	struct TypesPack {};
+	class TypesPack 
+	{
+	public:
+		static constexpr auto types_count = sizeof...(_Types);
+
+		template<typename _Type>
+		static constexpr size_t getTypeIndex()
+		{
+			return getTypeIndex_impl<_Type>(TypesPack<_Types...>{}, 0);
+		}
+
+	private:
+		template<typename _Type, typename _CurrentType, typename ..._RemainedTypes>
+		static constexpr size_t getTypeIndex_impl(TypesPack<_CurrentType, _RemainedTypes...>, size_t counter)
+		{
+			if constexpr (std::is_same<_Type, _CurrentType>::value) return counter;
+			else if constexpr (sizeof...(_RemainedTypes) != 0) return getTypeIndex_impl<_Type>(TypesPack<_RemainedTypes...>{}, counter + 1);
+			else { static_assert(false, "_Type isn't found in TypesPack"); return 0; }
+		}
+	};
 
 	template <typename ..._Types0, typename ..._Types1>
 	constexpr decltype(auto) conCatTypesPack(TypesPack<_Types0...>, TypesPack<_Types1...>) { return TypesPack<_Types0..., _Types1...>{}; }

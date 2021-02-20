@@ -41,17 +41,6 @@ namespace Common
 			static constexpr size_t check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value + ...); }
 			static constexpr auto init_methods_count = check_inits(Common::SystemsOrders::Init{});
 
-			bool has_entity(const ECS::EntityIdType entity_id) const
-			{
-				if (auto found_it = std::find(entities.begin(), entities.end(), entity_id);
-					found_it != entities.end()) return true;
-				if (auto found_it = std::find(not_inited_entities.begin(), not_inited_entities.end(), entity_id);
-					found_it != not_inited_entities.end()) return true;
-				if (auto found_it = std::find(initing_entities.begin(), initing_entities.end(), entity_id);
-					found_it != initing_entities.end()) return true;
-				return false;
-			}
-
 			using EntityCollection = std::vector<ECS::EntityIdType>;
 
 			EntityCollection entities;
@@ -87,14 +76,21 @@ namespace Common
 		template<typename _System>
 		void linkEntityToSystem(const ECS::EntityIdType entity_id)
 		{
+			auto mask = entity_systems_masks.emplace(entity_id);
+			if ((*mask)[SystemsTypes::getTypeIndex<_System>()]) return;
+			(*mask)[SystemsTypes::getTypeIndex<_System>()] = true;
+
 			auto &system_info = std::get<SystemInfo<_System>>(systems_info);
-			if (system_info.has_entity(entity_id)) return;
 			system_info.not_inited_entities.push_back(entity_id);
 		}
 
 		template<typename _System>
 		void unlinkEntityFromSystem(const ECS::EntityIdType entity_id)
 		{
+			auto mask = entity_systems_masks.emplace(entity_id);
+			if (!(*mask)[SystemsTypes::getTypeIndex<_System>()]) return;
+			(*mask)[SystemsTypes::getTypeIndex<_System>()] = false;
+
 
 		}
 
@@ -160,6 +156,7 @@ namespace Common
 
 	private:
 		ECS::EntityManager entity_manager;
+		Utils::ChunkTable<std::bitset<SystemsTypes::types_count>> entity_systems_masks;
 		ComponentManagerType component_manager;
 		SystemsCollection systems;
 		SystemsInfoCollection systems_info;

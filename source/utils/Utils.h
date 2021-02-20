@@ -22,10 +22,7 @@ namespace Utils
 		static constexpr auto types_count = sizeof...(_Types);
 
 		template<typename _Type>
-		static constexpr size_t getTypeIndex()
-		{
-			return getTypeIndex_impl<_Type>(TypesPack<_Types...>{}, 0);
-		}
+		static constexpr size_t getTypeIndex() { return getTypeIndex_impl<_Type>(TypesPack<_Types...>{}, 0); }
 
 	private:
 		template<typename _Type, typename _CurrentType, typename ..._RemainedTypes>

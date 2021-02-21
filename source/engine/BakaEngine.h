@@ -37,6 +37,17 @@ namespace Common
 		template<typename _System>
 		struct SystemInfo
 		{
+			void linkEntity(const ECS::EntityIdType entity_id)
+			{
+				not_inited_entities.push_back(entity_id);
+			}
+
+			void unlinkEntity(const ECS::EntityIdType entity_id)
+			{
+				not_destroyed_entities.push_back(entity_id);
+			}
+
+
 			template<typename ..._Orders>
 			static constexpr size_t check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value + ...); }
 			static constexpr auto init_methods_count = check_inits(Common::SystemsOrders::Init{});
@@ -80,8 +91,7 @@ namespace Common
 			if ((*mask)[SystemsTypes::getTypeIndex<_System>()]) return;
 			(*mask)[SystemsTypes::getTypeIndex<_System>()] = true;
 
-			auto &system_info = std::get<SystemInfo<_System>>(systems_info);
-			system_info.not_inited_entities.push_back(entity_id);
+			std::get<SystemInfo<_System>>(systems_info).linkEntity(entity_id);
 		}
 
 		template<typename _System>
@@ -91,7 +101,8 @@ namespace Common
 			if (!(*mask)[SystemsTypes::getTypeIndex<_System>()]) return;
 			(*mask)[SystemsTypes::getTypeIndex<_System>()] = false;
 
-
+			
+			std::get<SystemInfo<_System>>(systems_info).unlinkEntity(entity_id);
 		}
 
 	private:
@@ -103,16 +114,16 @@ namespace Common
 			auto &system_info = std::get<SystemInfo<_SystemPtr>>(systems_info);
 			if constexpr (SystemInfo<_SystemPtr>::init_methods_count == 0)
 			{
-				system_info.entities.insert(system_info.entities.end()
-					, system_info.not_inited_entities.begin()
-					, system_info.not_inited_entities.end());
+				for (const auto entity_id : system_info.not_inited_entities)
+					if (entity_id != ECS::EntityIdType_Invalid)
+						system_info.entities.push_back(entity_id);
 			}
 			else
 			{
 				system_info.passed_inits = 0;
-				system_info.initing_entities.insert(system_info.initing_entities.end()
-					, system_info.not_inited_entities.begin()
-					, system_info.not_inited_entities.end());
+				for (const auto entity_id : system_info.not_inited_entities)
+					if (entity_id != ECS::EntityIdType_Invalid)
+						system_info.initing_entities.push_back(entity_id);
 			}
 			system_info.not_inited_entities.clear();
 		}
@@ -129,7 +140,8 @@ namespace Common
 				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
 				for (const auto entity_id : system_info.initing_entities)
-					std::get<_System*>(systems)->init(_Order{}, entity_id);
+					if (entity_id != ECS::EntityIdType_Invalid)
+						std::get<_System*>(systems)->init(_Order{}, entity_id);
 				++system_info.passed_inits;
 
 				if (SystemInfo<_System>::init_methods_count == system_info.passed_inits)

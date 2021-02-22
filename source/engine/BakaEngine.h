@@ -37,14 +37,34 @@ namespace Common
 		template<typename _System>
 		struct SystemInfo
 		{
+			struct EntityState 
+			{
+				enum
+				{
+					TO_INIT
+					, INITING
+					, UPDATE
+					, TO_DESTROY
+					, DESTROYING
+					COUNT
+				};
+			}
+
 			void linkEntity(const ECS::EntityIdType entity_id)
 			{
-				not_inited_entities.push_back(entity_id);
+				entities_queues[EntityState::TO_INIT].push_back(entity_id);
+				*(entity_states.emplace(entity_id)) = EntityState::TO_INIT;
 			}
 
 			void unlinkEntity(const ECS::EntityIdType entity_id)
 			{
-				not_destroyed_entities.push_back(entity_id);
+				auto &state = *(entity_states.get(entity_id));
+				if (state != EntityState::Update)
+				{
+
+				}
+				state = EntityState::TO_DESTROY;
+				entities_queues[EntityState::TO_DESTROY].push_back(entity_id);
 			}
 
 
@@ -52,15 +72,8 @@ namespace Common
 			static constexpr size_t check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value + ...); }
 			static constexpr auto init_methods_count = check_inits(Common::SystemsOrders::Init{});
 
-			using EntityCollection = std::vector<ECS::EntityIdType>;
-
-			EntityCollection entities;
-
-			EntityCollection not_inited_entities;
-			EntityCollection initing_entities;
-
-			EntityCollection not_destroyed_entities;
-			EntityCollection destroying_entities;
+			std::vector<ECS::EntityIdType> entities_queues[EntityState::COUNT];
+			Utils::ChunkTable<uint8_t> entity_states;
 
 			uint32_t passed_inits = 0;
 		};
@@ -88,7 +101,12 @@ namespace Common
 		void linkEntityToSystem(const ECS::EntityIdType entity_id)
 		{
 			auto mask = entity_systems_masks.emplace(entity_id);
-			if ((*mask)[SystemsTypes::getTypeIndex<_System>()]) return;
+			if ((*mask)[SystemsTypes::getTypeIndex<_System>()])
+			{
+				std::cerr << "[Warning] " << __FUNCTION__ << " - Entity(ID " << entity_id << ") is already linked to System(Index " 
+					<< SystemsTypes::getTypeIndex<_System>() << ")" << std::endl;
+				return;
+			}
 			(*mask)[SystemsTypes::getTypeIndex<_System>()] = true;
 
 			std::get<SystemInfo<_System>>(systems_info).linkEntity(entity_id);
@@ -98,8 +116,13 @@ namespace Common
 		void unlinkEntityFromSystem(const ECS::EntityIdType entity_id)
 		{
 			auto mask = entity_systems_masks.emplace(entity_id);
-			if (!(*mask)[SystemsTypes::getTypeIndex<_System>()]) return;
-			(*mask)[SystemsTypes::getTypeIndex<_System>()] = false;
+			if (!(*mask)[SystemsTypes::getTypeIndex<_System>()])
+			{
+				std::cerr << "[Warning] " << __FUNCTION__ << " - Entity(ID " << entity_id << ") isn't linked to System(Index " 
+					<< SystemsTypes::getTypeIndex<_System>() << ")" << std::endl;
+				return;
+			}
+			//(*mask)[SystemsTypes::getTypeIndex<_System>()] = false;
 
 			
 			std::get<SystemInfo<_System>>(systems_info).unlinkEntity(entity_id);

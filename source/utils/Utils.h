@@ -30,7 +30,7 @@ namespace Utils
 		{
 			if constexpr (std::is_same<_Type, _CurrentType>::value) return counter;
 			else if constexpr (sizeof...(_RemainedTypes) != 0) return getTypeIndex_impl<_Type>(TypesPack<_RemainedTypes...>{}, counter + 1);
-			else { static_assert(false, "_Type isn't found in TypesPack"); return 0; }
+			else { static_assert(false, "[Error] TypesPack::getTypeIndex - _Type isn't found in TypesPack"); return 0; }
 		}
 	};
 

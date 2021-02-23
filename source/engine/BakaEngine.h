@@ -61,7 +61,9 @@ namespace Common
 				auto &state = *(entity_states.get(entity_id));
 				if (state != EntityState::Update)
 				{
-
+					std::cerr << "[Warning] " << __func__ << " - Entity(ID " << entity_id << ") linked to System(Index " 
+						<< SystemsTypes::getTypeIndex<_System>() << ") must be in UPDATE state for Unlinking" << std::endl;
+					return;
 				}
 				state = EntityState::TO_DESTROY;
 				entities_queues[EntityState::TO_DESTROY].push_back(entity_id);
@@ -103,7 +105,7 @@ namespace Common
 			auto mask = entity_systems_masks.emplace(entity_id);
 			if ((*mask)[SystemsTypes::getTypeIndex<_System>()])
 			{
-				std::cerr << "[Warning] " << __FUNCTION__ << " - Entity(ID " << entity_id << ") is already linked to System(Index " 
+				std::cerr << "[Warning] " << __func__ << " - Entity(ID " << entity_id << ") is already linked to System(Index " 
 					<< SystemsTypes::getTypeIndex<_System>() << ")" << std::endl;
 				return;
 			}
@@ -118,7 +120,7 @@ namespace Common
 			auto mask = entity_systems_masks.emplace(entity_id);
 			if (!(*mask)[SystemsTypes::getTypeIndex<_System>()])
 			{
-				std::cerr << "[Warning] " << __FUNCTION__ << " - Entity(ID " << entity_id << ") isn't linked to System(Index " 
+				std::cerr << "[Warning] " << __func__ << " - Entity(ID " << entity_id << ") isn't linked to System(Index " 
 					<< SystemsTypes::getTypeIndex<_System>() << ")" << std::endl;
 				return;
 			}

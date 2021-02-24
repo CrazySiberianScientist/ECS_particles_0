@@ -66,8 +66,14 @@ namespace Common
 						<< SystemsTypes::getTypeIndex<_System>() << ") must be in UPDATE state for Unlinking" << std::endl;
 					return;
 				}
-				state = EntityState::TO_DESTROY;
-				entities_queues[EntityState::TO_DESTROY].push_back(entity_id);
+				(*std::find(entities_queues[EntityState::TO_UPDATE].begin(), entities_queues[EntityState::TO_UPDATE].end(), entity_id)) = ECS::EntityIdType_Invalid;
+
+				//if constexpr (SystemInfo<_SystemPtr>::destroy_methods_count != 0)
+				{
+					state = EntityState::TO_DESTROY;
+					entities_queues[EntityState::TO_DESTROY].push_back(entity_id);
+				}
+				
 			}
 
 

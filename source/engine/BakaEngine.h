@@ -213,6 +213,30 @@ namespace Common
 			}
 			system_info.entities_queues[SystemInfo::TO_DESTROY].clear();
 		}
+		template<typename ..._Orders>
+		void run_destroys_orders(Utils::TypesPack<_Orders...>) { (run_systems_destroys<_Orders>(SystemsTypes{}), ...); }
+		template <typename _Order, typename ..._Systems>
+		void run_systems_destroys(Utils::TypesPack<_Systems...>) { (run_system_destroy<_Systems, _Order>(), ...); }
+		template<typename _System, typename _Order>
+		void run_system_destroy()
+		{
+			if constexpr (has_destroy<_System, _Order>::value)
+			{
+				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
+
+				for (const auto entity_id : system_info.entities_queues[SystemInfo::INITING])
+					if (entity_id != ECS::EntityIdType_Invalid)
+						std::get<_System*>(systems)->destroy(_Order{}, entity_id);
+				++system_info.passed_destroys;
+
+				if (SystemInfo<_System>::destroy_methods_count == system_info.passed_destroys)
+				{
+					for (const auto entity_id : system_info.entities_queues[SystemInfo::INITING])
+						system_info.entities_queues[SystemInfo::UPDATE].push_back(entity_id);
+					system_info.entities_queues[SystemInfo::INITING].clear();
+				}
+			}
+		}
 
 		void construct_systems() { construct_systems_impl(SystemsTypes{}); }
 		template<typename ..._Systems>

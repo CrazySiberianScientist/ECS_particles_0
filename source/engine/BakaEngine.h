@@ -87,11 +87,24 @@ namespace Common
 		void run();
 		void stop();
 
-		auto createEntity() { return entity_manager.create(); }
+		auto createEntity()
+		{
+			const auto entity_id = entity_manager.create();
+			if (entity_id == ECS::EntityIdType_Invalid) std::cerr << "[Warning] " << __func__ << " - Cannot create new Entity, maximum count" << std::endl;
+			else entity_systems_masks.emplace(entity_id);
+			return entity_id;
+		}
 		void removeEnity(const ECS::EntityIdType entity_id)
 		{
-			component_manager.removeAllComponents(entity_id);
-			entity_manager.remove(entity_id);
+			if (entity_id == ECS::EntityIdType_Invalid)
+			{
+				std::cerr << "[Warning] " << __func__ << " - entity_id is invalid" << std::endl;
+				return;
+			}
+
+			// TODO: order
+			/*component_manager.removeAllComponents(entity_id);
+			entity_manager.remove(entity_id);*/
 		}
 
 		auto &getComponentManager() { return component_manager; }
@@ -102,7 +115,12 @@ namespace Common
 		template<typename _System>
 		void linkEntityToSystem(const ECS::EntityIdType entity_id)
 		{
-			auto mask = entity_systems_masks.emplace(entity_id);
+			auto mask = entity_systems_masks.get(entity_id);
+			if (!mask)
+			{
+				std::cerr << "[Warning] " << __func__ << " - Entity(ID " << entity_id << ") isn't exsist" << std::endl;
+				return;
+			}
 			if ((*mask)[SystemsTypes::getTypeIndex<_System>()])
 			{
 				std::cerr << "[Warning] " << __func__ << " - Entity(ID " << entity_id << ") is already linked to System(Index " 
@@ -117,7 +135,12 @@ namespace Common
 		template<typename _System>
 		void unlinkEntityFromSystem(const ECS::EntityIdType entity_id)
 		{
-			auto mask = entity_systems_masks.emplace(entity_id);
+			auto mask = entity_systems_masks.get(entity_id);
+			if (!mask)
+			{
+				std::cerr << "[Warning] " << __func__ << " - Entity(ID " << entity_id << ") isn't exsist" << std::endl;
+				return;
+			}
 			if (!(*mask)[SystemsTypes::getTypeIndex<_System>()])
 			{
 				std::cerr << "[Warning] " << __func__ << " - Entity(ID " << entity_id << ") isn't linked to System(Index " 

@@ -37,23 +37,24 @@ namespace Common
 		template<typename _System>
 		struct SystemInfo
 		{
-			struct EntityState 
+			enum EntityState
 			{
-				enum
-				{
-					TO_INIT
-					, INITING
-					, UPDATE
-					, TO_DESTROY
-					, DESTROYING
-					COUNT
-				};
-			}
+				TO_INIT
+				, INITING
+				, UPDATE
+				, TO_DESTROY
+				, DESTROYING
+				COUNT
+			};
 
 			void linkEntity(const ECS::EntityIdType entity_id)
 			{
-				entities_queues[EntityState::TO_INIT].push_back(entity_id);
-				*(entity_states.emplace(entity_id)) = EntityState::TO_INIT;
+				if constexpr (SystemInfo<_SystemPtr>::init_methods_count != 0)
+				{
+					entities_queues[EntityState::TO_INIT].push_back(entity_id);
+					*(entity_states.emplace(entity_id)) = EntityState::TO_INIT;
+				}
+				else entities_queues[EntityState::UPDATE].push_back(entity_id);
 			}
 
 			void unlinkEntity(const ECS::EntityIdType entity_id)
@@ -73,11 +74,15 @@ namespace Common
 			template<typename ..._Orders>
 			static constexpr size_t check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value + ...); }
 			static constexpr auto init_methods_count = check_inits(Common::SystemsOrders::Init{});
+			template<typename ..._Orders>
+			static constexpr size_t check_destroys(Utils::TypesPack<_Orders...>) { return (has_destroy<_System, _Orders>::value + ...); }
+			static constexpr auto destroy_methods_count = check_destroys(Common::SystemsOrders::Destroy{});
 
 			std::vector<ECS::EntityIdType> entities_queues[EntityState::COUNT];
 			Utils::ChunkTable<uint8_t> entity_states;
 
 			uint32_t passed_inits = 0;
+			uint32_t passed_destroy = 0;
 		};
 		using SystemsInfoCollection = decltype(Utils::wrapTypesPack<std::tuple, SystemInfo>(SystemsTypes{}));
 
@@ -159,23 +164,16 @@ namespace Common
 		template<typename _SystemPtr>
 		void run_system_preinit()
 		{
-			auto &system_info = std::get<SystemInfo<_SystemPtr>>(systems_info);
-			if constexpr (SystemInfo<_SystemPtr>::init_methods_count == 0)
+			if constexpr (SystemInfo<_SystemPtr>::init_methods_count != 0)
 			{
-				for (const auto entity_id : system_info.not_inited_entities)
-					if (entity_id != ECS::EntityIdType_Invalid)
-						system_info.entities.push_back(entity_id);
-			}
-			else
-			{
-				system_info.passed_inits = 0;
-				for (const auto entity_id : system_info.not_inited_entities)
-					if (entity_id != ECS::EntityIdType_Invalid)
-						system_info.initing_entities.push_back(entity_id);
-			}
-			system_info.not_inited_entities.clear();
-		}
+				auto &system_info = std::get<SystemInfo<_SystemPtr>>(systems_info);
 
+				system_info.passed_inits = 0;
+				for (const auto entity_id : system_info.entities_queues[SystemInfo::TO_INIT])
+					system_info.entities_queues[SystemInfo::INITING].push_back(entity_id);
+				system_info.entities_queues[SystemInfo::TO_INIT].clear();
+			}
+		}
 		template<typename ..._Orders>
 		void run_inits_orders(Utils::TypesPack<_Orders...>) { (run_systems_inits<_Orders>(SystemsTypes{}), ...); }
 		template <typename _Order, typename ..._Systems>
@@ -187,19 +185,33 @@ namespace Common
 			{
 				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
-				for (const auto entity_id : system_info.initing_entities)
+				for (const auto entity_id : system_info.entities_queues[SystemInfo::INITING])
 					if (entity_id != ECS::EntityIdType_Invalid)
 						std::get<_System*>(systems)->init(_Order{}, entity_id);
 				++system_info.passed_inits;
 
 				if (SystemInfo<_System>::init_methods_count == system_info.passed_inits)
 				{
-					system_info.entities.insert(system_info.entities.end()
-						, system_info.initing_entities.begin()
-						, system_info.initing_entities.end());
-					system_info.initing_entities.clear();
+					for (const auto entity_id : system_info.entities_queues[SystemInfo::INITING])
+						system_info.entities_queues[SystemInfo::UPDATE].push_back(entity_id);
+					system_info.entities_queues[SystemInfo::INITING].clear();
 				}
 			}
+		}
+
+		template <typename ..._Systems>
+		void run_systems_predestroy(Utils::TypesPack<_Systems...>) { (run_system_predestroy<_Systems>(), ...); }
+		template<typename _SystemPtr>
+		void run_system_predestroy()
+		{
+			auto &system_info = std::get<SystemInfo<_SystemPtr>>(systems_info);
+			if constexpr (SystemInfo<_SystemPtr>::destroy_methods_count != 0)
+			{
+				system_info.passed_destroys = 0;
+				for (const auto entity_id : system_info.entities_queues[SystemInfo::TO_DESTROY])
+					system_info.entities_queues[SystemInfo::DESTROYING].push_back(entity_id);
+			}
+			system_info.entities_queues[SystemInfo::TO_DESTROY].clear();
 		}
 
 		void construct_systems() { construct_systems_impl(SystemsTypes{}); }

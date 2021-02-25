@@ -49,7 +49,7 @@ namespace Common
 
 			void linkEntity(const ECS::EntityIdType entity_id)
 			{
-				if constexpr (SystemInfo<_SystemPtr>::init_methods_count != 0)
+				if constexpr (SystemInfo<_System>::init_methods_count != 0)
 				{
 					entities_queues[EntityState::TO_INIT].push_back(entity_id);
 					*(entity_states.emplace(entity_id)) = EntityState::TO_INIT;
@@ -68,12 +68,12 @@ namespace Common
 				}
 				(*std::find(entities_queues[EntityState::TO_UPDATE].begin(), entities_queues[EntityState::TO_UPDATE].end(), entity_id)) = ECS::EntityIdType_Invalid;
 
-				//if constexpr (SystemInfo<_SystemPtr>::destroy_methods_count != 0)
+				if constexpr (SystemInfo<_System>::destroy_methods_count != 0)
 				{
 					state = EntityState::TO_DESTROY;
 					entities_queues[EntityState::TO_DESTROY].push_back(entity_id);
 				}
-				
+				else entity_states.remove(entity_id);
 			}
 
 
@@ -158,8 +158,8 @@ namespace Common
 					<< SystemsTypes::getTypeIndex<_System>() << ")" << std::endl;
 				return;
 			}
-			//(*mask)[SystemsTypes::getTypeIndex<_System>()] = false;
-
+			if constexpr (SystemInfo<_System>::destroy_methods_count == 0)
+				(*mask)[SystemsTypes::getTypeIndex<_System>()] = false;
 			
 			std::get<SystemInfo<_System>>(systems_info).unlinkEntity(entity_id);
 		}

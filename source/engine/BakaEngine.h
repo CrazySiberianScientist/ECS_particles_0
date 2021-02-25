@@ -230,16 +230,19 @@ namespace Common
 			{
 				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
-				for (const auto entity_id : system_info.entities_queues[SystemInfo::INITING])
+				for (const auto entity_id : system_info.entities_queues[SystemInfo::DESTROYING])
 					if (entity_id != ECS::EntityIdType_Invalid)
 						std::get<_System*>(systems)->destroy(_Order{}, entity_id);
 				++system_info.passed_destroys;
 
 				if (SystemInfo<_System>::destroy_methods_count == system_info.passed_destroys)
 				{
-					for (const auto entity_id : system_info.entities_queues[SystemInfo::INITING])
-						system_info.entities_queues[SystemInfo::UPDATE].push_back(entity_id);
-					system_info.entities_queues[SystemInfo::INITING].clear();
+					for (const auto entity_id : system_info.entities_queues[SystemInfo::DESTROYING])
+					{
+						system_info.entity_state.remove(entity_id);
+						(*entity_systems_masks.get(entity_id))[SystemsTypes::getTypeIndex<_System>()] = false;
+					}
+					system_info.entities_queues[SystemInfo::DESTROYING].clear();
 				}
 			}
 		}

@@ -6,6 +6,8 @@
 #include <glad/gl.h>
 #include <gl/GL.h>
 
+#include <iostream>
+
 #include "ecs/ECS.h"
 #include "Components.h"
 #include "SystemsOrders.h"
@@ -34,18 +36,23 @@ namespace Common
 		#undef DECLARE_METHOD_CHECKER
 
 	private:
-		template<typename _System>
-		struct SystemInfo
+		struct EntityState
 		{
-			enum EntityState
+			enum
 			{
 				TO_INIT
 				, INITING
 				, UPDATE
 				, TO_DESTROY
 				, DESTROYING
-				COUNT
+				, COUNT
 			};
+		};
+
+		template<typename _System>
+		struct SystemInfo
+		{
+			
 
 			void linkEntity(const ECS::EntityIdType entity_id)
 			{
@@ -95,8 +102,28 @@ namespace Common
 	public:
 		Engine();
 		~Engine();
-		void run();
-		void stop();
+
+		void run()
+		{
+			run_systems_preinits(SystemsTypes{});
+			run_inits_orders(SystemsOrders::Init{});
+
+			run_systems_predestroys(SystemsTypes{});
+			run_destroys_orders(SystemsOrders::Destroy{});
+
+			if (is_needed_to_stop)
+			{
+				// destroy
+				return;
+			}
+		}
+
+		/* TODO: I thought about realization via exception, but I'm not sure.
+		There is needed way to immediately engine stop.*/
+		void stop()
+		{
+			is_needed_to_stop = true;
+		}
 
 		auto createEntity()
 		{
@@ -167,17 +194,17 @@ namespace Common
 	private:
 		template <typename ..._Systems>
 		void run_systems_preinits(Utils::TypesPack<_Systems...>) { (run_system_preinit<_Systems>(), ...); }
-		template<typename _SystemPtr>
+		template<typename _System>
 		void run_system_preinit()
 		{
-			if constexpr (SystemInfo<_SystemPtr>::init_methods_count != 0)
+			if constexpr (SystemInfo<_System>::init_methods_count != 0)
 			{
-				auto &system_info = std::get<SystemInfo<_SystemPtr>>(systems_info);
+				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
 				system_info.passed_inits = 0;
-				for (const auto entity_id : system_info.entities_queues[SystemInfo::TO_INIT])
-					system_info.entities_queues[SystemInfo::INITING].push_back(entity_id);
-				system_info.entities_queues[SystemInfo::TO_INIT].clear();
+				for (const auto entity_id : system_info.entities_queues[EntityState::TO_INIT])
+					system_info.entities_queues[EntityState::INITING].push_back(entity_id);
+				system_info.entities_queues[EntityState::TO_INIT].clear();
 			}
 		}
 		template<typename ..._Orders>
@@ -191,33 +218,33 @@ namespace Common
 			{
 				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
-				for (const auto entity_id : system_info.entities_queues[SystemInfo::INITING])
+				for (const auto entity_id : system_info.entities_queues[EntityState::INITING])
 					if (entity_id != ECS::EntityIdType_Invalid)
 						std::get<_System*>(systems)->init(_Order{}, entity_id);
 				++system_info.passed_inits;
 
 				if (SystemInfo<_System>::init_methods_count == system_info.passed_inits)
 				{
-					for (const auto entity_id : system_info.entities_queues[SystemInfo::INITING])
-						system_info.entities_queues[SystemInfo::UPDATE].push_back(entity_id);
-					system_info.entities_queues[SystemInfo::INITING].clear();
+					for (const auto entity_id : system_info.entities_queues[EntityState::INITING])
+						system_info.entities_queues[EntityState::UPDATE].push_back(entity_id);
+					system_info.entities_queues[EntityState::INITING].clear();
 				}
 			}
 		}
 
 		template <typename ..._Systems>
-		void run_systems_predestroy(Utils::TypesPack<_Systems...>) { (run_system_predestroy<_Systems>(), ...); }
-		template<typename _SystemPtr>
+		void run_systems_predestroys(Utils::TypesPack<_Systems...>) { (run_system_predestroy<_Systems>(), ...); }
+		template<typename _System>
 		void run_system_predestroy()
 		{
-			auto &system_info = std::get<SystemInfo<_SystemPtr>>(systems_info);
-			if constexpr (SystemInfo<_SystemPtr>::destroy_methods_count != 0)
+			auto &system_info = std::get<SystemInfo<_System>>(systems_info);
+			if constexpr (SystemInfo<_System>::destroy_methods_count != 0)
 			{
 				system_info.passed_destroys = 0;
-				for (const auto entity_id : system_info.entities_queues[SystemInfo::TO_DESTROY])
-					system_info.entities_queues[SystemInfo::DESTROYING].push_back(entity_id);
+				for (const auto entity_id : system_info.entities_queues[EntityState::TO_DESTROY])
+					system_info.entities_queues[EntityState::DESTROYING].push_back(entity_id);
 			}
-			system_info.entities_queues[SystemInfo::TO_DESTROY].clear();
+			system_info.entities_queues[EntityState::TO_DESTROY].clear();
 		}
 		template<typename ..._Orders>
 		void run_destroys_orders(Utils::TypesPack<_Orders...>) { (run_systems_destroys<_Orders>(SystemsTypes{}), ...); }
@@ -225,6 +252,7 @@ namespace Common
 		void run_systems_destroys(Utils::TypesPack<_Systems...>) { (run_system_destroy<_Systems, _Order>(), ...); }
 		template<typename _System, typename _Order>
 		void run_system_destroy()
+
 		{
 			if constexpr (has_destroy<_System, _Order>::value)
 			{

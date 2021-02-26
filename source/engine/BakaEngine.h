@@ -108,16 +108,26 @@ namespace Common
 		using SystemsInfoCollection = decltype(Utils::wrapTypesPack<std::tuple, SystemInfo>(SystemsTypes{}));
 
 	public:
-		Engine();
-		~Engine();
+		Engine()
+		{
+			construct_systems();
+		}
+
+		~Engine()
+		{
+			destruct_systems();
+		}
 
 		void run()
 		{
 			flush_systems_inits(SystemsTypes{});
 			flush_systems_destroys(SystemsTypes{});
+			flush_entities_remove_queue();
 
 			run_inits_orders(SystemsOrders::Init{});
 			run_destroys_orders(SystemsOrders::Destroy{});
+
+			remove_entities_queue();
 
 			if (is_needed_to_stop)
 			{
@@ -148,9 +158,6 @@ namespace Common
 				return;
 			}
 
-			// TODO: order
-			/*component_manager.removeAllComponents(entity_id);
-			entity_manager.remove(entity_id);*/
 			entities_remove_queue[EntityRemoveState::TO_REMOVE].push_back(entity_id);
 		}
 
@@ -273,12 +280,12 @@ namespace Common
 
 				if (SystemInfo<_System>::destroy_methods_number == system_info.passed_destroys)
 				{
-					for (const auto entity_id : system_info.entities_queues[SystemInfo::DESTROYING])
+					for (const auto entity_id : system_info.entities_queues[EntitySystemState::DESTROYING])
 					{
 						system_info.entity_state.remove(entity_id);
 						(*entity_systems_masks.get(entity_id))[SystemsTypes::getTypeIndex<_System>()] = false;
 					}
-					system_info.entities_queues[SystemInfo::DESTROYING].clear();
+					system_info.entities_queues[EntitySystemState::DESTROYING].clear();
 				}
 			}
 		}
@@ -295,16 +302,30 @@ namespace Common
 		template<typename _System>
 		void destruct_system() { delete std::get<_System*>(systems); }
 
-		void flush_entities_remove_queue();
+		void flush_entities_remove_queue()
+		{
+			for (const auto entity_id : entities_remove_queue[EntityRemoveState::TO_REMOVE])
+				entities_remove_queue[EntityRemoveState::REMOVING].push_back(entity_id);
+			entities_remove_queue[EntityRemoveState::TO_REMOVE].clear();
+		}
+		void remove_entities_queue()
+		{
+			for (const auto entity_id : entities_remove_queue[EntityRemoveState::REMOVING])
+			{
+				component_manager.removeAllComponents(entity_id);
+				entity_manager.remove(entity_id);
+				entity_systems_masks.remove(entity_id);
+			}
+			entities_remove_queue[EntityRemoveState::REMOVING].clear();
+		}
 
 	private:
 		ECS::EntityManager entity_manager;
 		Utils::ChunkTable<std::bitset<SystemsTypes::types_count>> entity_systems_masks;
+		std::vector<ECS::EntityIdType> entities_remove_queue[EntityRemoveState::NUMBER];
 		ComponentManagerType component_manager;
 		SystemsCollection systems;
 		SystemsInfoCollection systems_info;
-
-		std::vector<ECS::EntityID> entities_remove_queue[EntityRemoveState::NUMBER];
 
 		bool is_needed_to_stop = false;
 	};

@@ -10,7 +10,7 @@ int main()
 {
 	Common::Engine engine;
 
-	//constexpr auto v = Common::Engine::SystemInfo<TestLogicSystem*>::init_methods_count;
+	//constexpr auto v = Common::Engine::SystemInfo<TestLogicSystem*>::init_methods_number;
 	//constexpr auto v = Common::Engine::has_init<UserLogic::TestLogicSystem, UserLogic::SystemsOrders::Init::TEST_0>::value;
 	//printf("!! %d\n", v);
 

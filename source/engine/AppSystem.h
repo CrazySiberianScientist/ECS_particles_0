@@ -6,10 +6,10 @@
 
 namespace EngineLogic
 {
-	class AppSystem : public GenericSystem
+	class AppSystem : public BaseSystem
 	{
 	public:
-		AppSystem(Common::Engine &engine_) : GenericSystem(engine_) {}
+		AppSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
 		/*void init(SystemsOrders::Init::APP)
 		{

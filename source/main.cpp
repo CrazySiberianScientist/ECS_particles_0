@@ -18,14 +18,14 @@ int main()
 
 	auto entity = engine.createEntity();
 	engine.linkEntityToSystem<UserLogic::TestLogicSystem>(entity);
-	/*for (auto i = 0; i < 100; ++i)
+	for (auto i = 0; i < 100; ++i)
 	{
 		auto entity = engine.createEntity();
 		engine.linkEntityToSystem<UserLogic::TestLogicSystem>(entity);
-	}*/
+	}
 
-	/*engine.linkEntityToSystem<EngineLogic::AppSystem>(entity);
-	engine.unlinkEntityFromSystem<EngineLogic::AppSystem>(entity);*/
+	engine.linkEntityToSystem<EngineLogic::AppSystem>(entity);
+	engine.unlinkEntityFromSystem<EngineLogic::AppSystem>(entity);
 
 
 	engine.run();

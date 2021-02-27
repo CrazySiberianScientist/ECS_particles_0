@@ -6,10 +6,10 @@
 
 namespace EngineLogic
 {
-	class CameraSystem : public GenericSystem
+	class CameraSystem : public BaseSystem
 	{
 	public:
-		CameraSystem(Common::Engine &engine_) : GenericSystem(engine_) {}
+		CameraSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
 		void init(SystemsOrders::Init::RENDER)
 		{

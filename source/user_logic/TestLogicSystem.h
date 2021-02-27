@@ -6,10 +6,10 @@
 namespace UserLogic
 {
 
-	class TestLogicSystem : public GenericSystem
+	class TestLogicSystem : public BaseSystem
 	{
 	public:
-		TestLogicSystem(Common::Engine &engine_) : GenericSystem(engine_) {}
+		TestLogicSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
 		void init(SystemsOrders::Init::TEST_0, const ECS::EntityIdType);
 

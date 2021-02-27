@@ -135,7 +135,8 @@ namespace Common
 
 				if (is_needed_to_stop)
 				{
-
+					const auto entities_ids = entity_manager.getEntities();
+					for (const auto e_id : entities_ids) removeEnity(e_id);
 
 					flush_systems_destroys(SystemsTypes{});
 					flush_entities_remove_queue();

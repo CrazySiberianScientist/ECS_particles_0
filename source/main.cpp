@@ -10,15 +10,22 @@ int main()
 {
 	Common::Engine engine;
 
-	//constexpr auto v = Common::Engine::SystemInfo<TestLogicSystem*>::init_methods_number;
-	//constexpr auto v = Common::Engine::has_init<UserLogic::TestLogicSystem, UserLogic::SystemsOrders::Init::TEST_0>::value;
+	//constexpr int v = Common::Engine::SystemInfo<UserLogic::TestLogicSystem>::destroy_methods_number;
+	//constexpr auto v = Common::Engine::has_destroy<UserLogic::TestLogicSystem, UserLogic::SystemsOrders::Destroy::TEST_0>::value;
 	//printf("!! %d\n", v);
 
+	//return 0;
 
 	auto entity = engine.createEntity();
 	engine.linkEntityToSystem<UserLogic::TestLogicSystem>(entity);
-	engine.linkEntityToSystem<EngineLogic::AppSystem>(entity);
-	engine.unlinkEntityFromSystem<EngineLogic::AppSystem>(entity);
+	/*for (auto i = 0; i < 100; ++i)
+	{
+		auto entity = engine.createEntity();
+		engine.linkEntityToSystem<UserLogic::TestLogicSystem>(entity);
+	}*/
+
+	/*engine.linkEntityToSystem<EngineLogic::AppSystem>(entity);
+	engine.unlinkEntityFromSystem<EngineLogic::AppSystem>(entity);*/
 
 
 	engine.run();

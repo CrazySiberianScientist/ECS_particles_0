@@ -24,6 +24,9 @@ namespace Utils
 		template<typename _Type>
 		static constexpr size_t getTypeIndex() { return getTypeIndex_impl<_Type>(TypesPack<_Types...>{}, 0); }
 
+		template <template <typename> typename _NewType, template <typename> typename _WrapType>
+		struct WrappedPack { using type = _NewType<_WrapType<_Types>...>; };
+
 	private:
 		template<typename _Type, typename _CurrentType, typename ..._RemainedTypes>
 		static constexpr size_t getTypeIndex_impl(TypesPack<_CurrentType, _RemainedTypes...>, size_t counter)

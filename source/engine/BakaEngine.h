@@ -62,6 +62,8 @@ namespace Common
 		template<typename _System>
 		struct SystemInfo
 		{
+			SystemInfo(Engine &engine) : system(engine) {}
+
 			void linkEntity(const ECS::EntityIdType entity_id)
 			{
 				if constexpr (SystemInfo<_System>::init_methods_number != 0)
@@ -121,8 +123,12 @@ namespace Common
 
 			uint32_t passed_inits = 0;
 			uint32_t passed_destroys = 0;
+
+			_System system;
 		};
-		using SystemsInfoCollection = decltype(Utils::wrapTypesPack<std::tuple, SystemInfo>(SystemsTypes{}));
+		using SystemsInfoCollection = SystemsTypes::WrappedPack<std::tuple, SystemInfo>::type;
+		template<typename ..._Systems>
+		SystemsInfoCollection create_SystemsInfoCollection(Utils::TypesPack<_Systems...>) { return SystemsInfoCollection(SystemInfo<_Systems>(*this)...); }
 
 	public:
 		Engine()
@@ -225,11 +231,8 @@ namespace Common
 				return;
 			}
 			if (!(*mask)[SystemsTypes::getTypeIndex<_System>()])
-			{
-				std::cerr << "[Warning] " << __FUNCTION__ << " - Entity(ID " << entity_id << ") isn't linked to System(Index " 
-					<< SystemsTypes::getTypeIndex<_System>() << ")" << std::endl;
 				return;
-			}
+
 			if constexpr (SystemInfo<_System>::destroy_methods_number == 0)
 				(*mask)[SystemsTypes::getTypeIndex<_System>()] = false;
 			
@@ -358,7 +361,7 @@ namespace Common
 		std::vector<ECS::EntityIdType> entities_remove_queue[EntityRemoveState::NUMBER];
 		ComponentManagerType component_manager;
 		SystemsCollection systems;
-		SystemsInfoCollection systems_info;
+		SystemsInfoCollection systems_info = create_SystemsInfoCollection(SystemsTypes{});
 
 		bool is_needed_to_stop = false;
 	};

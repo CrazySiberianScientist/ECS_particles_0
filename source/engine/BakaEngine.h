@@ -75,13 +75,15 @@ namespace Common
 			void unlinkEntity(const ECS::EntityIdType entity_id)
 			{
 				auto &state = *(entity_states.get(entity_id));
-				if (state != EntitySystemState::Update)
+
+				if (state == EntitySystemState::TO_DESTROY || state == EntitySystemState::DESTROYING)
 				{
-					std::cerr << "[Warning] " << __func__ << " - Entity(ID " << entity_id << ") linked to System(Index " 
-						<< SystemsTypes::getTypeIndex<_System>() << ") must be in UPDATE state for Unlinking" << std::endl;
+					std::cerr << "[Warning] " << __func__ << " - Entity(ID " << entity_id << ") that is linked to System(Index " 
+						<< SystemsTypes::getTypeIndex<_System>() << ") already in Unlinking process" << std::endl;
 					return;
 				}
-				(*std::find(entities_queues[EntitySystemState::TO_UPDATE].begin(), entities_queues[EntitySystemState::TO_UPDATE].end(), entity_id)) = ECS::EntityIdType_Invalid;
+				(*std::find(entities_queues[state].begin(), entities_queues[state].end(), entity_id)) = ECS::EntityIdType_Invalid;
+				
 
 				if constexpr (SystemInfo<_System>::destroy_methods_number != 0)
 				{
@@ -120,19 +122,29 @@ namespace Common
 
 		void run()
 		{
-			flush_systems_inits(SystemsTypes{});
-			flush_systems_destroys(SystemsTypes{});
-			flush_entities_remove_queue();
-
-			run_inits_orders(SystemsOrders::Init{});
-			run_destroys_orders(SystemsOrders::Destroy{});
-
-			remove_entities_queue();
-
-			if (is_needed_to_stop)
+			while (true)
 			{
-				// destroy
-				return;
+				flush_systems_inits(SystemsTypes{});
+				flush_systems_destroys(SystemsTypes{});
+				flush_entities_remove_queue();
+
+				run_inits_orders(SystemsOrders::Init{});
+				run_destroys_orders(SystemsOrders::Destroy{});
+
+				remove_entities_queue();
+
+				if (is_needed_to_stop)
+				{
+
+
+					flush_systems_destroys(SystemsTypes{});
+					flush_entities_remove_queue();
+
+					run_destroys_orders(SystemsOrders::Destroy{});
+					remove_entities_queue();
+
+					return;
+				}
 			}
 		}
 
@@ -219,7 +231,8 @@ namespace Common
 
 				system_info.passed_inits = 0;
 				for (const auto entity_id : system_info.entities_queues[EntitySystemState::TO_INIT])
-					system_info.entities_queues[EntitySystemState::INITING].push_back(entity_id);
+					if (entity_id != ECS::EntityIdType_Invalid)
+						system_info.entities_queues[EntitySystemState::INITING].push_back(entity_id);
 				system_info.entities_queues[EntitySystemState::TO_INIT].clear();
 			}
 		}
@@ -242,7 +255,8 @@ namespace Common
 				if (SystemInfo<_System>::init_methods_number == system_info.passed_inits)
 				{
 					for (const auto entity_id : system_info.entities_queues[EntitySystemState::INITING])
-						system_info.entities_queues[EntitySystemState::UPDATE].push_back(entity_id);
+						if (entity_id != ECS::EntityIdType_Invalid)
+							system_info.entities_queues[EntitySystemState::UPDATE].push_back(entity_id);
 					system_info.entities_queues[EntitySystemState::INITING].clear();
 				}
 			}

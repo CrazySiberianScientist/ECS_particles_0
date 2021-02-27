@@ -69,12 +69,16 @@ namespace Common
 					entities_queues[EntitySystemState::TO_INIT].push_back(entity_id);
 					*(entity_states.emplace(entity_id)) = EntitySystemState::TO_INIT;
 				}
-				else entities_queues[EntitySystemState::UPDATE].push_back(entity_id);
+				else
+				{
+					entities_queues[EntitySystemState::UPDATE].push_back(entity_id);
+					*(entity_states.emplace(entity_id)) = EntitySystemState::UPDATE;
+				}
 			}
 
 			void unlinkEntity(const ECS::EntityIdType entity_id)
 			{
-				auto &state = *(entity_states.get(entity_id));
+				auto &state = *(entity_states.emplace(entity_id));
 
 				if (state == EntitySystemState::TO_DESTROY || state == EntitySystemState::DESTROYING)
 				{
@@ -133,7 +137,7 @@ namespace Common
 
 				remove_entities_queue();
 
-				if (is_needed_to_stop)
+				//if (is_needed_to_stop)
 				{
 					const auto entities_ids = entity_manager.getEntities();
 					for (const auto e_id : entities_ids) removeEnity(e_id);

@@ -153,7 +153,7 @@ namespace Common
 
 				remove_entities_queue();
 
-				//if (is_needed_to_stop)
+				if (is_needed_to_stop)
 				{
 					const auto entities_ids = entity_manager.getEntities();
 					for (const auto e_id : entities_ids) removeEnity(e_id);

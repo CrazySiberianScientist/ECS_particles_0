@@ -28,10 +28,7 @@ namespace UserLogic
 			printf("!! %s %s %d\n", __FUNCTION__, "TEST_0", e);
 		}
 
-		void update(SystemsOrders::Update::TEST_1, const ECS::EntityIdType e)
-		{
-			printf("!! %s %s %d\n", __FUNCTION__, "TEST_1", e);
-		}
+		void update(SystemsOrders::Update::TEST_1, const ECS::EntityIdType e);
 
 		void destroy(SystemsOrders::Destroy::TEST_0, const ECS::EntityIdType e)
 		{

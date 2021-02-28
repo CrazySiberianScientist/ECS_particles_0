@@ -133,12 +133,12 @@ namespace Common
 	public:
 		Engine()
 		{
-			construct_systems();
+			
 		}
 
 		~Engine()
 		{
-			destruct_systems();
+			
 		}
 
 		void run()
@@ -199,7 +199,7 @@ namespace Common
 		auto &getComponentManager() { return component_manager; }
 		
 		template<typename _System>
-		auto *getSystem() { return std::get<_System*>(systems); }
+		auto &getSystem() { return std::get<SystemInfo<_System>>(systems_info).system; }
 		
 		template<typename _System>
 		void linkEntityToSystem(const ECS::EntityIdType entity_id)
@@ -277,7 +277,7 @@ namespace Common
 
 				for (const auto entity_id : system_info.entities_queues[EntitySystemState::INITING])
 					if (entity_id != ECS::EntityIdType_Invalid)
-						std::get<_System*>(systems)->init(_Order{}, entity_id);
+						system_info.system.init(_Order{}, entity_id);
 				++system_info.passed_inits;
 
 				if (SystemInfo<_System>::init_methods_number == system_info.passed_inits)
@@ -311,7 +311,7 @@ namespace Common
 
 				for (const auto entity_id : system_info.entities_queues[EntitySystemState::DESTROYING])
 					if (entity_id != ECS::EntityIdType_Invalid)
-						std::get<_System*>(systems)->destroy(_Order{}, entity_id);
+						system_info.system.destroy(_Order{}, entity_id);
 				++system_info.passed_destroys;
 
 				if (SystemInfo<_System>::destroy_methods_number == system_info.passed_destroys)
@@ -325,18 +325,6 @@ namespace Common
 				}
 			}
 		}
-
-		void construct_systems() { construct_systems_impl(SystemsTypes{}); }
-		template<typename ..._Systems>
-		void construct_systems_impl(Utils::TypesPack<_Systems...>) { (construct_system<_Systems>(), ...); }
-		template<typename _System>
-		void construct_system() { std::get<_System*>(systems) = new _System(*this); }
-
-		void destruct_systems() { destruct_systems_impl(SystemsTypes{}); }
-		template<typename ..._Systems> 
-		void destruct_systems_impl(Utils::TypesPack<_Systems...>) { (destruct_system<_Systems>(), ...); }
-		template<typename _System>
-		void destruct_system() { delete std::get<_System*>(systems); }
 
 		void flush_entities_remove_queue()
 		{
@@ -360,8 +348,7 @@ namespace Common
 		Utils::ChunkTable<std::bitset<SystemsTypes::types_count>> entity_systems_masks;
 		std::vector<ECS::EntityIdType> entities_remove_queue[EntityRemoveState::NUMBER];
 		ComponentManagerType component_manager;
-		SystemsCollection systems;
-		SystemsInfoCollection systems_info = create_SystemsInfoCollection(SystemsTypes{});
+		SystemsInfoCollection systems_info{ create_SystemsInfoCollection(SystemsTypes{}) };
 
 		bool is_needed_to_stop = false;
 	};

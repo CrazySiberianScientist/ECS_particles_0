@@ -11,9 +11,14 @@ namespace EngineLogic
 	public:
 		AppSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
-		/*void init(SystemsOrders::Init::APP)
+		void init(SystemsOrders::Init::APP, const ECS::EntityIdType e)
 		{
-			printf("!! %s %s\n", __FUNCTION__, "APP");
-		}*/
+			printf("!! %s %s %d\n", __FUNCTION__, "APP", e);
+		}
+
+		void destroy(SystemsOrders::Destroy::APP, const ECS::EntityIdType e)
+		{
+			printf("!! %s %s %d\n", __FUNCTION__, "APP", e);
+		}
 	};
 }

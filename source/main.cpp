@@ -25,7 +25,7 @@ int main()
 	}*/
 
 	engine.linkEntityToSystem<EngineLogic::AppSystem>(entity);
-	engine.unlinkEntityFromSystem<EngineLogic::AppSystem>(entity);
+	//engine.unlinkEntityFromSystem<EngineLogic::AppSystem>(entity);
 
 
 	engine.run();

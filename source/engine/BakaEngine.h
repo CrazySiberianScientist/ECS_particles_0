@@ -1,10 +1,6 @@
 #pragma once
 
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#include <stdio.h>
-#include <glad/gl.h>
-#include <gl/GL.h>
 
 #include <iostream>
 #include <type_traits>
@@ -13,8 +9,6 @@
 #include "Components.h"
 #include "SystemsOrders.h"
 #include "Systems.h"
-
-struct GLFWwindow;
 
 namespace Common
 {
@@ -412,8 +406,7 @@ namespace Common
 		bool is_needed_to_stop = false;
 	};
 
-	/*static void glfw_error_callback(int error, const char* description) {}
-		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){}*/
+	
 
 	/*void Engine::glfw_error_callback(int error, const char* description)
 	{

@@ -164,9 +164,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\AppSystem.cpp" />
     <ClCompile Include="engine\BakaEngine.cpp" />
     <ClCompile Include="glad\glad_gl.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="user_logic\SceneLogicSystem.cpp" />
     <ClCompile Include="user_logic\TestLogicSystem.cpp" />
   </ItemGroup>
   <ItemGroup>

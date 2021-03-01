@@ -4,6 +4,8 @@
 #include "EngineSystemsOrders.h"
 #include "BaseSystem.h"
 
+struct GLFWwindow;
+
 namespace EngineLogic
 {
 	class AppSystem : public BaseSystem
@@ -11,14 +13,12 @@ namespace EngineLogic
 	public:
 		AppSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
-		void init(SystemsOrders::Init::APP, const ECS::EntityIdType e)
-		{
-			printf("!! %s %s %d\n", __FUNCTION__, "APP", e);
-		}
+		void init(SystemsOrders::Init::APP);
+		void update(SystemsOrders::Update::APP);
+		void destroy(SystemsOrders::Destroy::APP);
 
-		void destroy(SystemsOrders::Destroy::APP, const ECS::EntityIdType e)
-		{
-			printf("!! %s %s %d\n", __FUNCTION__, "APP", e);
-		}
+	private:
+		static void glfw_error_callback(int error, const char* description);
+		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	};
 }

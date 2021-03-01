@@ -10,15 +10,7 @@ namespace UserLogic
 	public:
 		SceneLogicSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
-		void init(SystemsOrders::Init::SCENE_0)
-		{
-			printf("!! %s %s\n", __FUNCTION__, "SCENE_0");
-		}
-
-		void init(SystemsOrders::Init::SCENE_1)
-		{
-			printf("!! %s %s\n", __FUNCTION__, "SCENE_1");
-		}
+		void init(SystemsOrders::Init::SCENE_0);
 	};
 
 }

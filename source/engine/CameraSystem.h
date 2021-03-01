@@ -15,5 +15,15 @@ namespace EngineLogic
 		{
 			printf("!! %s %s\n", __FUNCTION__, "RENDER");
 		}
+
+		void update(SystemsOrders::Update::RENDER)
+		{
+			printf("!! %s %s\n", __FUNCTION__, "RENDER");
+		}
+
+		void destroy(SystemsOrders::Destroy::RENDER)
+		{
+			printf("!! %s %s\n", __FUNCTION__, "RENDER");
+		}
 	};
 }

@@ -7,6 +7,7 @@
 #include <gl/GL.h>
 
 #include <iostream>
+#include <type_traits>
 
 #include "ecs/ECS.h"
 #include "Components.h"
@@ -23,13 +24,17 @@ namespace Common
 		using ComponentManagerType = decltype(Utils::convertTypesPack<ECS::ComponentManager>(ComponentsTypes{}));
 		using SystemsCollection = decltype(Utils::convertTypesPack<std::tuple>(convertTypesToPointersPack(SystemsTypes{})));
 
+		struct MethodType { enum { NONE, COMMON, ENTITY }; };
 		#define DECLARE_METHOD_CHECKER(METHOD_NAME)\
 		template<typename _System, typename _OrderType>\
 		struct has_##METHOD_NAME {\
-			template<typename _Type, void(_Type::*)(_OrderType, const ECS::EntityIdType)> struct func_pattern {};\
-			template<typename _Type> static constexpr std::true_type check_func(func_pattern<_Type, &_Type::METHOD_NAME>*);\
-			template<typename _Type> static constexpr std::false_type check_func(...);\
-			static constexpr auto value = std::is_same<decltype(check_func<_System>(nullptr)), std::true_type>::value; }
+			template<typename _Type, void(_Type::*)(_OrderType)> struct func_pattern_common {};\
+			template<typename _Type> static constexpr std::integral_constant<int,  MethodType::COMMON> check_func(func_pattern_common<_Type, &_Type::METHOD_NAME>*);\
+			template<typename _Type, void(_Type::*)(_OrderType, const ECS::EntityIdType)> struct func_pattern_entity {};\
+			template<typename _Type> static constexpr std::integral_constant<int, MethodType::ENTITY> check_func(func_pattern_entity<_Type, &_Type::METHOD_NAME>*);\
+			template<typename _Type> static constexpr std::integral_constant<int, MethodType::NONE> check_func(...);\
+			static constexpr auto value_common = decltype(check_func<_System>(nullptr))::value == MethodType::COMMON;\
+			static constexpr auto value_entity = decltype(check_func<_System>(nullptr))::value == MethodType::ENTITY; };
 		DECLARE_METHOD_CHECKER(init);
 		DECLARE_METHOD_CHECKER(update);
 		DECLARE_METHOD_CHECKER(destroy);
@@ -112,15 +117,15 @@ namespace Common
 
 
 			template<typename ..._Orders>
-			static constexpr size_t check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value + ...); }
+			static constexpr size_t check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value_entity + ...); }
 			static constexpr auto init_methods_number = check_inits(Common::SystemsOrders::Init{});
 
 			template<typename ..._Orders>
-			static constexpr size_t check_updates(Utils::TypesPack<_Orders...>) { return (has_update<_System, _Orders>::value + ...); }
+			static constexpr size_t check_updates(Utils::TypesPack<_Orders...>) { return (has_update<_System, _Orders>::value_entity + ...); }
 			static constexpr auto update_methods_number = check_inits(Common::SystemsOrders::Update{});
 
 			template<typename ..._Orders>
-			static constexpr size_t check_destroys(Utils::TypesPack<_Orders...>) { return (has_destroy<_System, _Orders>::value + ...); }
+			static constexpr size_t check_destroys(Utils::TypesPack<_Orders...>) { return (has_destroy<_System, _Orders>::value_entity + ...); }
 			static constexpr auto destroy_methods_number = check_destroys(Common::SystemsOrders::Destroy{});
 
 
@@ -130,6 +135,8 @@ namespace Common
 			uint32_t passed_inits = 0;
 			uint32_t passed_updates = 0;
 			uint32_t passed_destroys = 0;
+
+			bool common_is_inited = false;
 
 			_System system;
 		};
@@ -161,7 +168,7 @@ namespace Common
 					flush_systems_destroys(SystemsTypes{});
 					flush_entities_remove_queue();
 
-					run_destroys_orders(SystemsOrders::Destroy{});
+					run_destroys_orders<true>(SystemsOrders::Destroy{});
 					remove_entities_queue();
 
 					return;
@@ -265,7 +272,16 @@ namespace Common
 		template<typename _System, typename _Order>
 		void run_system_init()
 		{
-			if constexpr (has_init<_System, _Order>::value)
+			if constexpr (has_init<_System, _Order>::value_common)
+			{
+				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
+				if (!system_info.common_is_inited)
+				{
+					system_info.system.init(_Order{});
+					system_info.common_is_inited = true;
+				}
+			}
+			if constexpr (has_init<_System, _Order>::value_entity)
 			{
 				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
@@ -286,7 +302,11 @@ namespace Common
 		template<typename _System, typename _Order>
 		void run_system_update()
 		{
-			if constexpr (has_update<_System, _Order>::value)
+			if constexpr (has_update<_System, _Order>::value_common)
+			{
+				std::get<SystemInfo<_System>>(systems_info).system.update(_Order{});
+			}
+			if constexpr (has_update<_System, _Order>::value_entity)
 			{
 				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
@@ -333,14 +353,18 @@ namespace Common
 				system_info.switchEntitiesState(EntitySystemState::TO_DESTROY, EntitySystemState::DESTROYING);
 			}
 		}
-		template<typename ..._Orders>
-		void run_destroys_orders(Utils::TypesPack<_Orders...>) { (run_systems_destroys<_Orders>(SystemsTypes{}), ...); }
-		template <typename _Order, typename ..._Systems>
-		void run_systems_destroys(Utils::TypesPack<_Systems...>) { (run_system_destroy<_Systems, _Order>(), ...); }
-		template<typename _System, typename _Order>
+		template<bool _is_run_common = false, typename ..._Orders>
+		void run_destroys_orders(Utils::TypesPack<_Orders...>) { (run_systems_destroys<_is_run_common, _Orders>(SystemsTypes{}), ...); }
+		template <bool _is_run_common, typename _Order, typename ..._Systems>
+		void run_systems_destroys(Utils::TypesPack<_Systems...>) { (run_system_destroy<_is_run_common, _Systems, _Order>(), ...); }
+		template<bool _is_run_common, typename _System, typename _Order>
 		void run_system_destroy()
 		{
-			if constexpr (has_destroy<_System, _Order>::value)
+			if constexpr (has_destroy<_System, _Order>::value_common && _is_run_common)
+			{
+				std::get<SystemInfo<_System>>(systems_info).system.destroy(_Order{});
+			}
+			if constexpr (has_destroy<_System, _Order>::value_entity)
 			{
 				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 

@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #include <cassert>
 
+#include "engine/Engine.h"
+
 namespace EngineLogic
 {
 
@@ -23,22 +25,22 @@ namespace EngineLogic
 
 	void AppSystem::update(SystemsOrders::Update::APP_FRAME_BEGIN)
 	{
-
-
-		while (!glfwWindowShouldClose(window))
+		if (glfwWindowShouldClose(window))
 		{
-			int width, height;
-			glfwGetFramebufferSize(window, &width, &height);
-			glViewport(0, 0, width, height);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-			glfwSwapBuffers(window);
-			glfwPollEvents();
+			engine.stop();
+			return;
 		}
 
+		int width, height;
+		glfwGetFramebufferSize(window, &width, &height);
+		glViewport(0, 0, width, height);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
 
-		return;
+	void AppSystem::postUpdate(SystemsOrders::PostUpdate::APP_FRAME_END)
+	{
+		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 
 	void AppSystem::destroy(SystemsOrders::Destroy::APP)

@@ -14,7 +14,7 @@ namespace Common
 {
 	class Engine
 	{
-	public:
+	private:
 		using ComponentManagerType = decltype(Utils::convertTypesPack<ECS::ComponentManager>(ComponentsTypes{}));
 		using SystemsCollection = decltype(Utils::convertTypesPack<std::tuple>(convertTypesToPointersPack(SystemsTypes{})));
 
@@ -35,7 +35,7 @@ namespace Common
 		DECLARE_METHOD_CHECKER(destroy);
 		#undef DECLARE_METHOD_CHECKER
 
-	public:
+	private:
 		struct EntityRemoveState
 		{
 			enum
@@ -134,6 +134,8 @@ namespace Common
 	public:
 		void run()
 		{
+			engine_state = EngineState::RUN;
+
 			while (true)
 			{
 				flush_systems_inits(SystemsTypes{});
@@ -150,7 +152,7 @@ namespace Common
 				cleanup_systems_destroys(SystemsTypes{});
 				remove_entities_queue();
 
-				if (is_needed_to_stop)
+				if (engine_state == EngineState::STOP)
 				{
 					const auto entities_ids = entity_manager.getEntities();
 					for (const auto e_id : entities_ids) removeEnity(e_id);
@@ -166,7 +168,7 @@ namespace Common
 			}
 		}
 
-		void stop() { is_needed_to_stop = true; }
+		void stop() { engine_state = EngineState::STOP; }
 
 		auto createEntity()
 		{
@@ -289,6 +291,7 @@ namespace Common
 		{
 			if constexpr (has_update<_System, _Order>::value_common)
 			{
+				//if (is_n)
 				std::get<SystemInfo<_System>>(systems_info).system.update(_Order{});
 			}
 			if constexpr (has_update<_System, _Order>::value_entity)
@@ -411,7 +414,15 @@ namespace Common
 		ComponentManagerType component_manager;
 		SystemsInfoCollection systems_info{ create_SystemsInfoCollection(SystemsTypes{}) };
 
-		bool is_needed_to_stop = false;
+		struct EngineState
+		{
+			enum
+			{
+				STOP
+				, RUN
+			};
+		};
+		uint8_t engine_state = EngineState::STOP;
 	};
 
 	

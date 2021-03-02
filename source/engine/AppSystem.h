@@ -15,6 +15,7 @@ namespace EngineLogic
 
 		void init(SystemsOrders::Init::APP);
 		void update(SystemsOrders::Update::APP_FRAME_BEGIN);
+		void postUpdate(SystemsOrders::PostUpdate::APP_FRAME_END);
 		void destroy(SystemsOrders::Destroy::APP);
 
 	private:

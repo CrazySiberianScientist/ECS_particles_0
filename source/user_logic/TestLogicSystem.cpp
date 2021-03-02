@@ -12,9 +12,9 @@ namespace UserLogic
 	{
 		printf("!! %s %s %d\n", __FUNCTION__, "TEST_1", e);
 
-		static int loh = 0;
+		/*static int loh = 0;
 		if (loh++ >= 10)
-			engine.stop();
+			engine.stop();*/
 	}
 
 }

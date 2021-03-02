@@ -291,16 +291,20 @@ namespace Common
 		{
 			if constexpr (has_update<_System, _Order>::value_common)
 			{
-				//if (is_n)
-				std::get<SystemInfo<_System>>(systems_info).system.update(_Order{});
+				if (engine_state == EngineState::RUN)
+					std::get<SystemInfo<_System>>(systems_info).system.update(_Order{});
 			}
 			if constexpr (has_update<_System, _Order>::value_entity)
 			{
 				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
 				for (const auto entity_id : system_info.entities_queues[EntitySystemState::UPDATE])
+				{
+					if (engine_state != EngineState::RUN)
+						break;
 					if (entity_id != ECS::EntityIdType_Invalid)
 						system_info.system.update(_Order{}, entity_id);
+				}
 			}
 		}
 		template<typename ..._Orders>
@@ -312,15 +316,20 @@ namespace Common
 		{
 			if constexpr (has_postUpdate<_System, _Order>::value_common)
 			{
-				std::get<SystemInfo<_System>>(systems_info).system.postUpdate(_Order{});
+				if (engine_state == EngineState::RUN)
+					std::get<SystemInfo<_System>>(systems_info).system.postUpdate(_Order{});
 			}
 			if constexpr (has_postUpdate<_System, _Order>::value_entity)
 			{
 				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
 				for (const auto entity_id : system_info.entities_queues[EntitySystemState::UPDATE])
+				{
+					if (engine_state != EngineState::RUN)
+						break;
 					if (entity_id != ECS::EntityIdType_Invalid)
 						system_info.system.postUpdate(_Order{}, entity_id);
+				}
 			}
 		}
 		template <typename ..._Systems>

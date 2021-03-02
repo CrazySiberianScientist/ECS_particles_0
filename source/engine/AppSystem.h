@@ -14,11 +14,14 @@ namespace EngineLogic
 		AppSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
 		void init(SystemsOrders::Init::APP);
-		void update(SystemsOrders::Update::APP);
+		void update(SystemsOrders::Update::APP_FRAME_BEGIN);
 		void destroy(SystemsOrders::Destroy::APP);
 
 	private:
 		static void glfw_error_callback(int error, const char* description);
 		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+	private:
+		GLFWwindow *window = nullptr;
 	};
 }

@@ -39,9 +39,6 @@
     <ClCompile Include="glad\glad_gl.c">
       <Filter>glad</Filter>
     </ClCompile>
-    <ClCompile Include="engine\BakaEngine.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="user_logic\TestLogicSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,9 +60,6 @@
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="engine\AppSystem.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\BakaEngine.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="ecs\ECS.h">
@@ -105,6 +99,9 @@
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="engine\Components.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Engine.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>

@@ -24,6 +24,11 @@ namespace UserLogic
 			SYSTEMS_ORDERS_TYPES(SCENE_0, TEST_0, SCENE_1, TEST_1);
 		};
 
+		struct PostUpdate
+		{
+
+		};
+
 		struct Destroy
 		{
 			SYSTEMS_ORDER(SCENE_0);

@@ -165,7 +165,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\AppSystem.cpp" />
-    <ClCompile Include="engine\BakaEngine.cpp" />
     <ClCompile Include="glad\glad_gl.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="user_logic\SceneLogicSystem.cpp" />
@@ -174,7 +173,7 @@
   <ItemGroup>
     <ClInclude Include="ecs\ECS.h" />
     <ClInclude Include="engine\AppSystem.h" />
-    <ClInclude Include="engine\BakaEngine.h" />
+    <ClInclude Include="engine\Engine.h" />
     <ClInclude Include="engine\BaseSystem.h" />
     <ClInclude Include="engine\CameraSystem.h" />
     <ClInclude Include="engine\Components.h" />

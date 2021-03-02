@@ -31,6 +31,7 @@ namespace Common
 			static constexpr auto value_entity = decltype(check_func<_System>(nullptr))::value == MethodType::ENTITY; };
 		DECLARE_METHOD_CHECKER(init);
 		DECLARE_METHOD_CHECKER(update);
+		DECLARE_METHOD_CHECKER(postUpdate);
 		DECLARE_METHOD_CHECKER(destroy);
 		#undef DECLARE_METHOD_CHECKER
 
@@ -119,16 +120,16 @@ namespace Common
 			static constexpr auto update_methods_number = check_inits(Common::SystemsOrders::Update{});
 
 			template<typename ..._Orders>
+			static constexpr size_t check_postUpdates(Utils::TypesPack<_Orders...>) { return (has_postUpdate<_System, _Orders>::value_entity + ...); }
+			static constexpr auto postUpdate_methods_number = check_inits(Common::SystemsOrders::PostUpdate{});
+
+			template<typename ..._Orders>
 			static constexpr size_t check_destroys(Utils::TypesPack<_Orders...>) { return (has_destroy<_System, _Orders>::value_entity + ...); }
 			static constexpr auto destroy_methods_number = check_destroys(Common::SystemsOrders::Destroy{});
 
 
 			std::vector<ECS::EntityIdType> entities_queues[EntitySystemState::NUMBER];
 			Utils::ChunkTable<uint8_t> entity_states;
-
-			uint32_t passed_inits = 0;
-			uint32_t passed_updates = 0;
-			uint32_t passed_destroys = 0;
 
 			bool common_is_inited = false;
 
@@ -144,14 +145,14 @@ namespace Common
 			while (true)
 			{
 				flush_systems_inits(SystemsTypes{});
-				flush_systems_destroys(SystemsTypes{});
-				flush_entities_remove_queue();
+				run_inits_orders(SystemsOrders::Init{});
 
+				flush_system_update(SystemsTypes{});
 				run_update_orders(SystemsOrders::Update{});
 
-				run_inits_orders(SystemsOrders::Init{});
+				flush_systems_destroys(SystemsTypes{});
+				flush_entities_remove_queue();
 				run_destroys_orders(SystemsOrders::Destroy{});
-
 				remove_entities_queue();
 
 				if (is_needed_to_stop)
@@ -252,12 +253,7 @@ namespace Common
 		void flush_system_init()
 		{
 			if constexpr (SystemInfo<_System>::init_methods_number != 0)
-			{
-				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
-
-				system_info.passed_inits = 0;
-				system_info.switchEntitiesState(EntitySystemState::TO_INIT, EntitySystemState::INITING);
-			}
+				 std::get<SystemInfo<_System>>(systems_info).switchEntitiesState(EntitySystemState::TO_INIT, EntitySystemState::INITING);
 		}
 		template<typename ..._Orders>
 		void run_inits_orders(Utils::TypesPack<_Orders...>) { (run_systems_inits<_Orders>(SystemsTypes{}), ...); }
@@ -283,12 +279,13 @@ namespace Common
 					if (entity_id != ECS::EntityIdType_Invalid)
 						system_info.system.init(_Order{}, entity_id);
 				++system_info.passed_inits;
-
-				if (SystemInfo<_System>::init_methods_number == system_info.passed_inits)
-					system_info.switchEntitiesState(EntitySystemState::INITING, EntitySystemState::UPDATE);
 			}
 		}
 
+		template <typename ..._Systems>
+		void flush_systems_updates(Utils::TypesPack<_Systems...>) { (flush_system_update<_Systems>(), ...); }
+		template<typename _System>
+		void flush_system_update() { std::get<SystemInfo<_System>>(systems_info).switchEntitiesState(EntitySystemState::INITING, EntitySystemState::UPDATE); }
 		template<typename ..._Orders>
 		void run_update_orders(Utils::TypesPack<_Orders...>) { (run_systems_updates<_Orders>(SystemsTypes{}), ...); }
 		template <typename _Order, typename ..._Systems>
@@ -316,12 +313,12 @@ namespace Common
 						auto it = entities.data();
 						for (auto swap_it = entities.data() + entities.size() - 1; it <= swap_it;)
 						{
-							if (*it != -1)
+							if (*it != ECS::EntityIdType_Invalid)
 							{
 								++it;
 								continue;
 							}
-							if (*swap_it != -1)
+							if (*swap_it != ECS::EntityIdType_Invalid)
 							{
 								std::swap(*it, *swap_it);
 								++it;

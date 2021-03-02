@@ -18,9 +18,15 @@ namespace EngineLogic
 
 		struct Update
 		{
-			SYSTEMS_ORDER(APP);
+			SYSTEMS_ORDER(APP_FRAME_BEGIN);
 			SYSTEMS_ORDER(RENDER);
-			SYSTEMS_ORDERS_TYPES(APP, RENDER);
+			SYSTEMS_ORDERS_TYPES(APP_FRAME_BEGIN, RENDER);
+		};
+
+		struct PostUpdate
+		{
+			SYSTEMS_ORDER(APP_FRAME_END);
+			SYSTEMS_ORDERS_TYPES(APP_FRAME_END);
 		};
 
 		struct Destroy

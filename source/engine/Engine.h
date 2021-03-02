@@ -116,14 +116,6 @@ namespace Common
 			static constexpr auto init_methods_number = check_inits(Common::SystemsOrders::Init{});
 
 			template<typename ..._Orders>
-			static constexpr size_t check_updates(Utils::TypesPack<_Orders...>) { return (has_update<_System, _Orders>::value_entity + ...); }
-			static constexpr auto update_methods_number = check_inits(Common::SystemsOrders::Update{});
-
-			template<typename ..._Orders>
-			static constexpr size_t check_postUpdates(Utils::TypesPack<_Orders...>) { return (has_postUpdate<_System, _Orders>::value_entity + ...); }
-			static constexpr auto postUpdate_methods_number = check_inits(Common::SystemsOrders::PostUpdate{});
-
-			template<typename ..._Orders>
 			static constexpr size_t check_destroys(Utils::TypesPack<_Orders...>) { return (has_destroy<_System, _Orders>::value_entity + ...); }
 			static constexpr auto destroy_methods_number = check_destroys(Common::SystemsOrders::Destroy{});
 
@@ -147,12 +139,15 @@ namespace Common
 				flush_systems_inits(SystemsTypes{});
 				run_inits_orders(SystemsOrders::Init{});
 
-				flush_system_update(SystemsTypes{});
+				flush_systems_updates(SystemsTypes{});
 				run_update_orders(SystemsOrders::Update{});
+				run_postUpdate_orders(SystemsOrders::PostUpdate{});
+				cleanup_systems_updates(SystemsTypes{});
 
 				flush_systems_destroys(SystemsTypes{});
 				flush_entities_remove_queue();
 				run_destroys_orders(SystemsOrders::Destroy{});
+				cleanup_systems_destroys(SystemsTypes{});
 				remove_entities_queue();
 
 				if (is_needed_to_stop)
@@ -278,7 +273,6 @@ namespace Common
 				for (const auto entity_id : system_info.entities_queues[EntitySystemState::INITING])
 					if (entity_id != ECS::EntityIdType_Invalid)
 						system_info.system.init(_Order{}, entity_id);
-				++system_info.passed_inits;
 			}
 		}
 
@@ -304,30 +298,51 @@ namespace Common
 				for (const auto entity_id : system_info.entities_queues[EntitySystemState::UPDATE])
 					if (entity_id != ECS::EntityIdType_Invalid)
 						system_info.system.update(_Order{}, entity_id);
-				++system_info.passed_updates;
+			}
+		}
+		template<typename ..._Orders>
+		void run_postUpdate_orders(Utils::TypesPack<_Orders...>) { (run_systems_postUpdates<_Orders>(SystemsTypes{}), ...); }
+		template <typename _Order, typename ..._Systems>
+		void run_systems_postUpdates(Utils::TypesPack<_Systems...>) { (run_system_postUpdate<_Systems, _Order>(), ...); }
+		template<typename _System, typename _Order>
+		void run_system_postUpdate()
+		{
+			if constexpr (has_postUpdate<_System, _Order>::value_common)
+			{
+				std::get<SystemInfo<_System>>(systems_info).system.postUpdate(_Order{});
+			}
+			if constexpr (has_postUpdate<_System, _Order>::value_entity)
+			{
+				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
 
-				if (SystemInfo<_System>::update_methods_number == system_info.passed_updates)
+				for (const auto entity_id : system_info.entities_queues[EntitySystemState::UPDATE])
+					if (entity_id != ECS::EntityIdType_Invalid)
+						system_info.system.postUpdate(_Order{}, entity_id);
+			}
+		}
+		template <typename ..._Systems>
+		void cleanup_systems_updates(Utils::TypesPack<_Systems...>) { (flush_system_update<_Systems>(), ...); }
+		template<typename _System>
+		void cleanup_system_update()
+		{
+			if (auto &entities = std::get<SystemInfo<_System>>(systems_info).entities_queues[EntitySystemState::UPDATE]; entities.size())
+			{
+				auto it = entities.data();
+				for (auto swap_it = entities.data() + entities.size() - 1; it <= swap_it;)
 				{
-					if (auto &entities = system_info.entities_queues[EntitySystemState::UPDATE]; entities.size())
+					if (*it != ECS::EntityIdType_Invalid)
 					{
-						auto it = entities.data();
-						for (auto swap_it = entities.data() + entities.size() - 1; it <= swap_it;)
-						{
-							if (*it != ECS::EntityIdType_Invalid)
-							{
-								++it;
-								continue;
-							}
-							if (*swap_it != ECS::EntityIdType_Invalid)
-							{
-								std::swap(*it, *swap_it);
-								++it;
-							}
-							--swap_it;
-						}
-						entities.resize(it - entities.data());
+						++it;
+						continue;
 					}
+					if (*swap_it != ECS::EntityIdType_Invalid)
+					{
+						std::swap(*it, *swap_it);
+						++it;
+					}
+					--swap_it;
 				}
+				entities.resize(it - entities.data());
 			}
 		}
 
@@ -337,12 +352,7 @@ namespace Common
 		void flush_system_destroy()
 		{
 			if constexpr (SystemInfo<_System>::destroy_methods_number != 0)
-			{
-				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
-
-				system_info.passed_destroys = 0;
-				system_info.switchEntitiesState(EntitySystemState::TO_DESTROY, EntitySystemState::DESTROYING);
-			}
+				std::get<SystemInfo<_System>>(systems_info).switchEntitiesState(EntitySystemState::TO_DESTROY, EntitySystemState::DESTROYING);
 		}
 		template<bool _is_run_common = false, typename ..._Orders>
 		void run_destroys_orders(Utils::TypesPack<_Orders...>) { (run_systems_destroys<_is_run_common, _Orders>(SystemsTypes{}), ...); }
@@ -358,22 +368,23 @@ namespace Common
 			if constexpr (has_destroy<_System, _Order>::value_entity)
 			{
 				auto &system_info = std::get<SystemInfo<_System>>(systems_info);
-
 				for (const auto entity_id : system_info.entities_queues[EntitySystemState::DESTROYING])
 					if (entity_id != ECS::EntityIdType_Invalid)
 						system_info.system.destroy(_Order{}, entity_id);
-				++system_info.passed_destroys;
-
-				if (SystemInfo<_System>::destroy_methods_number == system_info.passed_destroys)
-				{
-					for (const auto entity_id : system_info.entities_queues[EntitySystemState::DESTROYING])
-					{
-						system_info.entity_states.remove(entity_id);
-						(*entity_systems_masks.get(entity_id))[SystemsTypes::getTypeIndex<_System>()] = false;
-					}
-					system_info.entities_queues[EntitySystemState::DESTROYING].clear();
-				}
 			}
+		}
+		template <typename ..._Systems>
+		void cleanup_systems_destroys(Utils::TypesPack<_Systems...>) { (flush_system_update<_Systems>(), ...); }
+		template<typename _System>
+		void cleanup_system_destroy()
+		{
+			auto &system_info = std::get<SystemInfo<_System>>(systems_info);
+			for (const auto entity_id : system_info.entities_queues[EntitySystemState::DESTROYING])
+			{
+				system_info.entity_states.remove(entity_id);
+				(*entity_systems_masks.get(entity_id))[SystemsTypes::getTypeIndex<_System>()] = false;
+			}
+			system_info.entities_queues[EntitySystemState::DESTROYING].clear();
 		}
 
 		void flush_entities_remove_queue()

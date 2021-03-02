@@ -26,7 +26,7 @@ namespace UserLogic
 
 		struct PostUpdate
 		{
-
+			SYSTEMS_ORDERS_TYPES();
 		};
 
 		struct Destroy

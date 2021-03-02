@@ -5,22 +5,25 @@
 #include <GLFW/glfw3.h>
 #include <cassert>
 
-void EngineLogic::AppSystem::init(SystemsOrders::Init::APP)
+namespace EngineLogic
 {
-	assert((glfwInit()) && "glfwInit() - failed to init");
 
-	window = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
-	assert((window) && "glfwCreateWindow() - failed to create window");
-	
-	glfwSetKeyCallback(window, glfw_key_callback);
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);
-	gladLoadGL(glfwGetProcAddress);
-}
+	void AppSystem::init(SystemsOrders::Init::APP)
+	{
+		assert((glfwInit()) && "glfwInit() - failed to init");
 
-void EngineLogic::AppSystem::update(SystemsOrders::Update::APP_FRAME_BEGIN)
-{
-	
+		window = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
+		assert((window) && "glfwCreateWindow() - failed to create window");
+
+		glfwSetKeyCallback(window, glfw_key_callback);
+		glfwMakeContextCurrent(window);
+		glfwSwapInterval(1);
+		gladLoadGL(glfwGetProcAddress);
+	}
+
+	void AppSystem::update(SystemsOrders::Update::APP_FRAME_BEGIN)
+	{
+
 
 		while (!glfwWindowShouldClose(window))
 		{
@@ -34,12 +37,22 @@ void EngineLogic::AppSystem::update(SystemsOrders::Update::APP_FRAME_BEGIN)
 			glfwPollEvents();
 		}
 
-		
-		return;
-}
 
-void EngineLogic::AppSystem::destroy(SystemsOrders::Destroy::APP)
-{
-	glfwDestroyWindow(window);
-	glfwTerminate();
+		return;
+	}
+
+	void AppSystem::destroy(SystemsOrders::Destroy::APP)
+	{
+		glfwDestroyWindow(window);
+		glfwTerminate();
+	}
+
+	void AppSystem::glfw_error_callback(int error, const char * description)
+	{
+	}
+
+	void AppSystem::glfw_key_callback(GLFWwindow * window, int key, int scancode, int action, int mods)
+	{
+	}
+
 }

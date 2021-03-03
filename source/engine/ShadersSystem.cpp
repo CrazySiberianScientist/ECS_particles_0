@@ -1,6 +1,8 @@
 #include "ShadersSystem.h"
 
 #include <iostream>
+#include <fstream>
+#include <string>
 
 namespace EngineLogic
 {
@@ -20,8 +22,25 @@ namespace EngineLogic
 			if (found_extension == shaders_extensions.end()) continue;
 
 			const auto shader_type = found_extension->second;
-			std::cout << "!!! " << dir.path() << std::endl;
 
+			std::string text;
+			std::ifstream file(dir.path());
+			for (std::string line; std::getline(file, line); text.append(line)) {}
+
+			auto text_ptr = text.c_str();
+			const auto shader_id = glCreateShader(shader_type);
+			glShaderSource(shader_id, 1, &text_ptr, NULL);
+			glCompileShader(shader_id);
+
+			GLint isCompiled = 0;
+			glGetShaderiv(shader_id, GL_COMPILE_STATUS, &isCompiled);
+			if (isCompiled == GL_FALSE)
+			{
+				std::cerr << "[Error] Shader compilation failed : " << dir.path() << std::endl;
+				continue;
+			}
+
+			shaders[dir.path().u8string()] = shader_id;
 		}
 	}
 }

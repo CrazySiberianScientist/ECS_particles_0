@@ -9,7 +9,6 @@
 
 namespace EngineLogic
 {
-
 	void AppSystem::init(SystemsOrders::Init::APP)
 	{
 		assert((glfwInit()) && "glfwInit() - failed to init");
@@ -51,6 +50,7 @@ namespace EngineLogic
 
 	void AppSystem::glfw_error_callback(int error, const char * description)
 	{
+		std::cerr << "[GLFW Error] (" << error << ") " << description << std::endl;
 	}
 
 	void AppSystem::glfw_key_callback(GLFWwindow * window, int key, int scancode, int action, int mods)

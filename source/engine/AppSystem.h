@@ -18,6 +18,8 @@ namespace EngineLogic
 		void postUpdate(SystemsOrders::PostUpdate::APP_FRAME_END);
 		void destroy(SystemsOrders::Destroy::APP);
 
+		auto getGLFWwindow() const { return window; }
+
 	private:
 		static void glfw_error_callback(int error, const char* description);
 		static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

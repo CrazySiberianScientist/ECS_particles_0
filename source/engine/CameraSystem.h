@@ -18,7 +18,7 @@ namespace EngineLogic
 
 		void update(SystemsOrders::Update::RENDER)
 		{
-			printf("!! %s %s\n", __FUNCTION__, "RENDER");
+			//printf("!! %s %s\n", __FUNCTION__, "RENDER");
 		}
 
 		void destroy(SystemsOrders::Destroy::RENDER)

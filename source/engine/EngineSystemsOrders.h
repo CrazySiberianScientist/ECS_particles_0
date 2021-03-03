@@ -12,8 +12,9 @@ namespace EngineLogic
 		struct Init
 		{
 			SYSTEMS_ORDER(APP);
+			SYSTEMS_ORDER(SHADERS);
 			SYSTEMS_ORDER(RENDER);
-			SYSTEMS_ORDERS_TYPES(APP, RENDER);
+			SYSTEMS_ORDERS_TYPES(APP, SHADERS, RENDER);
 		};
 
 		struct Update

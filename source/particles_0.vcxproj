@@ -165,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\AppSystem.cpp" />
+    <ClCompile Include="engine\ShadersSystem.cpp" />
     <ClCompile Include="glad\glad_gl.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="user_logic\SceneLogicSystem.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="engine\EngineComponents.h" />
     <ClInclude Include="engine\EngineSystems.h" />
     <ClInclude Include="engine\EngineSystemsOrders.h" />
+    <ClInclude Include="engine\ShadersSystem.h" />
     <ClInclude Include="engine\Systems.h" />
     <ClInclude Include="engine\SystemsOrders.h" />
     <ClInclude Include="user_logic\SceneLogicSystem.h" />

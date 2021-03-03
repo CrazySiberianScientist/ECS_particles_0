@@ -48,6 +48,9 @@
     <ClCompile Include="engine\AppSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\ShadersSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils\linmath.h">
@@ -102,6 +105,9 @@
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="engine\Engine.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ShadersSystem.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>

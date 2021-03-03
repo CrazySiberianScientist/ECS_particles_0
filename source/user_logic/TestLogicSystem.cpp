@@ -38,6 +38,8 @@ namespace UserLogic
 
 	void TestLogicSystem::init(SystemsOrders::Init::TEST_0)
 	{
+		printf("!! %s %s\n", __FUNCTION__, "TEST_0");
+
 		glGenBuffers(1, &vertex_buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);

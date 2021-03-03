@@ -3,7 +3,6 @@
 #include <glad/gl.h>
 #include <gl/GL.h>
 #include <GLFW/glfw3.h>
-#include <cassert>
 
 #include "engine/Engine.h"
 
@@ -11,10 +10,20 @@ namespace EngineLogic
 {
 	void AppSystem::init(SystemsOrders::Init::APP)
 	{
-		assert((glfwInit()) && "glfwInit() - failed to init");
+		if (!glfwInit())
+		{
+			std::cerr << "[Error] glfwInit() - failed to init" << std::endl;
+			engine.stop();
+			return;
+		}
 
 		window = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
-		assert((window) && "glfwCreateWindow() - failed to create window");
+		if (!window)
+		{
+			std::cerr << "[Error] glfwCreateWindow() - failed to create window" << std::endl;
+			engine.stop();
+			return;
+		}
 
 		glfwSetKeyCallback(window, glfw_key_callback);
 		glfwMakeContextCurrent(window);

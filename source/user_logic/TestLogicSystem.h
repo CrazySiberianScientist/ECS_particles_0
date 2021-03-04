@@ -22,7 +22,7 @@ namespace UserLogic
 		}
 	
 	private:
-		GLuint vertex_buffer, vertex_shader, fragment_shader, program;
+		GLuint vertex_buffer, program;
 		GLint mvp_location, vpos_location, vcol_location;
 	};
 

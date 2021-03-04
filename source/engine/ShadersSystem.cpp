@@ -25,7 +25,7 @@ namespace EngineLogic
 
 			std::string text;
 			std::ifstream file(dir.path());
-			for (std::string line; std::getline(file, line); text.append(line)) {}
+			for (std::string line; std::getline(file, line); text.append(line + "\n")) {}
 
 			auto text_ptr = text.c_str();
 			const auto shader_id = glCreateShader(shader_type);
@@ -40,7 +40,7 @@ namespace EngineLogic
 				continue;
 			}
 
-			shaders[dir.path().u8string()] = shader_id;
+			shaders[dir.path().filename().u8string()] = shader_id;
 		}
 	}
 }

@@ -19,7 +19,11 @@ namespace EngineLogic
 		auto getShaderId(const std::string &shader_name)
 		{
 			auto found_it = shaders.find(shader_name);
-			if (found_it == shaders.end()) return GLuint(0);
+			if (found_it == shaders.end())
+			{
+				std::cerr << "[Error] Can't find shader: " << shader_name << std::endl;
+				return GLuint(0);
+			}
 			return found_it->second;
 		}
 

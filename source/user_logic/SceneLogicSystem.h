@@ -10,7 +10,10 @@ namespace UserLogic
 	public:
 		SceneLogicSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
-		void init(SystemsOrders::Init::SCENE_0);
+		void init(SystemsOrders::Init::SCENE);
+
+	private:
+		ECS::EntityIdType camera_entity = ECS::EntityIdType_Invalid;
 	};
 
 }

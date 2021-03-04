@@ -11,19 +11,10 @@ namespace EngineLogic
 	public:
 		CameraSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
-		void init(SystemsOrders::Init::RENDER)
-		{
-			printf("!! %s %s\n", __FUNCTION__, "RENDER");
-		}
+		void setMainCamera(const ECS::EntityIdType camera_id) { main_camera_id = camera_id; }
+		auto getMainCamera() const { return main_camera_id; }
 
-		void update(SystemsOrders::Update::RENDER)
-		{
-			//printf("!! %s %s\n", __FUNCTION__, "RENDER");
-		}
-
-		void destroy(SystemsOrders::Destroy::RENDER)
-		{
-			printf("!! %s %s\n", __FUNCTION__, "RENDER");
-		}
+	private:
+		ECS::EntityIdType main_camera_id = ECS::EntityIdType_Invalid;
 	};
 }

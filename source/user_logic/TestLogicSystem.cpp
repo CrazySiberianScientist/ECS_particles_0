@@ -16,30 +16,8 @@ namespace UserLogic
 		{   0.f,  0.6f, 0.f, 0.f, 1.f }
 	};
 
-	static const char* vertex_shader_text =
-		"#version 110\n"
-		"uniform mat4 MVP;\n"
-		"attribute vec3 vCol;\n"
-		"attribute vec2 vPos;\n"
-		"varying vec3 color;\n"
-		"void main()\n"
-		"{\n"
-		"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-		"    color = vCol;\n"
-		"}\n";
-
-	static const char* fragment_shader_text =
-		"#version 110\n"
-		"varying vec3 color;\n"
-		"void main()\n"
-		"{\n"
-		"    gl_FragColor = vec4(color, 1.0);\n"
-		"}\n";
-
 	void TestLogicSystem::init(SystemsOrders::Init::TEST_0)
 	{
-		printf("!! %s %s\n", __FUNCTION__, "TEST_0");
-
 		glGenBuffers(1, &vertex_buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);

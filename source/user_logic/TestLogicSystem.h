@@ -13,13 +13,7 @@ namespace UserLogic
 		TestLogicSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
 		void init(SystemsOrders::Init::TEST_0);
-
 		void update(SystemsOrders::Update::TEST_0);
-		
-		void destroy(SystemsOrders::Destroy::TEST_1, const ECS::EntityIdType e)
-		{
-			printf("!! %s %s %d\n", __FUNCTION__, "TEST_1", e);
-		}
 	
 	private:
 		GLuint vertex_buffer, program;

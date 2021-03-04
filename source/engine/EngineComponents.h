@@ -11,13 +11,15 @@ namespace EngineLogic
 
 		struct Transform
 		{
-			vec3 pos;
-			quat rot;
-			vec3 scale;
+			vec3 pos{};
+			quat rot{};
+			vec3 scale{1.0f, 1.0f, 1.0f};
 		};
 
 		struct CameraTransform
 		{
+			CameraTransform() { mat4x4_identity(modelview); mat4x4_identity(projection); }
+
 			mat4x4 modelview;
 			mat4x4 projection;
 		};

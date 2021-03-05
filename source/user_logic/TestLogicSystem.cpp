@@ -5,22 +5,11 @@
 
 namespace UserLogic
 {
-	static const struct
-	{
-		float x, y;
-		float r, g, b;
-	} vertices[3] =
-	{
-		{ -0.6f, -0.4f, 1.f, 0.f, 0.f },
-		{  0.6f, -0.4f, 0.f, 1.f, 0.f },
-		{   0.f,  0.6f, 0.f, 0.f, 1.f }
-	};
-
 	void TestLogicSystem::init(SystemsOrders::Init::TEST_0)
 	{
 		glGenBuffers(1, &vertex_buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_vertices), triangle_vertices, GL_STATIC_DRAW);
 
 		const auto vertex_shader = engine.getSystem<EngineLogic::ShadersSystem>().getShaderId(u8"triangle_test.vert");
 		const auto fragment_shader = engine.getSystem<EngineLogic::ShadersSystem>().getShaderId(u8"triangle_test.frag");
@@ -36,11 +25,11 @@ namespace UserLogic
 		vcol_location = glGetAttribLocation(program, "vCol");
 
 		glEnableVertexAttribArray(vpos_location);
-		glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-			sizeof(vertices[0]), (void*)0);
+		glVertexAttribPointer(vpos_location, 3, GL_FLOAT, GL_FALSE,
+			sizeof(triangle_vertices[0]), (void*)0);
 		glEnableVertexAttribArray(vcol_location);
 		glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-			sizeof(vertices[0]), (void*)(sizeof(float) * 2));
+			sizeof(triangle_vertices[0]), (void*)(sizeof(Vertex::pos)));
 	}
 
 	void TestLogicSystem::update(SystemsOrders::Update::TEST_0)

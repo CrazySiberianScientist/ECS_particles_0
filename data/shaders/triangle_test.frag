@@ -1,4 +1,3 @@
-#version 110
 varying vec3 color;
 void main()
 {

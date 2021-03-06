@@ -1,6 +1,7 @@
 #pragma once
 
-#include "utils/linmath.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include "ecs/ECS.h"
 
 namespace EngineLogic
@@ -11,17 +12,15 @@ namespace EngineLogic
 
 		struct Transform
 		{
-			vec3 pos{};
-			quat rot{};
-			vec3 scale{1.0f, 1.0f, 1.0f};
+			glm::vec3 pos;
+			glm::quat rot;
+			glm::vec3 scale{1.0f, 1.0f, 1.0f};
 		};
 
 		struct CameraTransform
 		{
-			CameraTransform() { mat4x4_identity(modelview); mat4x4_identity(projection); }
-
-			mat4x4 modelview;
-			mat4x4 projection;
+			glm::mat4 modelview;
+			glm::mat4 projection;
 		};
 
 		using ComponentsTypes = Utils::TypesPack<Transform, CameraTransform>;

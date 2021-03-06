@@ -6,22 +6,11 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
-#include "linmath.h"
 
 #define UTILS_ENUM_SEQUENCE(NAME, ...)\
 struct NAME{\
 	enum {__VA_ARGS__, NUMBER};\
 	using type = std::index_sequence<__VA_ARGS__>;\
-}
-
-namespace Math
-{
-	static constexpr mat4x4 mat4x4_identity_v {
-		{1.0f, 0.0f, 0.0f, 0.0f}
-		, {0.0f, 1.0f, 0.0f, 0.0f}
-		, {0.0f, 0.0f, 1.0f, 0.0f}
-		, {0.0f, 0.0f, 0.0f, 1.0f}
-	};
 }
 
 namespace Utils

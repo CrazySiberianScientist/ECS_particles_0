@@ -4,8 +4,17 @@
 #include <fstream>
 #include <string>
 
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+
 namespace EngineLogic
 {
+	void test()
+	{
+		glm::rotate()
+	}
+
 	void ShadersSystem::init(SystemsOrders::Init::SHADERS)
 	{
 		std::filesystem::path shaders_path(shaders_dir);
@@ -36,7 +45,9 @@ namespace EngineLogic
 			glGetShaderiv(shader_id, GL_COMPILE_STATUS, &isCompiled);
 			if (isCompiled == GL_FALSE)
 			{
-				std::cerr << "[Error] Shader compilation failed : " << dir.path() << std::endl;
+				char info_log[512];
+				glGetShaderInfoLog(shader_id, 512, NULL, info_log);
+				std::cerr << "[Error] Shader compilation failed \"" << dir.path() << "\" : " << info_log << std::endl;
 				continue;
 			}
 

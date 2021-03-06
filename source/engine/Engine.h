@@ -21,7 +21,7 @@ namespace Common
 		template<typename _System, typename _OrderType>\
 		struct has_##METHOD_NAME {\
 			template<typename _Type, void(_Type::*)(_OrderType)> struct func_pattern_common {};\
-			template<typename _Type> static constexpr std::integral_constant<int,  MethodType::COMMON> check_func(func_pattern_common<_Type, &_Type::METHOD_NAME>*);\
+			template<typename _Type> static constexpr std::integral_constant<int, MethodType::COMMON> check_func(func_pattern_common<_Type, &_Type::METHOD_NAME>*);\
 			template<typename _Type, void(_Type::*)(_OrderType, const ECS::EntityIdType)> struct func_pattern_entity {};\
 			template<typename _Type> static constexpr std::integral_constant<int, MethodType::ENTITY> check_func(func_pattern_entity<_Type, &_Type::METHOD_NAME>*);\
 			template<typename _Type> static constexpr std::integral_constant<int, MethodType::NONE> check_func(...);\
@@ -82,12 +82,12 @@ namespace Common
 
 				if (state == EntitySystemState::TO_DESTROY || state == EntitySystemState::DESTROYING)
 				{
-					std::cerr << "[Warning] " << __FUNCTION__ << " - Entity(ID " << entity_id << ") that is linked to System(Index " 
+					std::cerr << "[Warning] " << __FUNCTION__ << " - Entity(ID " << entity_id << ") that is linked to System(Index "
 						<< SystemsTypes::getTypeIndex<_System>() << ") already in Unlinking process" << std::endl;
 					return;
 				}
 				(*std::find(entities_queues[state].begin(), entities_queues[state].end(), entity_id)) = ECS::EntityIdType_Invalid;
-				
+
 
 				if constexpr (SystemInfo<_System>::destroy_methods_number != 0)
 				{

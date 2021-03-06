@@ -53,9 +53,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="utils\linmath.h">
-      <Filter>utils</Filter>
-    </ClInclude>
     <ClInclude Include="utils\Utils.h">
       <Filter>utils</Filter>
     </ClInclude>

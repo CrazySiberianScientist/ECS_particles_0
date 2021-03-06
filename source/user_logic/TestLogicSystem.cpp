@@ -39,7 +39,6 @@ namespace UserLogic
 	{
 		float ratio;
 		int width, height;
-		mat4x4 m, p, mvp;
 
 		glfwGetFramebufferSize(engine.getSystem<EngineLogic::AppSystem>().getGLFWwindow(), &width, &height);
 		ratio = width / (float)height;
@@ -47,14 +46,13 @@ namespace UserLogic
 		glViewport(0, 0, width, height);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-
-		const auto rot_mat = glm::rotate(glm::mat4(), (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-		mat4x4_mul(mvp, p, m);
+		const auto one_mat = glm::mat4(1.0f);
+		const auto rot_mat = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		const auto proj_mat = glm::ortho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+		const auto mv_mat = proj_mat * rot_mat;
 
 		glUseProgram(program);
-		glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)mvp);
+		glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)&mv_mat[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 

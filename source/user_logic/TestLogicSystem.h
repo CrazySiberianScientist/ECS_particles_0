@@ -23,8 +23,8 @@ namespace UserLogic
 
 		struct Vertex
 		{
-			glm::vec3 pos;
-			glm::vec3 color;
+			glm::vec3 pos{};
+			glm::vec3 color{};
 		};
 
 		inline static const Vertex triangle_vertices[3]{

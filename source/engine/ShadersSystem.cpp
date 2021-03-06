@@ -12,7 +12,7 @@ namespace EngineLogic
 {
 	void test()
 	{
-		glm::rotate()
+		//glm::mat4::operator[]
 	}
 
 	void ShadersSystem::init(SystemsOrders::Init::SHADERS)

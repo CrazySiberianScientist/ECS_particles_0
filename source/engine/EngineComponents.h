@@ -12,15 +12,15 @@ namespace EngineLogic
 
 		struct Transform
 		{
-			glm::vec3 pos;
-			glm::quat rot;
+			glm::vec3 pos{};
+			glm::quat rot{};
 			glm::vec3 scale{1.0f, 1.0f, 1.0f};
 		};
 
 		struct CameraTransform
 		{
-			glm::mat4 modelview;
-			glm::mat4 projection;
+			glm::mat4 modelview{};
+			glm::mat4 projection{};
 		};
 
 		using ComponentsTypes = Utils::TypesPack<Transform, CameraTransform>;

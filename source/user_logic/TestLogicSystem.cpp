@@ -37,14 +37,8 @@ namespace UserLogic
 
 	void TestLogicSystem::update(SystemsOrders::Update::TEST_0)
 	{
-		float ratio;
-		int width, height;
-
-		glfwGetFramebufferSize(engine.getSystem<EngineLogic::AppSystem>().getGLFWwindow(), &width, &height);
-		ratio = width / (float)height;
-
-		glViewport(0, 0, width, height);
-		glClear(GL_COLOR_BUFFER_BIT);
+		const auto frame_size = engine.getSystem<EngineLogic::AppSystem>().getFrameSize();
+		const float ratio = frame_size[0] / (float)frame_size[1];
 
 		const auto one_mat = glm::mat4(1.0f);
 		const auto rot_mat = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));

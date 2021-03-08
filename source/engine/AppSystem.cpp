@@ -39,9 +39,8 @@ namespace EngineLogic
 			return;
 		}
 
-		int width, height;
-		glfwGetFramebufferSize(window, &width, &height);
-		glViewport(0, 0, width, height);
+		glfwGetFramebufferSize(window, &frame_size[0], &frame_size[1]);
+		glViewport(0, 0, frame_size[0], frame_size[1]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 

@@ -19,6 +19,7 @@ namespace EngineLogic
 		void destroy(SystemsOrders::Destroy::APP);
 
 		auto getGLFWwindow() const { return window; }
+		auto getFrameSize() const { return frame_size; }
 
 	private:
 		static void glfw_error_callback(int error, const char* description);
@@ -26,5 +27,6 @@ namespace EngineLogic
 
 	private:
 		GLFWwindow *window = nullptr;
+		glm::ivec2 frame_size;
 	};
 }

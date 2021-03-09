@@ -6,6 +6,8 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include <GL/glext.h>
+
 namespace UserLogic
 {
 	void TestLogicSystem::init(SystemsOrders::Init::TEST_0)
@@ -51,9 +53,12 @@ namespace UserLogic
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 
-	void TestLogicSystem::update(SystemsOrders::Update::TEST_TRIANGLE, const ECS::EntityIdType entity_id)
+	void TestLogicSystem::update(SystemsOrders::Update::TEST_PARTICLES, const ECS::EntityIdType entity_id)
 	{
+		GLuint buffer_id;
+		glGenBuffers(1, &buffer_id);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer_id);
+
 		auto transform = engine.getComponentManager().getComponent<EngineLogic::Components::Transform>(entity_id);
 	}
-
 }

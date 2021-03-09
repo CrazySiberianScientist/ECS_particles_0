@@ -16,10 +16,7 @@ layout(std430, binding = 2) buffer Transforms
 	Transform trasforms[];
 };
 
-out gl_PerVertex
-{
-	vec4 gl_Position;
-};
+varying vec4 vertex_color;
 
 // --^^-- I/O data --^^--
 
@@ -29,8 +26,13 @@ out gl_PerVertex
 #define PARTICLE_RADIUS 0.01f
 #define POLYGON_SIZE 6
 
+#define COLOR_RED vec4(1.0f, 0.0f, 0.0f, 1.0f)
+#define COLOR_GREEN vec4(0.0f, 1.0f, 0.0f, 1.0f)
+#define COLOR_BLUE vec4(0.0f, 0.0f, 1.0f, 1.0f)
+
+vec4 vertices_color[POLYGON_SIZE] = vec4[](COLOR_RED, COLOR_GREEN, COLOR_BLUE, COLOR_BLUE, COLOR_GREEN, COLOR_RED);
 float triangle_angles[POLYGON_SIZE] = float[](0.0f, 90.0f, 180.0f, 180.0f, 270.0f, 0.0f);
-vec2 uv_coord[POLYGON_SIZE] = vec2[](vec2(0.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f), vec2(1.0f, 1.0f), vec2(1.0f, 0.0f), vec2(0.0f, 0.0f));
+//vec2 uv_coord[POLYGON_SIZE] = vec2[](vec2(0.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f), vec2(1.0f, 1.0f), vec2(1.0f, 0.0f), vec2(0.0f, 0.0f));
 
 // --^^-- Static data --^^--
 
@@ -38,14 +40,14 @@ vec2 uv_coord[POLYGON_SIZE] = vec2[](vec2(0.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.
 // --vv-- Quaternion functions --vv--
 
 vec4 quat_from_axis_angle(vec3 axis, float angle)
-{ 
-  vec4 qr;
-  float half_angle = (angle * 0.5) * 3.14159 / 180.0;
-  qr.x = axis.x * sin(half_angle);
-  qr.y = axis.y * sin(half_angle);
-  qr.z = axis.z * sin(half_angle);
-  qr.w = cos(half_angle);
-  return qr;
+{
+	vec4 qr;
+	float half_angle = (angle * 0.5) * 3.14159 / 180.0;
+	qr.x = axis.x * sin(half_angle);
+	qr.y = axis.y * sin(half_angle);
+	qr.z = axis.z * sin(half_angle);
+	qr.w = cos(half_angle);
+	return qr;
 }
 
 vec4 quat_conj(vec4 q)
@@ -85,7 +87,9 @@ void main()
 	vec3 particle_position = trasforms[particle_index].pos;
 
 	vec3 rotation_axis = vec3(0.0f, 0.0f, 1.0f);
-	vec3 vertex_position = particle_position + rotate_vertex_position(vec3(PARTICLE_RADIUS, 0.0f, 0.0f), rotation_axis, triangle_angles[vertex_polygon_index]);
+	vec3 vertex_position = particle_position 
+		+ rotate_vertex_position(vec3(PARTICLE_RADIUS, 0.0f, 0.0f), rotation_axis, triangle_angles[vertex_polygon_index]);
 
 	gl_Position = vec4(vertex_position, 1.0f);
+	vertex_color = vertices_color[vertex_polygon_index];
 }

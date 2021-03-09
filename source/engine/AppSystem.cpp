@@ -42,6 +42,9 @@ namespace EngineLogic
 		glfwGetFramebufferSize(window, &frame_size[0], &frame_size[1]);
 		glViewport(0, 0, frame_size[0], frame_size[1]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		time_state.ifps = static_cast<float>(glfwGetTime() - time_state.last_time);
+		time_state.last_time = glfwGetTime();
 	}
 
 	void AppSystem::postUpdate(SystemsOrders::PostUpdate::APP_FRAME_END)

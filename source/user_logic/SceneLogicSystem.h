@@ -11,6 +11,7 @@ namespace UserLogic
 		SceneLogicSystem(Common::Engine &engine_) : BaseSystem(engine_) {}
 
 		void init(SystemsOrders::Init::SCENE);
+		void update(SystemsOrders::Update::SCENE);
 
 	private:
 		ECS::EntityIdType camera_entity = ECS::EntityIdType_Invalid;

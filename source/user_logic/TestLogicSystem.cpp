@@ -40,10 +40,11 @@ namespace UserLogic
 		const auto frame_size = engine.getSystem<EngineLogic::AppSystem>().getFrameSize();
 		const float ratio = frame_size[0] / (float)frame_size[1];
 
-		const auto one_mat = glm::mat4(1.0f);
-		const auto rot_mat = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-		const auto proj_mat = glm::ortho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-		const auto mv_mat = proj_mat * rot_mat;
+		const auto main_camera = engine.getSystem<EngineLogic::CameraSystem>().getMainCamera();
+		if (main_camera == ECS::EntityIdType_Invalid) return;
+
+		const auto * const ct = engine.getComponentManager().getComponent<EngineLogic::Components::CameraTransform>(main_camera);
+		const auto mv_mat = ct->projection * ct->view;
 
 		glUseProgram(program);
 		glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)&mv_mat[0]);

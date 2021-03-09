@@ -18,6 +18,7 @@ namespace EngineLogic
 		void postUpdate(SystemsOrders::PostUpdate::APP_FRAME_END);
 		void destroy(SystemsOrders::Destroy::APP);
 
+		auto getIFPS() const { return time_state.ifps; }
 		auto getGLFWwindow() const { return window; }
 		auto getFrameSize() const { return frame_size; }
 		auto getFrameAspect() const { return frame_size[0] / (float)frame_size[1]; }
@@ -28,6 +29,11 @@ namespace EngineLogic
 
 	private:
 		GLFWwindow *window = nullptr;
+		struct
+		{
+			double last_time = 0.0f;
+			float ifps = 0.0f;
+		} time_state;
 		glm::ivec2 frame_size;
 	};
 }

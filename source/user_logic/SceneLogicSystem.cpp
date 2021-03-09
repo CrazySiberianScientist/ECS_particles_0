@@ -13,6 +13,5 @@ void UserLogic::SceneLogicSystem::init(SystemsOrders::Init::SCENE)
 void UserLogic::SceneLogicSystem::update(SystemsOrders::Update::SCENE)
 {
 	auto t = engine.getComponentManager().getComponent<EngineLogic::Components::Transform>(camera_entity);
-
 	t->pos = glm::angleAxis(glm::radians(30.0f * engine.getSystem<EngineLogic::AppSystem>().getIFPS()), glm::vec3(0.0, 1.0f, 0.0f)) * t->pos;
 }

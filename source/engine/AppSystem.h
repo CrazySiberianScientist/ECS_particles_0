@@ -20,6 +20,7 @@ namespace EngineLogic
 
 		auto getGLFWwindow() const { return window; }
 		auto getFrameSize() const { return frame_size; }
+		auto getFrameAspect() const { return frame_size[0] / (float)frame_size[1]; }
 
 	private:
 		static void glfw_error_callback(int error, const char* description);

@@ -165,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\AppSystem.cpp" />
+    <ClCompile Include="engine\CameraSystem.cpp" />
     <ClCompile Include="engine\ShadersSystem.cpp" />
     <ClCompile Include="glad\glad_gl.c" />
     <ClCompile Include="main.cpp" />

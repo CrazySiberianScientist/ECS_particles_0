@@ -108,7 +108,7 @@ namespace Common
 				entities_queues[from_state].clear();
 			}
 
-
+			
 			template<typename ..._Orders>
 			static constexpr size_t check_inits(Utils::TypesPack<_Orders...>) { return (has_init<_System, _Orders>::value_entity + ...); }
 			static constexpr auto init_methods_number = check_inits(Common::SystemsOrders::Init{});

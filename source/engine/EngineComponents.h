@@ -19,8 +19,13 @@ namespace EngineLogic
 
 		struct CameraTransform
 		{
-			glm::mat4 modelview{};
+			glm::mat4 view{};
 			glm::mat4 projection{};
+			// TODO: free camera mode
+			glm::vec3 target_pos{};
+			float fov_y = 60.0f;
+			float z_near = 0.0f;
+			float z_far = 100.0f;
 		};
 
 		using ComponentsTypes = Utils::TypesPack<Transform, CameraTransform>;

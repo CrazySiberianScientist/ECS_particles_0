@@ -45,7 +45,7 @@ namespace UserLogic
 				, sizeof(glm::vec3) * transforms_buffer.size()
 				, const_cast<glm::vec3*>(transforms_buffer.data<0>())
 				, GL_STATIC_DRAW);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, buffer_id);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer_id);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		}
 
@@ -60,6 +60,6 @@ namespace UserLogic
 		}
 
 		glUseProgram(program);
-		glDrawArrays(GL_TRIANGLES, 0, transforms_buffer.size() * 6);
+		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(transforms_buffer.size() * 6));
 	}
 }

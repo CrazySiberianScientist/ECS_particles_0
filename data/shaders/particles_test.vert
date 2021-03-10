@@ -6,17 +6,10 @@ in int gl_VertexID;
 
 uniform mat4 vp_transform;
 
-struct Transform
+layout(std430, binding = 0) buffer Transforms
 {
-	vec3 pos;
-	vec4 rot;
-	vec3 scale;
-};
-
-layout(std430, binding = 3) buffer Transforms
-{
-	//Transform trasforms[];
 	vec3 positions[];
+	//vec4 rotations[];
 };
 
 varying vec4 vertex_color;
@@ -31,9 +24,9 @@ varying vec4 vertex_color;
 
 #define COLOR_RED vec4(1.0f, 0.0f, 0.0f, 1.0f)
 #define COLOR_GREEN vec4(0.0f, 1.0f, 0.0f, 1.0f)
-#define COLOR_BLUE vec4(0.0f, 0.0f, 1.0f, 1.0f)
+#define COLOR_WHITE vec4(1.0f, 1.0f, 1.0f, 1.0f)
 
-vec4 vertices_color[POLYGON_SIZE] = vec4[](COLOR_RED, COLOR_GREEN, COLOR_BLUE, COLOR_BLUE, COLOR_GREEN, COLOR_RED);
+vec4 vertices_color[POLYGON_SIZE] = vec4[](COLOR_RED, COLOR_GREEN, COLOR_WHITE, COLOR_WHITE, COLOR_GREEN, COLOR_RED);
 float triangle_angles[POLYGON_SIZE] = float[](0.0f, 90.0f, 180.0f, 180.0f, 270.0f, 0.0f);
 //vec2 uv_coord[POLYGON_SIZE] = vec2[](vec2(0.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f), vec2(1.0f, 1.0f), vec2(1.0f, 0.0f), vec2(0.0f, 0.0f));
 
@@ -100,6 +93,7 @@ void main()
 	uint vertex_polygon_index = gl_VertexID - particle_index * POLYGON_SIZE;
 	vec3 particle_position = positions[particle_index];
 
+	//vec3 rotation_axis = quat_mult_pos(rotations[particle_index], vec3(0.0f, 0.0f, 1.0f));
 	vec3 rotation_axis = vec3(0.0f, 0.0f, 1.0f);
 	vec3 vertex_position = particle_position 
 		+ rotate_vertex_position(vec3(PARTICLE_RADIUS, 0.0f, 0.0f), rotation_axis, triangle_angles[vertex_polygon_index]);

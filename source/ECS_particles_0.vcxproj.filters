@@ -1,117 +1,100 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="glad">
       <UniqueIdentifier>{77b2e1cd-1d0f-4b2e-8564-d47212697f9a}</UniqueIdentifier>
     </Filter>
     <Filter Include="utils">
       <UniqueIdentifier>{4386adde-c7f1-4ba3-be20-a1f705581995}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine">
-      <UniqueIdentifier>{04316109-5970-4387-a154-edb9add99712}</UniqueIdentifier>
+    <Filter Include="ecs">
+      <UniqueIdentifier>{ab7b6366-bfed-4013-ac09-4a2e7c8f32ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine">
-      <UniqueIdentifier>{fb797fc0-10e8-4045-8589-a6f74d1dc716}</UniqueIdentifier>
+    <Filter Include="engine">
+      <UniqueIdentifier>{79ac4476-5d19-4beb-8e8d-ce209f19b07f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\ECS">
-      <UniqueIdentifier>{ab8e531c-801b-446d-85b8-e8096fc50d54}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="User_Logic">
-      <UniqueIdentifier>{8441ae5e-b6cf-4b03-811a-d5714922a8e9}</UniqueIdentifier>
+    <Filter Include="user_logic">
+      <UniqueIdentifier>{2423c151-d4ff-43f3-ad1f-5bc7e305b3d9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="glad\glad_gl.c">
       <Filter>glad</Filter>
     </ClCompile>
-    <ClCompile Include="user_logic\TestLogicSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="user_logic\SceneLogicSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="engine\AppSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\ShadersSystem.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>engine</Filter>
     </ClCompile>
     <ClCompile Include="engine\CameraSystem.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>engine</Filter>
     </ClCompile>
+    <ClCompile Include="engine\ShadersSystem.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="user_logic\SceneLogicSystem.cpp">
+      <Filter>user_logic</Filter>
+    </ClCompile>
+    <ClCompile Include="user_logic\TestLogicSystem.cpp">
+      <Filter>user_logic</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils\Utils.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="engine\EngineComponents.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\AppSystem.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="ecs\ECS.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\EngineSystemsOrders.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\CameraSystem.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\BaseSystem.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="user_logic\UserSystemsOrders.h">
-      <Filter>User_Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="user_logic\SceneLogicSystem.h">
-      <Filter>User_Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="user_logic\TestLogicSystem.h">
-      <Filter>User_Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="user_logic\UserComponents.h">
-      <Filter>User_Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\Systems.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\EngineSystems.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="user_logic\UserSystems.h">
-      <Filter>User_Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\SystemsOrders.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\Components.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\Engine.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\ShadersSystem.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="utils\StructOfVectors.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ecs\ECS.h">
+      <Filter>ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\AppSystem.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\BaseSystem.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\CameraSystem.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Components.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Engine.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\EngineComponents.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\EngineSystems.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\EngineSystemsOrders.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\ShadersSystem.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Systems.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\SystemsOrders.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="user_logic\SceneLogicSystem.h">
+      <Filter>user_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="user_logic\TestLogicSystem.h">
+      <Filter>user_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="user_logic\UserComponents.h">
+      <Filter>user_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="user_logic\UserSystems.h">
+      <Filter>user_logic</Filter>
+    </ClInclude>
+    <ClInclude Include="user_logic\UserSystemsOrders.h">
+      <Filter>user_logic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@ void UserLogic::SceneLogicSystem::init(SystemsOrders::Init::SCENE)
 {
 	camera_entity = engine.createEntity();
 	auto camera = engine.getComponentManager().createBundle(EngineLogic::Components::CameraBundle{}, camera_entity);
-	std::get<EngineLogic::Components::Transform*>(camera)->pos[0] = -2.0f;
+	std::get<EngineLogic::Components::Transform*>(camera)->pos[0] = -1.0f;
 	engine.linkEntityToSystem<EngineLogic::CameraSystem>(camera_entity);
 	engine.getSystem<EngineLogic::CameraSystem>().setMainCamera(camera_entity);
 
@@ -17,12 +17,12 @@ void UserLogic::SceneLogicSystem::init(SystemsOrders::Init::SCENE)
 
 		auto rand_coord = [&gen]()
 		{
-			return std::generate_canonical<float, 32>(gen);
+			return std::generate_canonical<float, 32>(gen) - 0.5f;
 		};
 
 		auto entity = engine.createEntity();
 		engine.getComponentManager().createComponent<EngineLogic::Components::Transform>(entity,
-			{ { rand_coord(), rand_coord(), -rand_coord()}
+			{ { rand_coord(), rand_coord(), rand_coord()}
 			, glm::angleAxis(glm::half_pi<float>() * rand_coord(), glm::vec3{ rand_coord(), rand_coord(), rand_coord() })
 			, glm::vec3(1.0f) });
 

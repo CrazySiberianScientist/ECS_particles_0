@@ -23,37 +23,6 @@ namespace UserLogic
 		glLinkProgram(program);
 
 		vp_transform_location = glGetUniformLocation(program, "vp_transform");
-
-
-		/*glGenBuffers(1, &vertex_buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_vertices), triangle_vertices, GL_STATIC_DRAW);
-
-		mvp_location = glGetUniformLocation(program, "MVP");
-		vpos_location = glGetAttribLocation(program, "vPos");
-		vcol_location = glGetAttribLocation(program, "vCol");
-
-		glEnableVertexAttribArray(vpos_location);
-		glVertexAttribPointer(vpos_location, 3, GL_FLOAT, GL_FALSE,
-			sizeof(triangle_vertices[0]), (void*)0);
-		glEnableVertexAttribArray(vcol_location);
-		glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-			sizeof(triangle_vertices[0]), (void*)(sizeof(Vertex::pos)));*/
-	}
-
-	void TestLogicSystem::update(SystemsOrders::Update::TEST_0)
-	{
-		return;
-
-		const auto main_camera = engine.getSystem<EngineLogic::CameraSystem>().getMainCamera();
-		if (main_camera == ECS::EntityIdType_Invalid) return;
-
-		const auto * const ct = engine.getComponentManager().getComponent<EngineLogic::Components::CameraTransform>(main_camera);
-		const auto mv_mat = ct->projection * ct->view;
-
-		glUseProgram(program);
-		glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)&mv_mat[0]);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 
 	void TestLogicSystem::update(SystemsOrders::Update::TEST_PARTICLES)
@@ -92,7 +61,5 @@ namespace UserLogic
 
 		glUseProgram(program);
 		glDrawArrays(GL_TRIANGLES, 0, transforms_buffer.size() * 6);
-
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); // unbind
 	}
 }

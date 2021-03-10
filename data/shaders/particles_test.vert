@@ -4,6 +4,8 @@
 
 in int gl_VertexID;
 
+uniform mat4 vp_transform;
+
 struct Transform
 {
 	vec3 pos;
@@ -11,7 +13,7 @@ struct Transform
 	vec3 scale;
 };
 
-layout(std430, binding = 2) buffer Transforms
+layout(std430, binding = 3) buffer Transforms
 {
 	Transform trasforms[];
 };
@@ -90,6 +92,6 @@ void main()
 	vec3 vertex_position = particle_position 
 		+ rotate_vertex_position(vec3(PARTICLE_RADIUS, 0.0f, 0.0f), rotation_axis, triangle_angles[vertex_polygon_index]);
 
-	gl_Position = vec4(vertex_position, 1.0f);
+	gl_Position = vp_transform * vec4(vertex_position, 1.0f);
 	vertex_color = vertices_color[vertex_polygon_index];
 }

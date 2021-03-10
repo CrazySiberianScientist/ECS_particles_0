@@ -12,18 +12,21 @@ namespace UserLogic
 {
 	void TestLogicSystem::init(SystemsOrders::Init::TEST_0)
 	{
-		glGenBuffers(1, &vertex_buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_vertices), triangle_vertices, GL_STATIC_DRAW);
-
-		const auto vertex_shader = engine.getSystem<EngineLogic::ShadersSystem>().getShaderId(u8"triangle_test.vert");
-		const auto fragment_shader = engine.getSystem<EngineLogic::ShadersSystem>().getShaderId(u8"triangle_test.frag");
+		const auto vertex_shader = engine.getSystem<EngineLogic::ShadersSystem>().getShaderId(u8"particles_test.vert");
+		const auto fragment_shader = engine.getSystem<EngineLogic::ShadersSystem>().getShaderId(u8"particles_test.frag");
 		if (vertex_shader == 0 || fragment_shader == 0) return;
 
 		program = glCreateProgram();
 		glAttachShader(program, vertex_shader);
 		glAttachShader(program, fragment_shader);
 		glLinkProgram(program);
+
+		vp_transform_location = glGetUniformLocation(program, "vp_transform");
+
+
+		/*glGenBuffers(1, &vertex_buffer);
+		glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_vertices), triangle_vertices, GL_STATIC_DRAW);
 
 		mvp_location = glGetUniformLocation(program, "MVP");
 		vpos_location = glGetAttribLocation(program, "vPos");
@@ -34,13 +37,12 @@ namespace UserLogic
 			sizeof(triangle_vertices[0]), (void*)0);
 		glEnableVertexAttribArray(vcol_location);
 		glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-			sizeof(triangle_vertices[0]), (void*)(sizeof(Vertex::pos)));
+			sizeof(triangle_vertices[0]), (void*)(sizeof(Vertex::pos)));*/
 	}
 
 	void TestLogicSystem::update(SystemsOrders::Update::TEST_0)
 	{
-		const auto frame_size = engine.getSystem<EngineLogic::AppSystem>().getFrameSize();
-		const float ratio = frame_size[0] / (float)frame_size[1];
+		return;
 
 		const auto main_camera = engine.getSystem<EngineLogic::CameraSystem>().getMainCamera();
 		if (main_camera == ECS::EntityIdType_Invalid) return;
@@ -53,12 +55,41 @@ namespace UserLogic
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 
-	void TestLogicSystem::update(SystemsOrders::Update::TEST_PARTICLES, const ECS::EntityIdType entity_id)
+	void TestLogicSystem::update(SystemsOrders::Update::TEST_PARTICLES)
 	{
+		std::vector<EngineLogic::Components::Transform> transforms_buffer;
+		const auto &system_entities = engine.getSystemEntities<TestLogicSystem>();
+		transforms_buffer.reserve(system_entities.size());
+		for (const auto e : system_entities)
+		{
+			if (e == ECS::EntityIdType_Invalid) continue;
+			auto t = engine.getComponentManager().getComponent<EngineLogic::Components::Transform>(e);
+			if (!t) continue;
+			transforms_buffer.emplace_back(*t);
+		}
+
 		GLuint buffer_id;
 		glGenBuffers(1, &buffer_id);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer_id);
+		glBufferData(GL_SHADER_STORAGE_BUFFER
+			, sizeof(EngineLogic::Components::Transform) * transforms_buffer.size()
+			, const_cast<EngineLogic::Components::Transform*>(transforms_buffer.data())
+			, GL_STATIC_DRAW);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, buffer_id);
 
-		auto transform = engine.getComponentManager().getComponent<EngineLogic::Components::Transform>(entity_id);
+
+		{
+			const auto main_camera = engine.getSystem<EngineLogic::CameraSystem>().getMainCamera();
+			if (main_camera == ECS::EntityIdType_Invalid) return;
+
+			const auto * const ct = engine.getComponentManager().getComponent<EngineLogic::Components::CameraTransform>(main_camera);
+			const auto vp_mat = ct->projection * ct->view;
+
+			glUniformMatrix4fv(vp_transform_location, 1, GL_FALSE, (const GLfloat*)&vp_mat[0]);
+		}
+		glUseProgram(program);
+		glDrawArrays(GL_TRIANGLES, 0, transforms_buffer.size() * 6);
+
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); // unbind
 	}
 }

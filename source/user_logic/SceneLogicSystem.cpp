@@ -8,6 +8,8 @@ void UserLogic::SceneLogicSystem::init(SystemsOrders::Init::SCENE)
 	std::get<EngineLogic::Components::Transform*>(camera)->pos[0] = -2.0f;
 	engine.linkEntityToSystem<EngineLogic::CameraSystem>(camera_entity);
 	engine.getSystem<EngineLogic::CameraSystem>().setMainCamera(camera_entity);
+
+	//for ()
 }
 
 void UserLogic::SceneLogicSystem::update(SystemsOrders::Update::SCENE)

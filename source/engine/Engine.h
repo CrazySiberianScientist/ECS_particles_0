@@ -12,6 +12,20 @@ namespace Common
 {
 	class Engine
 	{
+	public:
+		struct EntitySystemState
+		{
+			enum
+			{
+				TO_INIT
+				, INITING
+				, UPDATE
+				, TO_DESTROY
+				, DESTROYING
+				, NUMBER
+			};
+		};
+
 	private:
 		using ComponentManagerType = decltype(Utils::convertTypesPack<ECS::ComponentManager>(ComponentsTypes{}));
 		using SystemsCollection = decltype(Utils::convertTypesPack<std::tuple>(convertTypesToPointersPack(SystemsTypes{})));
@@ -33,26 +47,12 @@ namespace Common
 		DECLARE_METHOD_CHECKER(destroy);
 		#undef DECLARE_METHOD_CHECKER
 
-	private:
 		struct EntityRemoveState
 		{
 			enum
 			{
 				TO_REMOVE
 				, REMOVING
-				, NUMBER
-			};
-		};
-
-		struct EntitySystemState
-		{
-			enum
-			{
-				TO_INIT
-				, INITING
-				, UPDATE
-				, TO_DESTROY
-				, DESTROYING
 				, NUMBER
 			};
 		};
@@ -191,6 +191,9 @@ namespace Common
 		
 		template<typename _System>
 		auto &getSystem() { return std::get<SystemInfo<_System>>(systems_info).system; }
+
+		template<typename _System>
+		auto &getSystemEntities(uint8_t entity_state = EntitySystemState::UPDATE) const { return std::get<SystemInfo<_System>>(systems_info).entities_queues[entity_state]; }
 		
 		template<typename _System>
 		void linkEntityToSystem(const ECS::EntityIdType entity_id)

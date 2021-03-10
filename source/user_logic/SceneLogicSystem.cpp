@@ -1,5 +1,6 @@
 #include "SceneLogicSystem.h"
 #include "engine/Engine.h"
+#include <random>
 
 void UserLogic::SceneLogicSystem::init(SystemsOrders::Init::SCENE)
 {
@@ -9,7 +10,24 @@ void UserLogic::SceneLogicSystem::init(SystemsOrders::Init::SCENE)
 	engine.linkEntityToSystem<EngineLogic::CameraSystem>(camera_entity);
 	engine.getSystem<EngineLogic::CameraSystem>().setMainCamera(camera_entity);
 
-	//for ()
+	for (auto i = 0; i < 100; ++i)
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+
+		auto rand_coord = [&gen]()
+		{
+			return std::generate_canonical<float, 32>(gen);
+		};
+
+		auto entity = engine.createEntity();
+		engine.getComponentManager().createComponent<EngineLogic::Components::Transform>(entity,
+			{ { rand_coord(), rand_coord(), -rand_coord()}
+			, glm::angleAxis(glm::half_pi<float>() * rand_coord(), glm::vec3{ rand_coord(), rand_coord(), rand_coord() })
+			, glm::vec3(1.0f) });
+
+		engine.linkEntityToSystem<UserLogic::TestLogicSystem>(entity);
+	}
 }
 
 void UserLogic::SceneLogicSystem::update(SystemsOrders::Update::SCENE)

@@ -15,7 +15,8 @@ struct Transform
 
 layout(std430, binding = 3) buffer Transforms
 {
-	Transform trasforms[];
+	//Transform trasforms[];
+	vec3 positions[];
 };
 
 varying vec4 vertex_color;
@@ -67,6 +68,17 @@ vec4 quat_mult(vec4 q1, vec4 q2)
 	return qr;
 }
 
+vec3 quat_mult_pos(vec4 qr, vec3 position)
+{
+	vec4 qr_conj = quat_conj(qr);
+	vec4 q_pos = vec4(position.x, position.y, position.z, 0);
+	
+	vec4 q_tmp = quat_mult(qr, q_pos);
+	qr = quat_mult(q_tmp, qr_conj);
+	
+	return vec3(qr.x, qr.y, qr.z);
+}
+
 vec3 rotate_vertex_position(vec3 position, vec3 axis, float angle)
 {
 	vec4 qr = quat_from_axis_angle(axis, angle);
@@ -86,7 +98,7 @@ void main()
 {
 	uint particle_index = gl_VertexID / POLYGON_SIZE;
 	uint vertex_polygon_index = gl_VertexID - particle_index * POLYGON_SIZE;
-	vec3 particle_position = trasforms[particle_index].pos;
+	vec3 particle_position = positions[particle_index];
 
 	vec3 rotation_axis = vec3(0.0f, 0.0f, 1.0f);
 	vec3 vertex_position = particle_position 

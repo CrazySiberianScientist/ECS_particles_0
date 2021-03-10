@@ -110,5 +110,8 @@
     <ClInclude Include="engine\ShadersSystem.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="utils\StructOfVectors.h">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

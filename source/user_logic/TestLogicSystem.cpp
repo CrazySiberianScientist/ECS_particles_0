@@ -5,8 +5,9 @@
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
-
 #include <GL/glext.h>
+
+#include "utils/StructOfVectors.h"
 
 namespace UserLogic
 {
@@ -57,26 +58,27 @@ namespace UserLogic
 
 	void TestLogicSystem::update(SystemsOrders::Update::TEST_PARTICLES)
 	{
-		std::vector<EngineLogic::Components::Transform> transforms_buffer;
+		Utils::StructOfVectors<glm::vec3, glm::quat, glm::vec3> transforms_buffer;
 		const auto &system_entities = engine.getSystemEntities<TestLogicSystem>();
-		transforms_buffer.reserve(system_entities.size());
 		for (const auto e : system_entities)
 		{
 			if (e == ECS::EntityIdType_Invalid) continue;
 			auto t = engine.getComponentManager().getComponent<EngineLogic::Components::Transform>(e);
 			if (!t) continue;
-			transforms_buffer.emplace_back(*t);
+			transforms_buffer.append(t->pos, t->rot, t->scale);
 		}
 
-		GLuint buffer_id;
-		glGenBuffers(1, &buffer_id);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer_id);
-		glBufferData(GL_SHADER_STORAGE_BUFFER
-			, sizeof(EngineLogic::Components::Transform) * transforms_buffer.size()
-			, const_cast<EngineLogic::Components::Transform*>(transforms_buffer.data())
-			, GL_STATIC_DRAW);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, buffer_id);
-
+		{
+			GLuint buffer_id;
+			glGenBuffers(1, &buffer_id);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer_id);
+			glBufferData(GL_SHADER_STORAGE_BUFFER
+				, sizeof(glm::vec3) * transforms_buffer.size()
+				, const_cast<glm::vec3*>(transforms_buffer.data<0>())
+				, GL_STATIC_DRAW);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, buffer_id);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+		}
 
 		{
 			const auto main_camera = engine.getSystem<EngineLogic::CameraSystem>().getMainCamera();
@@ -87,6 +89,7 @@ namespace UserLogic
 
 			glUniformMatrix4fv(vp_transform_location, 1, GL_FALSE, (const GLfloat*)&vp_mat[0]);
 		}
+
 		glUseProgram(program);
 		glDrawArrays(GL_TRIANGLES, 0, transforms_buffer.size() * 6);
 

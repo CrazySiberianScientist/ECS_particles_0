@@ -22,8 +22,8 @@ void UserLogic::SceneLogicSystem::init(SystemsOrders::Init::SCENE)
 
 		auto entity = engine.createEntity();
 		engine.getComponentManager().createComponent<EngineLogic::Components::Transform>(entity,
-			{ { rand_coord(), rand_coord(), rand_coord()}
-			, glm::angleAxis(glm::half_pi<float>() * rand_coord(), glm::vec3{ rand_coord(), rand_coord(), rand_coord() })
+			{ glm::vec3(rand_coord(), rand_coord(), rand_coord())
+			, glm::angleAxis(glm::half_pi<float>() * rand_coord(), glm::normalize(glm::vec3(rand_coord(), rand_coord(), rand_coord())))
 			, glm::vec3(1.0f) });
 
 		engine.linkEntityToSystem<UserLogic::TestLogicSystem>(entity);

@@ -6,10 +6,14 @@ in int gl_VertexID;
 
 uniform mat4 vp_transform;
 
-layout(std430, binding = 0) buffer Transforms
+layout(std430, binding = 0) buffer Positions
 {
 	vec3 positions[];
-	//vec4 rotations[];
+};
+
+layout(std430, binding = 1) buffer Rotations
+{
+	vec4 rotations[];
 };
 
 varying vec4 vertex_color;
@@ -93,8 +97,8 @@ void main()
 	uint vertex_polygon_index = gl_VertexID - particle_index * POLYGON_SIZE;
 	vec3 particle_position = positions[particle_index];
 
-	//vec3 rotation_axis = quat_mult_pos(rotations[particle_index], vec3(0.0f, 0.0f, 1.0f));
-	vec3 rotation_axis = vec3(0.0f, 0.0f, 1.0f);
+	vec3 rotation_axis = quat_mult_pos(rotations[particle_index], vec3(0.0f, 0.0f, 1.0f));
+	//vec3 rotation_axis = vec3(0.0f, 0.0f, 1.0f);
 	vec3 vertex_position = particle_position 
 		+ rotate_vertex_position(vec3(PARTICLE_RADIUS, 0.0f, 0.0f), rotation_axis, triangle_angles[vertex_polygon_index]);
 

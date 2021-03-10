@@ -50,6 +50,18 @@ namespace UserLogic
 		}
 
 		{
+			GLuint buffer_id;
+			glGenBuffers(1, &buffer_id);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer_id);
+			glBufferData(GL_SHADER_STORAGE_BUFFER
+				, sizeof(glm::quat) * transforms_buffer.size()
+				, const_cast<glm::quat*>(transforms_buffer.data<1>())
+				, GL_STATIC_DRAW);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffer_id);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+		}
+
+		{
 			const auto main_camera = engine.getSystem<EngineLogic::CameraSystem>().getMainCamera();
 			if (main_camera == ECS::EntityIdType_Invalid) return;
 

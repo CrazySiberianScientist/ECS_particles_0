@@ -41,25 +41,27 @@ namespace UserLogic
 
 		{
 			GLuint buffer_id;
+			const GLuint buffer_bind_id = 0;
 			glGenBuffers(1, &buffer_id);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer_id);
 			glBufferData(GL_SHADER_STORAGE_BUFFER
 				, sizeof(glm::vec4) * transforms_buffer.size()
 				, const_cast<glm::vec4*>(transforms_buffer.data<0>())
 				, GL_STATIC_DRAW);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer_id);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, buffer_bind_id, buffer_id);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		}
 
 		{
 			GLuint buffer_id;
+			const GLuint buffer_bind_id = 1;
 			glGenBuffers(1, &buffer_id);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer_id);
 			glBufferData(GL_SHADER_STORAGE_BUFFER
 				, sizeof(glm::quat) * transforms_buffer.size()
 				, const_cast<glm::quat*>(transforms_buffer.data<1>())
 				, GL_STATIC_DRAW);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffer_id);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, buffer_bind_id, buffer_id);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		}
 

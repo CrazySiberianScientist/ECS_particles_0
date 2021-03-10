@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/norm.hpp>
 #include <GL/glext.h>
 
 #include "utils/StructOfVectors.h"
@@ -27,14 +28,15 @@ namespace UserLogic
 
 	void TestLogicSystem::update(SystemsOrders::Update::TEST_PARTICLES)
 	{
-		Utils::StructOfVectors<glm::vec3, glm::quat, glm::vec3> transforms_buffer;
+		Utils::StructOfVectors<glm::vec4, glm::quat> transforms_buffer;
 		const auto &system_entities = engine.getSystemEntities<TestLogicSystem>();
+		
 		for (const auto e : system_entities)
 		{
 			if (e == ECS::EntityIdType_Invalid) continue;
 			auto t = engine.getComponentManager().getComponent<EngineLogic::Components::Transform>(e);
 			if (!t) continue;
-			transforms_buffer.append(t->pos, t->rot, t->scale);
+			transforms_buffer.append(glm::vec4(t->pos, 1.0f), t->rot);
 		}
 
 		{
@@ -42,8 +44,8 @@ namespace UserLogic
 			glGenBuffers(1, &buffer_id);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer_id);
 			glBufferData(GL_SHADER_STORAGE_BUFFER
-				, sizeof(glm::vec3) * transforms_buffer.size()
-				, const_cast<glm::vec3*>(transforms_buffer.data<0>())
+				, sizeof(glm::vec4) * transforms_buffer.size()
+				, const_cast<glm::vec4*>(transforms_buffer.data<0>())
 				, GL_STATIC_DRAW);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer_id);
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -73,5 +75,16 @@ namespace UserLogic
 
 		glUseProgram(program);
 		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(transforms_buffer.size() * 6));
+	}
+
+	void TestLogicSystem::update(SystemsOrders::Update::TEST_PARTICLES_MOVE, const ECS::EntityIdType entity_id)
+	{
+		auto t = engine.getComponentManager().getComponent<EngineLogic::Components::Transform>(entity_id);
+		if (!t) return;
+		auto s = engine.getComponentManager().getComponent<Components::Speed>(entity_id);
+		if (!s) return;
+
+		t->pos = t->pos + s->move_vec * engine.getSystem<EngineLogic::AppSystem>().getIFPS();
+		if (glm::length2(t->pos) > 1.0f) t->pos = glm::vec3(0.0f);
 	}
 }

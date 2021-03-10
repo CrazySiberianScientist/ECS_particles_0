@@ -8,17 +8,12 @@ namespace UserLogic
 	{
 		// -v-v-v- Components -v-v-v-
 
-		struct Test0
+		struct Speed
 		{
-			bool state = false;
+			glm::vec3 move_vec;
 		};
 
-		struct Test1
-		{
-			int v = 666;
-		};
-
-		using ComponentsTypes = Utils::TypesPack<Test0, Test1>;
+		using ComponentsTypes = Utils::TypesPack<Speed>;
 
 		// -^-^-^- Components -^-^-^-
 

@@ -1,6 +1,6 @@
 #version 450 core
 
-varying vec4 vertex_color;
+in vec4 vertex_color;
 void main()
 {
 	gl_FragColor = vertex_color;

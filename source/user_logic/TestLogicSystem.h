@@ -15,6 +15,7 @@ namespace UserLogic
 
 		void init(SystemsOrders::Init::TEST_0);
 		void update(SystemsOrders::Update::TEST_PARTICLES);
+		void update(SystemsOrders::Update::TEST_PARTICLES_MOVE, const ECS::EntityIdType entity_id);
 	
 	private:
 		GLuint vertex_buffer, program;

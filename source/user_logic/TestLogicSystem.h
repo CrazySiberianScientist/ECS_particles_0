@@ -18,8 +18,7 @@ namespace UserLogic
 		void update(SystemsOrders::Update::TEST_PARTICLES_MOVE, const ECS::EntityIdType entity_id);
 	
 	private:
-		GLuint vertex_buffer, program;
-		GLint mvp_location, vpos_location, vcol_location;
+		GLuint program;
 		GLint vp_transform_location;
 	};
 

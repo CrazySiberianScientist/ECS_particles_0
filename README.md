@@ -7,8 +7,8 @@ Hello, comrades! This is my training project, it consists of two parts : **ECS**
 Main purpose of this project - create ECS with minimal perfomance overhead *(ha-ha-ha)*, because of this I preferred static polymorphism (template magic), flat memory collections and hierarchies avoidance.  
 Because this project is training there are some disadvantages:
 * Project isn't well tested
-* I tried implement cross-platform code, but it isn't configured for Linux build
-* There are can be strange and weird names and architecture decisions
+* I tried to implement cross-platform code, but it isn't configured for Linux build
+* There are may be strange and weird names and architecture decisions
 * Isn't thread safe
 
 

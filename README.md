@@ -59,17 +59,51 @@ Important classes:
 	```  
 
 * **Common::Engine** (*engine/Engine.h*)  
-Aggregates **EntityManager**, **ComponentManager**, and a lot of **Systems**. Calls methods of **Systems** via next order:  
+Aggregates **EntityManager**, **ComponentManager**, and a lot of **Systems**. Calls methods of **Systems** via next order (see table). **Init** - methods call once, when **entity** is just linked to System, but isn't immidiately, entity pushed to init-queue and inited on next frame. **Destoy** - methods call once, when **entity** is just unlinked to System, but isn't immidiately, entity pushed to destroy-queue and destroyed on next frame.
 
-Systems methods ordrers                        |
-------------------------------- |
+Systems methods ordrers |
+----------------------- |
+**Engine init :** |
 SomeEngineSystem::init(EngineLogic::SystemsOrders::Init::ORDER_0) |
 SomeEngineSystem::init(EngineLogic::SystemsOrders::Init::ORDER_N...) |
 SomeEngineSystem::init(EngineLogic::SystemsOrders::Init::ORDER_0, const ECS::EntityIdType) |
 SomeEngineSystem::init(EngineLogic::SystemsOrders::Init::ORDER_N..., const ECS::EntityIdType) |
-|
+**User init :** |
 SomeUserSystem::init(UserLogic::SystemsOrders::Init::ORDER_0) |
 SomeUserSystem::init(UserLogic::SystemsOrders::Init::ORDER_N...) |
-SomeEngineSystem::update(EngineLogic::SystemsOrders::Update::ORDER_0) |
-...........|
-SomeEngineSystem::update(EngineLogic::SystemsOrders::Update::ORDER_N) |
+SomeUserSystem::init(UserLogic::SystemsOrders::Init::ORDER_0, const ECS::EntityIdType) |
+SomeUserSystem::init(UserLogic::SystemsOrders::Init::ORDER_N..., const ECS::EntityIdType) |
+**System update :** |
+SomeEngineSystem::update(EngineLogic::SystemsOrders::update::ORDER_0) |
+SomeEngineSystem::update(EngineLogic::SystemsOrders::update::ORDER_N...) |
+SomeEngineSystem::update(EngineLogic::SystemsOrders::update::ORDER_0, const ECS::EntityIdType) |
+SomeEngineSystem::update(EngineLogic::SystemsOrders::update::ORDER_N..., const ECS::EntityIdType) |
+**User update :** |
+SomeUserSystem::update(UserLogic::SystemsOrders::update::ORDER_0) |
+SomeUserSystem::update(UserLogic::SystemsOrders::update::ORDER_N...) |
+SomeUserSystem::update(UserLogic::SystemsOrders::update::ORDER_0, const ECS::EntityIdType) |
+SomeUserSystem::update(UserLogic::SystemsOrders::update::ORDER_N..., const ECS::EntityIdType) |
+**User postUpdate :** |
+SomeUserSystem::postUpdate(UserLogic::SystemsOrders::postUpdate::ORDER_0) |
+SomeUserSystem::postUpdate(UserLogic::SystemsOrders::postUpdate::ORDER_N...) |
+SomeUserSystem::postUpdate(UserLogic::SystemsOrders::postUpdate::ORDER_0, const ECS::EntityIdType) |
+SomeUserSystem::postUpdate(UserLogic::SystemsOrders::postUpdate::ORDER_N..., const ECS::EntityIdType) |
+**System postUpdate :** |
+SomeEngineSystem::postUpdate(EngineLogic::SystemsOrders::postUpdate::ORDER_0) |
+SomeEngineSystem::postUpdate(EngineLogic::SystemsOrders::postUpdate::ORDER_N...) |
+SomeEngineSystem::postUpdate(EngineLogic::SystemsOrders::postUpdate::ORDER_0, const ECS::EntityIdType) |
+SomeEngineSystem::postUpdate(EngineLogic::SystemsOrders::postUpdate::ORDER_N..., const ECS::EntityIdType) |
+**User destroy :** |
+SomeUserSystem::destroy(UserLogic::SystemsOrders::destroy::ORDER_0) |
+SomeUserSystem::destroy(UserLogic::SystemsOrders::destroy::ORDER_N...) |
+SomeUserSystem::destroy(UserLogic::SystemsOrders::destroy::ORDER_0, const ECS::EntityIdType) |
+SomeUserSystem::destroy(UserLogic::SystemsOrders::destroy::ORDER_N..., const ECS::EntityIdType) |
+**System destroy :** |
+SomeEngineSystem::destroy(EngineLogic::SystemsOrders::destroy::ORDER_0) |
+SomeEngineSystem::destroy(EngineLogic::SystemsOrders::destroy::ORDER_N...) |
+SomeEngineSystem::destroy(EngineLogic::SystemsOrders::destroy::ORDER_0, const ECS::EntityIdType) |
+SomeEngineSystem::destroy(EngineLogic::SystemsOrders::destroy::ORDER_N..., const ECS::EntityIdType) |
+
+* Each methods order must be registered in ***EngineSystemsOrders.h*** or ***UserSystemsOrders.h***
+* Each component must be registered in ***EngineComponents.h*** or ***UserComponents.h***
+* Each system must be registered in ***EngineSystems.h*** or ***UserSystems.h***

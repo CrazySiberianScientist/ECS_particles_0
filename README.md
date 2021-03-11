@@ -5,7 +5,7 @@
 
 Hello, comrades! This is my training project, it consists of two parts : **ECS** and **OpenGL based Dummy-Engine**.  
 Main purpose of this project - create ECS with minimal perfomance overhead *(ha-ha-ha)*, because of this I preferred static polymorphism (template magic), flat memory collections and hierarchies avoidance.  
-Because this project is training there are some disadvantages:
+Since this project is training there are some disadvantages:
 * Project isn't well tested
 * I tried to implement cross-platform code, but it isn't configured for Linux build
 * There are may be strange and weird names and architecture decisions
@@ -37,7 +37,7 @@ Important classes:
 
 ## Dummy Engine part
 
-Necessary files: *all projects files are neccessary*
+Necessary files: *all projects files are necessary*
 
 Important classes:
 * **BaseSystem** and it's Inheritances  
@@ -59,7 +59,7 @@ Important classes:
 	```  
 
 * **Common::Engine** (*engine/Engine.h*)  
-Aggregates **EntityManager**, **ComponentManager**, and a lot of **Systems**. Calls methods of **Systems** via next order (see table). **Init** - methods call once, when **entity** is just linked to System, but isn't immidiately, entity pushed to init-queue and inited on next frame. **Destoy** - methods call once, when **entity** is just unlinked to System, but isn't immidiately, entity pushed to destroy-queue and destroyed on next frame.
+Aggregates **EntityManager**, **ComponentManager**, and a lot of **Systems**. Calls methods of **Systems** via next order (see table). **Init** - methods are called once, when **entity** is just linked to System, but isn't immidiately, entity is pushed to init-queue and initiated on next frame. **Destroy** - methods are called once, when **entity** is just unlinked to System, but isn't immidiately, entity is pushed to destroy-queue and destroyed on next frame.
 
 Systems methods ordrers |
 ----------------------- |
@@ -104,6 +104,6 @@ SomeEngineSystem::destroy(EngineLogic::SystemsOrders::destroy::ORDER_N...) |
 SomeEngineSystem::destroy(EngineLogic::SystemsOrders::destroy::ORDER_0, const ECS::EntityIdType) |
 SomeEngineSystem::destroy(EngineLogic::SystemsOrders::destroy::ORDER_N..., const ECS::EntityIdType) |
 
-* Each methods order must be registered in ***EngineSystemsOrders.h*** or ***UserSystemsOrders.h***
+* Each method order must be registered in ***EngineSystemsOrders.h*** or ***UserSystemsOrders.h***
 * Each component must be registered in ***EngineComponents.h*** or ***UserComponents.h***
 * Each system must be registered in ***EngineSystems.h*** or ***UserSystems.h***

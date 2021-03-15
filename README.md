@@ -8,14 +8,14 @@ Main purpose of this project - create ECS with minimal perfomance overhead *(ha-
 Since this project is training there are some disadvantages:
 * Project isn't well tested
 * I tried to implement cross-platform code, but it isn't configured for Linux build
-* There are may be strange and weird names and architecture decisions
+* There are may be strange names and architecture decisions
 * Isn't thread safe
 
 
 ## Requirements and external dependencies
 
 ECS part:
-* C++17 compiler (repository includes MS Visual Studio 2019 project)  
+* C++17 compiler (repository includes MS Visual Studio 2019 project and CMake for msvc)  
 
 Dummy-Engine part:
 * GLFW (https://www.glfw.org/). In project global variable **GLFW_DIR** is used.
@@ -47,15 +47,14 @@ Important classes:
  	```cpp
 	// Methods per entity
 	void init(SystemsOrders::Init::_ORDER_, const ECS::EntityIdType entity_id);
- 	void update(SystemsOrders::Update::_ORDER_, const ECS::EntityIdType entity_id);
- 	void postUpdate(SystemsOrders::PostUpdate::_ORDER_, const ECS::EntityIdType entity_id);
- 	void destroy(SystemsOrders::Destroy::_ORDER_, const ECS::EntityIdType entity_id);
-	void init(SystemsOrders::Init::_ORDER_);
+	void update(SystemsOrders::Update::_ORDER_, const ECS::EntityIdType entity_id);
+	void postUpdate(SystemsOrders::PostUpdate::_ORDER_, const ECS::EntityIdType entity_id);
+	void destroy(SystemsOrders::Destroy::_ORDER_, const ECS::EntityIdType entity_id);
 	// Common methods, called once per frame (except init(...) and destroy(...)
 	void init(SystemsOrders::Init::_ORDER_);
- 	void update(SystemsOrders::Update::_ORDER_);
- 	void postUpdate(SystemsOrders::PostUpdate::_ORDER_);
- 	void destroy(SystemsOrders::Destroy::_ORDER_);
+	void update(SystemsOrders::Update::_ORDER_);
+	void postUpdate(SystemsOrders::PostUpdate::_ORDER_);
+	void destroy(SystemsOrders::Destroy::_ORDER_);
 	```  
 
 * **Common::Engine** (*engine/Engine.h*)  

@@ -13,7 +13,13 @@ namespace UserLogic
 			glm::vec3 move_vec;
 		};
 
-		using ComponentsTypes = Utils::TypesPack<Speed>;
+		struct ShaderObject
+		{
+			std::string fragment_shader_name;
+			std::string vertex_shader_name;
+		};
+
+		using ComponentsTypes = Utils::TypesPack<Speed, ShaderObject>;
 
 		// -^-^-^- Components -^-^-^-
 

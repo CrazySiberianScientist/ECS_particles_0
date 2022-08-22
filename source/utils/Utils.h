@@ -24,7 +24,7 @@ namespace Utils
 		template<typename _Type>
 		static constexpr size_t getTypeIndex() { return getTypeIndex_impl<_Type>(TypesPack<_Types...>{}, 0); }
 
-		template <template <typename> typename _NewType, template <typename> typename _WrapType>
+		template <template <typename...> typename _NewType, template <typename> typename _WrapType>
 		struct WrappedPack { using type = _NewType<_WrapType<_Types>...>; };
 
 	private:
@@ -40,13 +40,13 @@ namespace Utils
 	template <typename ..._Types0, typename ..._Types1>
 	constexpr decltype(auto) conCatTypesPack(TypesPack<_Types0...>, TypesPack<_Types1...>) { return TypesPack<_Types0..., _Types1...>{}; }
 
-	template <template <typename> typename _NewType, typename ..._Types0, typename ..._Types1>
+	template <template <typename...> typename _NewType, typename ..._Types0, typename ..._Types1>
 	constexpr decltype(auto) combineTypesPack(TypesPack<_Types0...>, TypesPack<_Types1...>) { return _NewType<_Types0..., _Types1...>{}; }
 
-	template <template <typename> typename _NewType, typename ..._Types>
+	template <template <typename...> typename _NewType, typename ..._Types>
 	constexpr decltype(auto) convertTypesPack(TypesPack<_Types...>) { return _NewType<_Types...>{}; }
 
-	template <template <typename> typename _NewType, template <typename> typename _WrapType, typename ..._Types>
+	template <template <typename...> typename _NewType, template <typename> typename _WrapType, typename ..._Types>
 	constexpr decltype(auto) wrapTypesPack(TypesPack<_Types...>) { return _NewType<_WrapType<_Types>...>{}; }
 
 	template <typename ..._Types>
